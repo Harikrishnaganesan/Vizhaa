@@ -16,7 +16,7 @@ const reviews = [
   {
     name: "John doe",
     avatar: "/avatar3.png",
-    text: "I was the service I received from their company! responsive, and genuinely cared about meeting my needs. I highly recommend them."
+    text: "I was impressed with the service I received from their company! They were responsive, and genuinely cared about meeting my needs. I highly recommend them."
   },
   {
     name: "John doe",
