@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 const reviews = [
@@ -32,6 +32,10 @@ const reviews = [
 
 const ReviewSection = () => {
   const [currentSlide, setCurrentSlide] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const totalSteps = 1; // just show reviews
   
   // Auto-slide every 2 seconds
   useEffect(() => {
@@ -41,6 +45,66 @@ const ReviewSection = () => {
     
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsScrollLocked(true);
+          setCurrentStep(0);
+        } else {
+          setIsScrollLocked(false);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let scrollCount = 0;
+    let lastWheelTime = 0;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isScrollLocked && currentStep < totalSteps) {
+        e.preventDefault();
+        
+        if (e.deltaY > 0) {
+          if (Date.now() - lastWheelTime > 500) {
+            scrollCount = 0;
+          }
+          scrollCount++;
+          lastWheelTime = Date.now();
+
+          if (scrollCount >= 1 && currentStep < totalSteps) {
+            setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+            scrollCount = 0;
+          }
+        }
+      }
+    };
+
+    const handleScroll = () => {
+      if (currentStep >= totalSteps && isScrollLocked) {
+        setIsScrollLocked(false);
+      }
+    };
+
+    if (isScrollLocked) {
+      window.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isScrollLocked, currentStep, totalSteps]);
   
   const getVisibleReviews = () => {
     const result = [];
@@ -52,7 +116,10 @@ const ReviewSection = () => {
   };
 
   return (
-    <section className="w-full py-16 bg-gray-200 flex flex-col items-center">
+    <section 
+      ref={sectionRef}
+      className="w-full h-screen py-16 bg-gray-200 flex flex-col items-center justify-center"
+    >
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold text-green-600 mb-4 text-center">
           Our Client Review

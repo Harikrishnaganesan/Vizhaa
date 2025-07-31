@@ -1,16 +1,91 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 // You can use FontAwesome for emoji, or Lottie for animation if you have the JSON
 // For hand shake, we'll use CSS animation for up-down effect
 
 const Laptop = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const totalSteps = 3; // laptop, left hand, right hand
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsScrollLocked(true);
+          setCurrentStep(0);
+        } else {
+          setIsScrollLocked(false);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let scrollCount = 0;
+    let lastWheelTime = 0;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isScrollLocked && currentStep < totalSteps) {
+        e.preventDefault();
+        
+        if (e.deltaY > 0) { // Scrolling down
+          if (Date.now() - lastWheelTime > 500) {
+            scrollCount = 0;
+          }
+          scrollCount++;
+          lastWheelTime = Date.now();
+
+          if (scrollCount >= 1 && currentStep < totalSteps) {
+            setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+            scrollCount = 0;
+          }
+        }
+      }
+    };
+
+    const handleScroll = () => {
+      if (currentStep >= totalSteps && isScrollLocked) {
+        setIsScrollLocked(false);
+      }
+    };
+
+    if (isScrollLocked) {
+      window.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isScrollLocked, currentStep, totalSteps]);
+
+  // Calculate which elements should be visible based on current step
+  const showLaptop = currentStep >= 1;
+  const showLeftHand = currentStep >= 2;
+  const showRightHand = currentStep >= 3;
+
   return (
-    <section className="w-full flex flex-col items-center justify-center py-12">
+    <section 
+      ref={sectionRef}
+      className="w-full h-screen flex flex-col items-center justify-center py-12"
+    >
       <div className="relative flex flex-col items-center justify-center">
         {/* Laptop illustration */}
-        <div className="relative z-10">
+        <div className={`relative z-10 transition-all duration-1000 ${
+          showLaptop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
           <Image
             src="/laptop.png"
             alt="Laptop"
@@ -33,7 +108,9 @@ const Laptop = () => {
           </div>
         </div>
         {/* Hands holding phones, animated shake, overlapping the laptop */}
-        <div className="absolute -left-32 top-60 -translate-y-1/2 z-2   flex flex-col items-center">
+        <div className={`absolute -left-32 top-60 -translate-y-1/2 z-2 flex flex-col items-center transition-all duration-1000 ${
+          showLeftHand ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+        }`}>
           <div className="relative origin-bottom animate-swing-left">
             <Image
               src="/left-hand.png"
@@ -45,7 +122,9 @@ const Laptop = () => {
             />
           </div>
         </div>
-        <div className="absolute -right-32 top-60 -translate-y-1/2 z-2 flex flex-col items-center">
+        <div className={`absolute -right-32 top-60 -translate-y-1/2 z-2 flex flex-col items-center transition-all duration-1000 ${
+          showRightHand ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
+        }`}>
           <div className="relative origin-bottom animate-swing-right">
             <Image
               src="/right-hand.png"

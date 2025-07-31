@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Header = () => {
   return (
-    <header className="w-full flex items-center px-8 py-4 bg-white/80 backdrop-blur-md relative top-0 left-0 z-50 shadow-sm ">
+    <header className="w-full flex items-center px-8 py-4 bg-white/80 backdrop-blur-md fixed top-0 left-0 z-50 shadow-sm ">
       {/* Left: Location & Event */}
       <div className="flex items-center gap-6 flex-1">
         <div className="flex items-center gap-1 text-green-600 font-medium cursor-pointer">

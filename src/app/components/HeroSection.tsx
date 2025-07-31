@@ -33,7 +33,7 @@ const HeroSection = () => {
   const handleScroll = () => {
     const nextSection = document.getElementById("second-section");
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -56,7 +56,7 @@ const HeroSection = () => {
       
 
       {/* Content */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center w-full px-4">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center w-full px-4 ">
         <h1 className="text-white text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
           {slides[current].heading}
         </h1>

@@ -11,14 +11,13 @@ import Download from "./components/Download";
 
 export default function HomePage() {
   return (
-    <>
-      
+    <div className="scroll-smooth">
       <HeroSection />
       <SecondSection />
       <LaptopSection />
       <ReviewSection />
       <CountReview />
       <Download />
-    </>
+    </div>
   );
 }
