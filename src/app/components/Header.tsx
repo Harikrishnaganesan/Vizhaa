@@ -30,9 +30,9 @@ const Header = () => {
      <Link href="/howwork" className="hover:text-green-600">How It Works</Link>
      <Link href="/contact" className="hover:text-green-600">Contact</Link>
     </nav>
-   <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-5 py-2 rounded-full shadow transition">
-    Log in/Sign up
-    </button>
+    <Link href="/login" className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-5 py-2 rounded-full shadow transition">
+      Log in/Sign up
+      </Link>
   </div>
     </header>
   );
