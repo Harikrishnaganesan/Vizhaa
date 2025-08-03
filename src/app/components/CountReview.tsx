@@ -120,7 +120,7 @@ const CountReview = () => {
   return (
     <section 
       ref={sectionRef}
-      className="w-full min-h-screen flex items-center justify-center px-8 py-8 bg-white " 
+      className="w-full flex items-center justify-center px-8 py-8 mb-16 bg-white " 
       style={{ fontFamily: 'Inter, Segoe UI, Arial, sans-serif' }}
     >  <div className="px-[45px] pt-[40px] pb-[55px] rounded-[24px] border border-gray-300">
 

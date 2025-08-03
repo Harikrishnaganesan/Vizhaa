@@ -23,7 +23,7 @@ const Laptop = () => {
 
   return (
     <section 
-      className="w-full h-screen flex flex-col items-center justify-center px-8"
+      className="w-full flex flex-col items-center justify-center py-[3px] px-8 mb-16"
     >
       <div className="relative flex flex-col items-center justify-center">
         {/* Laptop illustration */}
@@ -33,18 +33,18 @@ const Laptop = () => {
           <Image
             src="/laptop.png"
             alt="Laptop"
-            width={500}
-            height={300}
+            width={700}
+            height={420}
             className="mx-auto"
             priority
           />
           {/* Screen content overlay */}
-          <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-[340px] h-[180px] flex flex-col items-center justify-center text-center bg-transparent">
-            <h2 className="text-2xl md:text-3xl font-bold text-green-700 mb-2">
+          <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-[480px] h-[250px] flex flex-col items-center justify-center text-center bg-transparent">
+            <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-3">
               What will you discover<br />inside the app?
             </h2>
             
-            <p className="text-gray-700 text-base md:text-lg">
+            <p className="text-gray-700 text-lg md:text-xl">
               From booking top-rated event workers<br />
               to managing tasks everything you need<br />
               right at your fingertips
@@ -52,29 +52,29 @@ const Laptop = () => {
           </div>
         </div>
         {/* Hands holding phones, animated shake, overlapping the laptop */}
-        <div className={`absolute -left-32 top-60 -translate-y-1/2 z-2 flex flex-col items-center transition-all duration-1000 ${
+        <div className={`absolute -left-40 top-72 -translate-y-1/2 z-2 flex flex-col items-center transition-all duration-1000 ${
           showLeftHand ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
         }`}>
           <div className="relative origin-bottom animate-swing-left">
             <Image
               src="/left-hand.png"
               alt="Left Hand"
-              width={210}
-              height={200}
+              width={280}
+              height={260}
               className=""
               priority
             />
           </div>
         </div>
-        <div className={`absolute -right-32 top-60 -translate-y-1/2 z-2 flex flex-col items-center transition-all duration-1000 ${
+        <div className={`absolute -right-40 top-72 -translate-y-1/2 z-2 flex flex-col items-center transition-all duration-1000 ${
           showRightHand ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
         }`}>
           <div className="relative origin-bottom animate-swing-right">
             <Image
               src="/right-hand.png"
               alt="Right Hand"
-              width={210}
-              height={200}
+              width={280}
+              height={260}
               className=""
               priority
             />

@@ -16,9 +16,8 @@ const SecondSection = () => {
   return (
     <section 
       id="second-section" 
-      className="w-full flex flex-col items-center justify-center px-8 bg-white relative overflow-hidden"
+      className="w-full min-h-screen flex flex-col items-center justify-center py-8 px-8 mb-16 bg-white relative overflow-hidden"
       style={{
-        height: 'calc(100vh - 80px)',
         backgroundImage: "url('/second bg.png')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -26,7 +25,7 @@ const SecondSection = () => {
       }}
     >
       {/* Rotating Red Ball in Right Corner */}
-      <div className="absolute top-158 right-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
+      <div className="absolute top-170 right-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
         <Image
           src="/10415249 4-2.png"
           alt="Rotating decorative ball"
@@ -38,7 +37,7 @@ const SecondSection = () => {
       </div>
       
       {/* Rotating left Ball in Left Corner */}
-      <div className="absolute top-20 left-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
+      <div className="absolute top-30 left-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
         <Image
           src="/10415249 4-2.png"
           alt="Rotating decorative ball"

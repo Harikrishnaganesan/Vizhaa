@@ -38,7 +38,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
       <Image
         src={slides[current].image}
         alt="Hero Background"

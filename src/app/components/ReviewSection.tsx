@@ -119,7 +119,7 @@ const ReviewSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="w-full min-h-screen px-8 py-8 flex flex-col items-center justify-center"
+      className="w-full px-8 py-8 mb-16 flex flex-col items-center justify-center"
     >
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold text-green-600 mb-4 text-center">

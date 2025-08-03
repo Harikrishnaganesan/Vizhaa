@@ -2,7 +2,6 @@
 
 "use client";
 import React from "react";
-import FullPageScroll from "./components/FullPageScroll";
 import SecondSection from "./components/SecondSection";
 import HeroSection from "./components/HeroSection";
 import LaptopSection from "./components/LaptopSection";
@@ -13,7 +12,7 @@ import Footer from "./components/footer";
 
 export default function HomePage() {
   return (
-    <FullPageScroll>
+    <main className="w-full">
       <HeroSection />
       <SecondSection />
       <LaptopSection />
@@ -21,6 +20,6 @@ export default function HomePage() {
       <CountReview />
       <Download />
       <Footer />
-    </FullPageScroll>
+    </main>
   );
 }

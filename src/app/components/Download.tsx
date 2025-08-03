@@ -74,7 +74,7 @@ const Download = () => {
   return (
     <section 
       ref={sectionRef}
-      className="w-full min-h-screen flex justify-center items-center px-8 py-8 bg-white relative"
+      className="w-full flex justify-center items-center px-8 py-8 mb-16 bg-white relative"
     >
       <div className="relative bg-white rounded-[24px] shadow-xl px-2 md:px-32 py-14 flex flex-col md:flex-row items-center gap-10 md:gap-32 max-w-6xl w-full h-[400px] mx-auto border border-gray-100 z-10 overflow-hidden" style={{ minHeight: 340 }}>
         
