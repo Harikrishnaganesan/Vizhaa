@@ -13,9 +13,10 @@ const Download = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsScrollLocked(true);
-          setCurrentStep(0);
+          setCurrentStep(1); // Show mobile immediately when section is visible
         } else {
           setIsScrollLocked(false);
+          setCurrentStep(0); // Reset when leaving view
         }
       },
       { threshold: 0.5 }
@@ -68,10 +69,12 @@ const Download = () => {
     };
   }, [isScrollLocked, currentStep, totalSteps]);
 
+  const showMobile = currentStep >= 1;
+
   return (
     <section 
       ref={sectionRef}
-      className="w-full h-screen flex justify-center items-center py-16 bg-white relative"
+      className="w-full min-h-screen flex justify-center items-center px-8 py-8 bg-white relative"
     >
       <div className="relative bg-white rounded-[24px] shadow-xl px-2 md:px-32 py-14 flex flex-col md:flex-row items-center gap-10 md:gap-32 max-w-6xl w-full h-[400px] mx-auto border border-gray-100 z-10 overflow-hidden" style={{ minHeight: 340 }}>
         
@@ -95,7 +98,9 @@ const Download = () => {
         </div>
 
         {/* Right: Phone with QR code */}
-        <div className="flex-1 flex justify-center items-center z-10">
+        <div className={`flex-1 flex justify-center items-center z-10 transition-all duration-1000 ${
+          showMobile ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
+        }`}>
           <Image
             src="/mobile.png"
             alt="Download App Phone"

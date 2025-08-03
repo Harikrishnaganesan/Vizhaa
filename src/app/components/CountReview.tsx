@@ -36,7 +36,7 @@ const CountReview = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsScrollLocked(true);
-          setCurrentStep(0);
+          setCurrentStep(1); // Show counting immediately when section is visible
           if (!isVisible) {
             setIsVisible(true);
           }
@@ -120,10 +120,12 @@ const CountReview = () => {
   return (
     <section 
       ref={sectionRef}
-      className="w-full h-screen flex items-center justify-center py-16 bg-white" 
+      className="w-full min-h-screen flex items-center justify-center px-8 py-8 bg-white " 
       style={{ fontFamily: 'Inter, Segoe UI, Arial, sans-serif' }}
-    >
-      <div className="flex flex-col md:flex-row gap-12 md:gap-54 items-center justify-center w-full max-w-6xl mx-auto ">
+    >  <div className="px-[45px] pt-[40px] pb-[55px] rounded-[24px] border border-gray-300">
+
+    
+      <div className="flex flex-col md:flex-row gap-12 md:gap-54 items-center justify-center w-full  max-w-6xl mx-auto ">
         {stats.map((stat, idx) => (
           <div key={idx} className="flex flex-col items-center min-w-[200px]">
             <Image src={stat.icon} alt={stat.label} width={200} height={200} className="mb-4" />
@@ -133,6 +135,7 @@ const CountReview = () => {
             <div className="text-[#223344] text-xl text-center font-semibold tracking-tight">{stat.label}</div>
           </div>
         ))}
+      </div>
       </div>
     </section>
   );

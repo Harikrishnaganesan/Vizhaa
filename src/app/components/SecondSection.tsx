@@ -1,111 +1,75 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 const SecondSection = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const totalSteps = 2; // text content, image
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsScrollLocked(true);
-          setCurrentStep(0);
-        } else {
-          setIsScrollLocked(false);
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
+    // Show content after component mounts
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    let scrollCount = 0;
-    let lastWheelTime = 0;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (isScrollLocked && currentStep < totalSteps) {
-        e.preventDefault();
-        
-        if (e.deltaY > 0) {
-          if (Date.now() - lastWheelTime > 500) {
-            scrollCount = 0;
-          }
-          scrollCount++;
-          lastWheelTime = Date.now();
-
-          if (scrollCount >= 1 && currentStep < totalSteps) {
-            setCurrentStep(prev => Math.min(prev + 1, totalSteps));
-            scrollCount = 0;
-          }
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (currentStep >= totalSteps && isScrollLocked) {
-        setIsScrollLocked(false);
-      }
-    };
-
-    if (isScrollLocked) {
-      window.addEventListener('wheel', handleWheel, { passive: false });
-      window.addEventListener('scroll', handleScroll);
-    }
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isScrollLocked, currentStep, totalSteps]);
-
-  const showText = currentStep >= 1;
-  const showImage = currentStep >= 2;
 
   return (
     <section 
-      ref={sectionRef}
       id="second-section" 
-      className="w-full h-screen flex flex-col md:flex-row items-center justify-between px-8 bg-white"
+      className="w-full flex flex-col items-center justify-center px-8 bg-white relative overflow-hidden"
+      style={{
+        height: 'calc(100vh - 80px)',
+        backgroundImage: "url('/second bg.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
     >
-      {/* Left: Heading, subheading, icons */}
-      <div className={`flex-1 flex flex-col items-start justify-center max-w-2xl transition-all duration-1000 ${
-        showText ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-      }`}>
-        <div className="flex items-center mb-2">
-          <h2 className="text-4xl md:text-5xl font-bold text-green-600 mr-4 leading-tight">
-            Better events for
-            <br className="hidden md:block" />
-            more people.
-          </h2>
-        </div>
-        <p className="text-base md:text-lg text-gray-500 mb-4 mt-2">
-          For every celebration, we connect the right people<br className="hidden md:block" />
-          so organizers can focus on what truly matters.
-        </p>
-      </div>
-      {/* Right: Large illustration (static image) */}
-      <div className={`flex-1 flex justify-center items-center mt-8 md:mt-0 transition-all duration-1000 ${
-        showImage ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-      }`}>
+      {/* Rotating Red Ball in Right Corner */}
+      <div className="absolute top-158 right-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
         <Image
-          src="/secondlottie.png"
-          alt="Event Catering Illustration"
-          width={400}
-          height={300}
-          className="w-72 h-72 md:w-[400px] md:h-[300px] object-contain"
+          src="/10415249 4-2.png"
+          alt="Rotating decorative ball"
+          width={80}
+          height={80}
+          className="w-full h-full object-contain drop-shadow-lg"
           draggable={false}
         />
       </div>
+      
+      {/* Rotating left Ball in Left Corner */}
+      <div className="absolute top-20 left-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
+        <Image
+          src="/10415249 4-2.png"
+          alt="Rotating decorative ball"
+          width={80}
+          height={80}
+          className="w-full h-full object-contain drop-shadow-lg"
+          draggable={false}
+        />
+      </div>
+    
+      {/* Centered Content */}
+      <div className={`flex flex-col items-center justify-center text-center max-w-4xl transition-all duration-1000 ${
+        showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}>
+        <div className="flex items-center justify-center mb-6">
+          <h2 className="text-6xl md:text-6xl lg:text-7xl font-bold text-green-600 leading-tight">
+            <span className="relative block">
+              Better events for
+              <span className="relative block">
+                more people.
+                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3/4  rounded-full"></span>
+              </span>
+            </span>
+          </h2>
+        </div>
+        <p className="text-lg md:text-xl lg:text-2xl text-gray-500 mb-6 max-w-3xl">
+          For every celebration, we connect the right <br /> people
+          so organizers can focus on what<br />  truly matters.
+        </p>
+      </div>
+
     </section>
   );
 };

@@ -1,75 +1,20 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-
-// You can use FontAwesome for emoji, or Lottie for animation if you have the JSON
-// For hand shake, we'll use CSS animation for up-down effect
 
 const Laptop = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const totalSteps = 3; // laptop, left hand, right hand
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsScrollLocked(true);
-          setCurrentStep(0);
-        } else {
-          setIsScrollLocked(false);
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
+    // Staggered animation when component mounts
+    const timers = [
+      setTimeout(() => setCurrentStep(1), 500),  // Show laptop
+      setTimeout(() => setCurrentStep(2), 900),  // Show left hand
+      setTimeout(() => setCurrentStep(3), 1300), // Show right hand
+    ];
+    
+    return () => timers.forEach(timer => clearTimeout(timer));
   }, []);
-
-  useEffect(() => {
-    let scrollCount = 0;
-    let lastWheelTime = 0;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (isScrollLocked && currentStep < totalSteps) {
-        e.preventDefault();
-        
-        if (e.deltaY > 0) { // Scrolling down
-          if (Date.now() - lastWheelTime > 500) {
-            scrollCount = 0;
-          }
-          scrollCount++;
-          lastWheelTime = Date.now();
-
-          if (scrollCount >= 1 && currentStep < totalSteps) {
-            setCurrentStep(prev => Math.min(prev + 1, totalSteps));
-            scrollCount = 0;
-          }
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (currentStep >= totalSteps && isScrollLocked) {
-        setIsScrollLocked(false);
-      }
-    };
-
-    if (isScrollLocked) {
-      window.addEventListener('wheel', handleWheel, { passive: false });
-      window.addEventListener('scroll', handleScroll);
-    }
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isScrollLocked, currentStep, totalSteps]);
 
   // Calculate which elements should be visible based on current step
   const showLaptop = currentStep >= 1;
@@ -78,8 +23,7 @@ const Laptop = () => {
 
   return (
     <section 
-      ref={sectionRef}
-      className="w-full h-screen flex flex-col items-center justify-center py-12"
+      className="w-full h-screen flex flex-col items-center justify-center px-8"
     >
       <div className="relative flex flex-col items-center justify-center">
         {/* Laptop illustration */}
