@@ -1,5 +1,7 @@
 import React from "react";
 import Image from "next/image";
+import Link from 'next/link';
+
 
 const Header = () => {
   return (
@@ -22,14 +24,16 @@ const Header = () => {
         <Image src="/logo.svg" alt="Logo" width={180} height={48} className="h-12 w-auto" priority />
       </div>
       {/* Right: Nav & Button */}
-      <div className="flex items-center gap-6 flex-1 justify-end">
-        <nav className="flex gap-6 text-gray-700 font-medium">
-          <a href="#" className="border-b-2 border-green-600 pb-1">Home</a>
-          <a href="#" className="hover:text-green-600">How It Works</a>
-          <a href="#" className="hover:text-green-600">Contact</a>
-        </nav>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-5 py-2 rounded-full shadow transition">Log in/Sign up</button>
-      </div>
+      <div className="flex items-center justify-end gap-6 flex-1">
+     <nav className="flex gap-6 text-gray-700 font-medium">
+     <Link href="/" className="border-b-2 border-green-600 pb-1">Home</Link>
+     <Link href="/howwork" className="hover:text-green-600">How It Works</Link>
+     <Link href="/contact" className="hover:text-green-600">Contact</Link>
+    </nav>
+   <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-5 py-2 rounded-full shadow transition">
+    Log in/Sign up
+    </button>
+  </div>
     </header>
   );
 };
