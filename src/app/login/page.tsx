@@ -313,12 +313,12 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
       setError('');
       router.push('/'); // Redirect to home page
     }
-    else if (email === 'hari@gmailcom' && password === 'hari123') { 
+    else if (email === 'hari@gmail.com' && password === 'hari123') { 
         setError('');
-        router.push('/event'); // Redirect to home page
+        router.push('/event'); // Redirect to event page
     }
     else {
-      setError('Invalid login credentials. Try user@example.com / password123');
+      setError('Invalid login credentials. Try: mani@gmail.com / mani123 or hari@gmail.com / hari123');
     }
   };
 
