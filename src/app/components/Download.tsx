@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, JSX } from "react";
 import Image from "next/image";
 
-const Download = () => {
+function Download(): JSX.Element {
   const [currentStep, setCurrentStep] = useState(0);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -113,6 +113,6 @@ const Download = () => {
       </div>
     </section>
   );
-};
+}
 
 export default Download;

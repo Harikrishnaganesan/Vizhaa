@@ -41,7 +41,7 @@ const Footer = () => {
         {/* Bottom Section: Logo, Social Icons, Copyright */}
         <div className="border-t border-gray-800 pt-6 flex flex-col items-center text-center">
           <div className="flex items-center gap-2 mb-4">
-            <Image src="/footer.png" alt="Vizhaa Logo" width={28} height={28} className="w-27 h-12" />
+            <Image src="/footer-vizha.svg" alt="Vizhaa Logo" width={28} height={28} className="w-27 h-12" />
           </div>
           
           <div className="flex gap-6 text-white mb-4">

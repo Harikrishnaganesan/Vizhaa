@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 
 const SecondSection = () => {
   const [showContent, setShowContent] = useState(false);
@@ -24,7 +23,7 @@ const SecondSection = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Rotating Red Ball in Right Corner */}
+      {/* Rotating Red Ball in Right Corner
       <div className="absolute top-170 right-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
         <Image
           src="/10415249 4-2.png"
@@ -36,7 +35,7 @@ const SecondSection = () => {
         />
       </div>
       
-      {/* Rotating left Ball in Left Corner */}
+       Rotating left Ball in Left Corner 
       <div className="absolute top-30 left-[-110px] w-60 h-60 animate-spin pointer-events-none" style={{animationDuration: '10s'}}>
         <Image
           src="/10415249 4-2.png"
@@ -46,7 +45,7 @@ const SecondSection = () => {
           className="w-full h-full object-contain drop-shadow-lg"
           draggable={false}
         />
-      </div>
+      </div> */}
     
       {/* Centered Content */}
       <div className={`flex flex-col items-center justify-center text-center max-w-4xl transition-all duration-1000 ${

@@ -182,11 +182,7 @@ function OTPView({ onBack, onVerified }: { onBack: () => void; onVerified: () =>
               className="w-full h-auto"
               priority
             />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="bg-purple-500 text-white px-6 py-2 rounded-l-full font-bold text-lg">
-                WELCOME
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -280,11 +276,7 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
               className="w-full h-auto"
               priority
             />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="bg-purple-500 text-white px-6 py-2 rounded-l-full font-bold text-lg">
-                WELCOME
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -460,11 +452,7 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
               className="w-full h-auto"
               priority
             />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="bg-purple-500 text-white px-6 py-2 rounded-l-full font-bold text-lg">
-                WELCOME
-              </span>
-            </div>
+           
           </div>
         </div>
       </div>
