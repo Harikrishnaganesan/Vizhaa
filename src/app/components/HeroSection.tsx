@@ -1,22 +1,25 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { Righteous } from 'next/font/google';
 
-// Slide data array
+const righteous = Righteous({
+  subsets: ['latin'],
+  weight: '400',
+});
+
 const slides = [
   {
-    image: "/hero2.png",
+    image: "/caroseul-1.svg",
     heading: "Be the reason someone’s special day is perfect",
     subheading: "Your talent, their celebration we make the connection.",
     button: "Book Now",
-    
   },
   {
-    image: "/hero1.png",
+    image: "/caroseul-2.svg",
     heading: "Great events start with great planning!",
     subheading: "We make your event a culinary masterpiece",
     button: "Book Now",
-    
   },
 ];
 
@@ -33,7 +36,14 @@ const HeroSection = () => {
   const handleScroll = () => {
     const nextSection = document.getElementById("second-section");
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Calculate the exact position to scroll to
+      const sectionPosition = nextSection.getBoundingClientRect().top + window.pageYOffset;
+      
+      // Scroll to the exact top of the next section
+      window.scrollTo({
+        top: sectionPosition,
+        behavior: "smooth"
+      });
     }
   };
 
@@ -48,15 +58,8 @@ const HeroSection = () => {
         fill
         priority
       />
-      
 
-      {/* Overlay */}
-      {/* <div className="absolute inset-0 bg-black bg-opacity-60 z-10" /> */}
-
-      
-
-      {/* Content */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center w-full px-4 ">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center w-full px-4">
         <h1 className="text-white text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
           {slides[current].heading}
         </h1>
@@ -66,13 +69,20 @@ const HeroSection = () => {
         <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded shadow-lg text-lg transition mb-12">
           {slides[current].button}
         </button>
-        {/* Scroll Down Button - moved further down */}
         <button
           onClick={handleScroll}
-          className="animate-bounce text-white text-lg font-semibold flex flex-col items-center absolute left-1/2 -translate-x-1/2 top-80"
+          className="cursor-pointer animate-bounce text-white flex items-center absolute left-1/2 -translate-x-1/2 bottom-[-120px] z-30"
           style={{ zIndex: 30 }}
         >
-          Scroll Down <span className="text-2xl">⌄</span>
+          <p className={`${righteous.className} text-white text-xl md:text-2xl`}>
+            Scroll Down
+          </p>
+          <img
+            src="/scroll-down.svg"
+            alt="Scroll Down Icon"
+            className="w-6 h-6 mt-1"
+            draggable={false}
+          />
         </button>
       </div>
     </section>

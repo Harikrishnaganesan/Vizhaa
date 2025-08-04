@@ -4,19 +4,19 @@ import Image from "next/image";
 
 const stats = [
   {
-    icon: "/section1.png",
+    icon: "/verified-supplier.svg",
     value: 5000,
     suffix: "+",
     label: "Verified Suppliers"
   },
   {
-    icon: "/section2.png",
+    icon: "/cities-covered.svg",
     value: 500,
     suffix: "+",
     label: "Cities Covered"
   },
   {
-    icon: "/section-3.png",
+    icon: "/event-posted.svg",
     value: 10000,
     suffix: "+",
     label: "Events Posted"

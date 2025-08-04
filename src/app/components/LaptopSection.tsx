@@ -31,7 +31,7 @@ const Laptop = () => {
           showLaptop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <Image
-            src="/laptop.png"
+            src="/laptop.svg"
             alt="Laptop"
             width={700}
             height={420}
@@ -57,7 +57,7 @@ const Laptop = () => {
         }`}>
           <div className="relative origin-bottom animate-swing-left">
             <Image
-              src="/left-hand.png"
+              src="/left-hand.svg"
               alt="Left Hand"
               width={280}
               height={260}
@@ -71,7 +71,7 @@ const Laptop = () => {
         }`}>
           <div className="relative origin-bottom animate-swing-right">
             <Image
-              src="/right-hand.png"
+              src="/right-hand.svg"
               alt="Right Hand"
               width={280}
               height={260}

@@ -89,10 +89,10 @@ function Download(): JSX.Element {
           <p className="text-gray-500 text-xl md:text-2xl mb-8 font-medium">Your perfect event, just a tap away.</p>
           <div className="flex gap-6 mt-2">
             <a href="#" target="_blank" rel="noopener noreferrer">
-              <Image src="/google.png" alt="Get it on Google Play" width={238} height={73} className="h-[63px] w-auto" />
+              <Image src="/google-play.svg" alt="Get it on Google Play" width={238} height={73} className="h-[63px] w-auto" />
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer">
-              <Image src="/Appstore.png" alt="Download on the App Store" width={238} height={73} className="h-[63px] w-auto" />
+              <Image src="/app-store.svg" alt="Download on the App Store" width={238} height={73} className="h-[63px] w-auto" />
             </a>
           </div>
         </div>
@@ -102,7 +102,7 @@ function Download(): JSX.Element {
           showMobile ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
         }`}>
           <Image
-            src="/mobile.png"
+            src="/mobile.svg"
             alt="Download App Phone"
             width={160}
             height={380}
