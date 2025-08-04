@@ -423,7 +423,7 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
               <button
                 type="button"
                 onClick={onForgot}
-                className="text-sm text-black underline hover:text-blue-600"
+                className="text-sm text-black underline hover:text-blue-600 cursor-pointer"
               >
                 Forgot Password?
               </button>
