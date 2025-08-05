@@ -31,7 +31,6 @@ const Event: React.FC = () => {
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
         if (entry.isIntersecting) {
-          // Animate steps one by one
           steps.forEach((_, index) => {
             setTimeout(() => {
               setVisibleSteps(prev => [...prev, index]);
@@ -51,20 +50,19 @@ const Event: React.FC = () => {
 
   return (
     <section
+      id="second-section"
       ref={sectionRef}
       className={`bg-white rounded-[10px] shadow-md px-4 py-10 md:px-14 max-w-5xl mx-auto flex flex-col md:flex-row md:items-stretch mt-45 border border-gray-200 relative transition-all duration-1000 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
     >
-      {/* Left colored border with glow */}
       <div
         className="hidden md:block absolute left-0 top-0 h-full w-[10px] rounded-l-[10px] z-20"
         style={{
-          background: "linear-gradient(180deg, #48bb78 0%, #38b2ac 100%)", // green-teal gradient
-          boxShadow: "-8px 0 32px -8px #38b2ac55", // colored shadow (tweak theme color and opacity)
+          background: "linear-gradient(180deg, #48bb78 0%, #38b2ac 100%)",
+          boxShadow: "-8px 0 32px -8px #38b2ac55",
         }}
       />
-      {/* Left column */}
       <div className="md:w-2/3 md:pl-10">
         <h2 className="text-green-600 text-2xl md:text-3xl font-bold mb-7">
           For Event Organizers
@@ -92,9 +90,7 @@ const Event: React.FC = () => {
           ))}
         </ul>
       </div>
-      {/* Divider on desktop */}
       <div className="hidden md:block w-px mx-8 bg-gray-200" />
-      {/* Right column */}
       <div className="md:w-1/3 flex flex-col items-center justify-center mt-8 md:mt-0">
         <div className="mb-3 text-center">
           <span className="font-bold text-gray-700 text-base md:text-lg">
@@ -104,11 +100,10 @@ const Event: React.FC = () => {
             Plan the perfect event in just a few taps
           </div>
         </div>
-        {/* Event image */}
         <div className="relative w-[180px] h-[130px]">
           <div className="absolute left-0 top-0 h-full w-full rounded-md shadow-[-16px_0_32px_-6px_rgba(56,178,172,0.24)] pointer-events-none" aria-hidden />
           <Image
-            src="/Event.png"
+            src="/EO.svg"
             alt="Event planning"
             width={180}
             height={130}

@@ -75,7 +75,7 @@ const WhyChooseUs: React.FC = () => {
         </div>
         <div className="mt-4">
           <Image
-            src="/bro.png"
+            src="/choose-us.svg"
             alt="Teamwork Illustration"
             width={260}
             height={260}

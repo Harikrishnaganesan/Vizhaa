@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { FaEnvelope, FaPhone, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
-import HeroWork from '../components/work/heroWork';
+import HeroWork from '../components/conatct/heroWork';
 
 function ContactPage() {
   return (
