@@ -11,7 +11,7 @@ function ContactPage() {
 
 
       {/* Contact Sections */}
-      <div className="max-w-7xl mx-auto px-8 mt-16 pb-16">
+      <div id="second-section" className="max-w-7xl mx-auto px-8 mt-16 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Left Column - Contact Information */}
           <div className="space-y-12">

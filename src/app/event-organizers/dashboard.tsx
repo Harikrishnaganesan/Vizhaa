@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Header from "../../app/components/Header";
-import Footer from "../../app/components/footer";
+import Image from "next/image";
 
 const tabs = [
   { key: "dashboard", label: "Dash Board" },
@@ -102,7 +102,10 @@ const EventOrganizersDashboard: React.FC = () => {
           {/* Mini-header profile bar */}
           <div className="w-full flex justify-end items-center bg-[#23364E] px-8 py-4" style={{ minHeight: '64px' }}>
             <div className="flex items-center gap-3">
-              <img src="/avatar1.png" alt="User" className="h-10 w-10 rounded-full border-2 border-white" />
+              <Image src="/avatar1.png" alt="User"
+              width={40} 
+              height={40}
+               className="h-10 w-10 rounded-full border-2 border-white" />
               <span className="text-white font-semibold">John Doe</span>
               <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M7 10l5 5 5-5H7z"/></svg>
             </div>

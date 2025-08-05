@@ -52,7 +52,7 @@ const Event: React.FC = () => {
     <section
       id="second-section"
       ref={sectionRef}
-      className={`bg-white rounded-[10px] shadow-md px-4 py-10 md:px-14 max-w-5xl mx-auto flex flex-col md:flex-row md:items-stretch mt-45 border border-gray-200 relative transition-all duration-1000 ${
+      className={`bg-white rounded-[10px] shadow-md px-4 py-10 md:px-14 max-w-5xl mx-auto flex flex-col md:flex-row md:items-stretch mt-[60px] border border-gray-200 relative transition-all duration-1000 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
     >

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 const SecondSection = () => {
   const [showContent, setShowContent] = useState(false);
@@ -66,37 +67,47 @@ const SecondSection = () => {
       </div>
 
       {/* Decorative SVGs - Background Design */}
-      <img
+      <Image
         src="/left-line.svg"
         alt="left-line"
+        width={300}
+        height={300}  
         className="absolute top-10 left-0 w-96 md:w-74 lg:w-82"
       />
-      <img
+      <Image
         src="/right-line.svg"
         alt="right-line"
+        width={300}
+        height={300}
         className="absolute top-10 right-[-60px]  w-96 md:w-74 lg:w-82"
       />
 
-      <img
+      <Image
         src="/red-ball.svg"
         alt="red-ball-top"
+        width={100}
+        height={100}  
         className={`absolute top-20 left-[-40px] w-25 md:w-25 transition-all duration-1000 ${
           animateElements ? 'animate-spin' : ''
         }`}
         style={{ animationDuration: '8s' }}
       />
-      <img
+      <Image
         src="/red-ball.svg"
         alt="red-ball-bottom"
+        width={100}
+        height={100}
         className={`absolute bottom-43 right-[-40px] w-25 md:w-25 transition-all duration-1000 ${
           animateElements ? 'animate-spin' : ''
         }`}
         style={{ animationDuration: '8s' }}
       />
 
-      <img
+      <Image
         src="/flower.svg"
         alt="flower"
+        width={100}
+        height={100}
         className={`absolute bottom-0 left-[-250px] w-40 md:w-80 transition-all duration-2000 ${
           animateElements ? 'translate-x-32 opacity-100' : 'translate-x-0 opacity-0'
         }`}

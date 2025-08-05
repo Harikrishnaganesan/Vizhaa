@@ -77,9 +77,11 @@ const HeroSection = () => {
           <p className={`${righteous.className} text-white text-xl md:text-2xl`}>
             Scroll Down
           </p>
-          <img
+          <Image
             src="/scroll-down.svg"
             alt="Scroll Down Icon"
+            width={24}
+            height={24}
             className="w-6 h-6 mt-1"
             draggable={false}
           />

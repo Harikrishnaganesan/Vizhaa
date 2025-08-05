@@ -1,6 +1,7 @@
 // pages/HeroWork.tsx or components/HeroWork.tsx
 "use client";
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Righteous } from 'next/font/google';
 
 const righteous = Righteous({
@@ -19,9 +20,10 @@ const HeroWork: React.FC = () => {
     const nextSection = document.getElementById("second-section");
     if (nextSection) {
       const sectionPosition = nextSection.getBoundingClientRect().top + window.pageYOffset;
+      const offset = 150;
 
       window.scrollTo({
-        top: sectionPosition,
+        top: sectionPosition - offset,
         behavior: "smooth"
       });
     }
@@ -30,12 +32,19 @@ const HeroWork: React.FC = () => {
   return (
     <div
       className="
-        relative h-[90vh] w-full flex flex-col justify-center items-center
+        relative h-[90vh] w-full flex flex-col justify-center items-center -top-2
         bg-cover bg-center
         text-white
       "
-      style={{ backgroundImage: 'url("/hero-section.svg")' }}
     >
+      <Image
+        src="/hero-section.svg"
+        alt="Hero background"
+        fill
+        style={{ objectFit: 'cover', zIndex: 0 }}
+        priority
+        draggable={false}
+      />
       <div className="absolute inset-0 bg-black/40 z-0" />
       <div className={`relative z-10 flex flex-col items-center justify-center py-16 px-6 rounded-lg md:relative md:bottom-8 transition-all duration-1000 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -73,9 +82,11 @@ const HeroWork: React.FC = () => {
         className="cursor-pointer animate-bounce text-white flex items-center absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 hover:opacity-80 transition-opacity"
       >
         <span className={`${righteous.className} text-white text-xl md:text-2xl`}>Scroll Down</span>
-        <img
+        <Image
           src="/scroll-down.svg"
           alt="Scroll Down Icon"
+          width={24}
+          height={24}
           className="w-6 h-6 mt-1"
           draggable={false}
         />
