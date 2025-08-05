@@ -1,4 +1,5 @@
 // pages/HeroWork.tsx or components/HeroWork.tsx
+
 "use client";
 import React, { useState, useEffect } from 'react';
 import { Righteous } from 'next/font/google';

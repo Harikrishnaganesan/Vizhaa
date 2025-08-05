@@ -9,16 +9,17 @@ const righteous = Righteous({
 });
 
 const slides = [
-  {
-    image: "/caroseul-2.svg",
-    heading: "Be the reason someone’s special day is perfect",
-    subheading: "Your talent, their celebration we make the connection.",
-    button: "Book Now",
-  },
+  
   {
     image: "/caroseul-1.svg",
     heading: "Great events start with great planning!",
     subheading: "We make your event a culinary masterpiece",
+    button: "Book Now",
+  },
+  {
+    image: "/caroseul-2.svg",
+    heading: "Be the reason someone’s special day is perfect",
+    subheading: "Your talent, their celebration we make the connection.",
     button: "Book Now",
   },
 ];
