@@ -1,15 +1,12 @@
 // dashboard.tsx
 "use client";
 import React, { useState, useEffect } from "react";
-import Header from "../../app/components/Header";
-import SupplierSignUp from "../../app/components/SupplierSignUp";
-import OrganizerSignUp from "../../app/components/OrganizerSignUp";
 import MyEvents from "./MyEvents";
 import EventForm from "./EventForm";
 import StatusTab from "./StatusTab";
 import PaymentTab from "./PaymentTab";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+// Removed unused imports
 
 const sidebarItems = [
   { key: "events", label: "My Events", icon: <img src="/view-event.svg" alt="My Events" className="w-5 h-5" /> },
@@ -88,11 +85,17 @@ const EventOrganizersDashboard: React.FC = () => {
         return <EventForm onSubmit={handleFormSubmit} />;
       case "payment":
         return formData && <PaymentTab 
-                 formData={formData} 
+                 formData={{
+                   eventName: formData.eventName ?? "",
+                   location: formData.location ?? "",
+                   date: formData.date ?? "",
+                   time: formData.time ?? ""
+                 }} 
                  onPaymentComplete={handlePaymentComplete} 
                />;
       case "status":
-        return <StatusTab currentEvent={currentEvent} />;
+        // TODO: Replace with actual supplier data when available
+        return <StatusTab currentEvent={currentEvent} suppliers={[]} />;
       default:
         return null;
     }

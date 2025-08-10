@@ -13,11 +13,23 @@ interface EventData {
   isPastEvent: boolean;
 }
 
-interface StatusTabProps {
-  currentEvent?: EventData | null;
+interface SupplierProfile {
+  id: number;
+  name: string;
+  role: string;
+  age: number;
+  address: string;
+  avatarUrl: string;
 }
 
-const StatusTab: React.FC<StatusTabProps> = ({ currentEvent }) => {
+interface StatusTabProps {
+  currentEvent?: EventData | null;
+  suppliers: SupplierProfile[];
+}
+
+const StatusTab: React.FC<StatusTabProps> = ({ currentEvent, suppliers }) => {
+  const totalSuppliers = currentEvent?.numSuppliers || 0;
+  const joinedSuppliers = suppliers.length;
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl mx-auto mt-8">
       <div className="flex items-center justify-between mb-6">
@@ -27,27 +39,27 @@ const StatusTab: React.FC<StatusTabProps> = ({ currentEvent }) => {
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="10" cy="10" r="8" fill="#23364E"/><path fill="#fff" d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-1.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
             Service
           </span>
-          <span className="text-gray-600 font-semibold">7 / 15</span>
+          <span className="text-gray-600 font-semibold">{joinedSuppliers} / {totalSuppliers}</span>
         </div>
       </div>
       <div className="space-y-6">
-        {[1,2,3].map((i) => (
-          <div key={i} className="border rounded-lg p-6 flex flex-col md:flex-row md:items-center gap-6 bg-gray-50">
+        {suppliers.map((supplier) => (
+          <div key={supplier.id} className="border rounded-lg p-6 flex flex-col md:flex-row md:items-center gap-6 bg-gray-50">
             <div className="flex-shrink-0">
-              <Image src="/avatar1.png" alt="Profile" width={100} height={100} className="rounded-lg object-cover w-[100px] h-[100px]" />
+              <Image src={supplier.avatarUrl} alt="Profile" width={100} height={100} className="rounded-lg object-cover w-[100px] h-[100px]" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-lg text-gray-800">John Doe</h3>
-                  <span className="text-gray-500 text-sm">Manager</span>
+                  <h3 className="font-bold text-lg text-gray-800">{supplier.name}</h3>
+                  <span className="text-gray-500 text-sm">{supplier.role}</span>
                 </div>
                 <button className="border border-gray-300 rounded px-4 py-1 text-gray-600 font-medium hover:bg-gray-100">Remove</button>
               </div>
-              <div className="mt-2 text-gray-600 text-sm">Age : 45</div>
+              <div className="mt-2 text-gray-600 text-sm">Age : {supplier.age}</div>
               <div className="mt-2 text-gray-600 text-sm">
                 <span className="font-semibold">Address</span><br />
-                Vizhaa Technologies, 123 Event Avenue, Chennai, Tamil Nadu - 600001, India.
+                {supplier.address}
               </div>
               <div className="mt-4 flex justify-end">
                 <button className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-6 py-2 rounded shadow flex items-center gap-2">
