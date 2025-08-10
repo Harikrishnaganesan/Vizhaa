@@ -21,12 +21,12 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, currentEvent, past
 
   if (!currentEvent) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl mx-auto mt-16 flex flex-col items-center justify-center min-h-[400px]">
-        <img src="/event-posted.svg" alt="No Event" className="w-32 h-32 mb-6" />
-        <h2 className="text-2xl font-bold text-gray-700 mb-2">No Current Event</h2>
-        <p className="text-gray-500 mb-6">You have not created any events yet. Start by adding a new event.</p>
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 w-full max-w-md sm:max-w-2xl mx-auto mt-8 sm:mt-16 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
+        <img src="/event-posted.svg" alt="No Event" className="w-20 h-20 sm:w-32 sm:h-32 mb-4 sm:mb-6" />
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-1 sm:mb-2 text-center">No Current Event</h2>
+        <p className="text-gray-500 mb-4 sm:mb-6 text-center text-sm sm:text-base">You have not created any events yet. Start by adding a new event.</p>
         <button
-          className="bg-[#2DBE60] hover:bg-[#249e4e] text-white font-semibold px-8 py-3 rounded shadow transition"
+          className="bg-[#2DBE60] hover:bg-[#249e4e] text-white font-semibold px-6 sm:px-8 py-2 sm:py-3 rounded shadow transition w-full sm:w-auto"
           onClick={handleNewEvent}
         >
           New Event
