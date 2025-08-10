@@ -11,7 +11,6 @@ export default function Workpage() {
       <SecondWork />
       <SupplierHowItWorks />
       <WhyChooseUs />
-      
     </div>
   );
 }

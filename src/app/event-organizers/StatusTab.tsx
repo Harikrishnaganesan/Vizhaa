@@ -1,7 +1,23 @@
 import React from "react";
 import Image from "next/image";
 
-const StatusTab: React.FC = () => {
+interface EventData {
+  eventName: string;
+  location: string;
+  numSuppliers: number;
+  time: string;
+  date: string;
+  selectedServices: string;
+  selectedDressCode: string;
+  paymentStatus: 'Paid' | 'Advance Paid' | 'Unpaid';
+  isPastEvent: boolean;
+}
+
+interface StatusTabProps {
+  currentEvent?: EventData | null;
+}
+
+const StatusTab: React.FC<StatusTabProps> = ({ currentEvent }) => {
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl mx-auto mt-8">
       <div className="flex items-center justify-between mb-6">

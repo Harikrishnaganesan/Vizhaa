@@ -1,63 +1,112 @@
-import React from "react";
+// PaymentTab.tsx
+import React, { useState } from "react";
 
-const PaymentTab: React.FC = () => {
+interface PaymentTabProps {
+  formData: any;
+  onPaymentComplete: (status: 'Paid' | 'Advance Paid') => void;
+}
+
+const PaymentTab: React.FC<PaymentTabProps> = ({ formData, onPaymentComplete }) => {
+  const [paymentOption, setPaymentOption] = useState<'full' | 'advance' | null>(null);
+
+  const handlePayment = () => {
+    if (!paymentOption) return;
+    if (onPaymentComplete) {
+      onPaymentComplete(paymentOption === 'full' ? 'Paid' : 'Advance Paid');
+    }
+  };
+  
+  if (!formData) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl mx-auto mt-8 text-center">
+        <h2 className="text-[#2DBE60] text-2xl font-bold mb-6">Payment Details</h2>
+        <div className="text-gray-700 text-lg">Please fill out the event form first to proceed with payment.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl mx-auto mt-8">
       <h2 className="text-[#2DBE60] text-2xl font-bold mb-6">Payment Details</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Total Payment</span><span className="text-gray-800">500</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Status</span><span className="text-red-600 font-semibold">Unpaid</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Advance Payment</span><span className="text-gray-800">50</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Status</span><span className="text-green-600 font-semibold">Paid</span></div>
+      {formData && (
+        <div className="mb-4 p-4 bg-green-50 rounded border border-green-200">
+          <div className="font-semibold text-green-700 mb-2">Event: {formData.eventName}</div>
+          <div className="text-gray-700 text-sm">Location: {formData.location}</div>
+          <div className="text-gray-700 text-sm">Date: {formData.date}</div>
+          <div className="text-gray-700 text-sm">Time: {formData.time}</div>
         </div>
-        <div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Event Details</span><span className="text-gray-800">Marriage</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Location</span><span className="text-gray-800">AVC Marriage Hall, Mayiladuthurai</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Number of Suppliers</span><span className="text-gray-800">15</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Date</span><span className="text-gray-800">03-09-2025</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Number of Services</span><span className="text-gray-800">Evening, Night</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Time</span><span className="text-gray-800">6:30 PM</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Dress Code</span><span className="text-gray-800">Gold</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Verification</span><span className="text-blue-600 underline cursor-pointer">Edit</span></div>
+      )}
+      
+      <div className="mb-6 bg-gray-50 p-6 rounded-lg">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Payment Options</h2>
+        <div className="space-y-3">
+          <div 
+            className={`p-4 border rounded-lg cursor-pointer transition ${
+              paymentOption === "full" 
+                ? "border-green-500 bg-green-50" 
+                : "border-gray-200 hover:bg-gray-100"
+            }`}
+            onClick={() => setPaymentOption("full")}
+          >
+            <div className="flex items-center">
+              <div className={`w-5 h-5 rounded-full border mr-3 flex items-center justify-center ${
+                paymentOption === "full" 
+                  ? "border-green-500 bg-green-500" 
+                  : "border-gray-400"
+              }`}>
+                {paymentOption === "full" && (
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+              <div>
+                <div className="font-medium">Full Payment</div>
+                <div className="text-sm text-gray-600">Pay the full amount of ₹5000 now</div>
+              </div>
+            </div>
+          </div>
+          
+          <div 
+            className={`p-4 border rounded-lg cursor-pointer transition ${
+              paymentOption === "advance" 
+                ? "border-green-500 bg-green-50" 
+                : "border-gray-200 hover:bg-gray-100"
+            }`}
+            onClick={() => setPaymentOption("advance")}
+          >
+            <div className="flex items-center">
+              <div className={`w-5 h-5 rounded-full border mr-3 flex items-center justify-center ${
+                paymentOption === "advance" 
+                  ? "border-green-500 bg-green-500" 
+                  : "border-gray-400"
+              }`}>
+                {paymentOption === "advance" && (
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+              <div>
+                <div className="font-medium">Advance Payment</div>
+                <div className="text-sm text-gray-600">Pay ₹500 now and the rest later</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <hr className="my-8" />
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-[#2DBE60]">Payment History</h3>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-green-600 font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#2DBE60"/></svg>Paid</span>
-            <span className="flex items-center gap-1 text-red-600 font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#EF4444"/></svg>Unpaid</span>
-          </div>
-        </div>
-        <div className="space-y-4">
-          <div className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50">
-            <div>
-              <div className="flex items-center gap-2 text-[#2DBE60] font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#2DBE60" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> Marriage</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> 03-09-2025</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> AVC Marriage Hall, Mayiladuthurai</div>
-            </div>
-            <span className="text-green-600 font-semibold flex items-center gap-1"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#2DBE60"/></svg>Paid</span>
-          </div>
-          <div className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50">
-            <div>
-              <div className="flex items-center gap-2 text-[#2DBE60] font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#2DBE60" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> Marriage</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> 03-09-2025</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> AVC Marriage Hall, Mayiladuthurai</div>
-            </div>
-            <span className="text-red-600 font-semibold flex items-center gap-1"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#EF4444"/></svg>Unpaid</span>
-          </div>
-          <div className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50">
-            <div>
-              <div className="flex items-center gap-2 text-[#2DBE60] font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#2DBE60" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> Marriage</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> 03-09-2025</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> AVC Marriage Hall, Mayiladuthurai</div>
-            </div>
-            <span className="text-yellow-500 font-semibold flex items-center gap-1"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#FACC15"/></svg>Payment Pending</span>
-          </div>
-        </div>
-      </div>
+
+      <button 
+        className={`w-full py-3 px-4 rounded-md text-white font-medium transition ${
+          !paymentOption
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-green-600 hover:bg-green-700"
+        }`}
+        disabled={!paymentOption}
+        onClick={handlePayment}
+      >
+        Complete Payment
+      </button>
     </div>
   );
 };

@@ -1,11 +1,15 @@
+// dashboard.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../app/components/Header";
+import SupplierSignUp from "../../app/components/SupplierSignUp";
+import OrganizerSignUp from "../../app/components/OrganizerSignUp";
 import MyEvents from "./MyEvents";
 import EventForm from "./EventForm";
 import StatusTab from "./StatusTab";
 import PaymentTab from "./PaymentTab";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const sidebarItems = [
   { key: "events", label: "My Events", icon: <img src="/view-event.svg" alt="My Events" className="w-5 h-5" /> },
@@ -14,19 +18,81 @@ const sidebarItems = [
   { key: "payment", label: "Payment", icon: <img src="/poket.svg" alt="Payment" className="w-5 h-5" /> },
 ];
 
+interface EventData {
+  eventName: string;
+  location: string;
+  numSuppliers: number;
+  time: string;
+  date: string;
+  selectedServices: string;
+  selectedDressCode: string;
+  paymentStatus: 'Paid' | 'Advance Paid' | 'Unpaid';
+  isPastEvent: boolean;
+}
+
+
+
 const EventOrganizersDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("events");
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
+  const [formData, setFormData] = useState<Partial<EventData> | null>(null);
+
+  useEffect(() => {
+    const storedEvents = localStorage.getItem("events");
+    if (storedEvents) {
+      const parsedEvents = JSON.parse(storedEvents);
+      setEvents(parsedEvents);
+      const current = parsedEvents.find((event: EventData) => !event.isPastEvent);
+      setCurrentEvent(current || null);
+    }
+  }, []);
+
+  const handleStartNewEvent = () => {
+    setActiveTab("form");
+  };
+
+  const handleFormSubmit = (data: Partial<EventData>) => {
+    setFormData(data);
+    setActiveTab("payment");
+  };
+
+  const handlePaymentComplete = (paymentStatus: 'Paid' | 'Advance Paid') => {
+    const newEvent = {
+      ...formData,
+      paymentStatus,
+      isPastEvent: false
+    } as EventData;
+
+    const updatedEvents = events.map(event => ({
+      ...event,
+      isPastEvent: true
+    }));
+
+    updatedEvents.unshift(newEvent);
+    setEvents(updatedEvents);
+    setCurrentEvent(newEvent);
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
+    setActiveTab("events");
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "events":
-        return <MyEvents />;
+        return <MyEvents 
+                 onStartNewEvent={handleStartNewEvent} 
+                 currentEvent={currentEvent}
+                 pastEvents={events.filter(event => event.isPastEvent)}
+               />;
       case "form":
-        return <EventForm />;
-      case "status":
-        return <StatusTab />;
+        return <EventForm onSubmit={handleFormSubmit} />;
       case "payment":
-        return <PaymentTab />;
+        return formData && <PaymentTab 
+                 formData={formData} 
+                 onPaymentComplete={handlePaymentComplete} 
+               />;
+      case "status":
+        return <StatusTab currentEvent={currentEvent} />;
       default:
         return null;
     }
@@ -34,9 +100,9 @@ const EventOrganizersDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#23364E] flex flex-col">
-      <Header />
+     
       <div className="flex flex-1">
-        {/* Sidebar - Updated to match Supplier Dashboard */}
+        {/* Sidebar */}
         <aside className="w-56 bg-[#23364E] text-white py-8 px-4 flex flex-col gap-2 shadow-lg min-h-full">
           <div className="flex items-center gap-2 mb-6 px-3">
             <img src="/dashboard.svg" alt="Dashboard" className="w-5 h-5" />
@@ -72,8 +138,7 @@ const EventOrganizersDashboard: React.FC = () => {
             </div>
           </div>
           <main className="flex-1 bg-[#F8F9FA] flex flex-col items-center py-12 px-4">
-            {/* Tab content for active navigation */}
-            {activeTab && renderTabContent()}
+            {renderTabContent()}
           </main>
         </div>
       </div>

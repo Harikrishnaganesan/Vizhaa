@@ -5,17 +5,17 @@ import HeroWork from '../components/conatct/heroWork';
 
 function ContactPage() {
   return (
-    <div className="min-h-screen bg-white">
+  <div className="min-h-screen bg-white">
         <HeroWork/>
-      {/* Header Section */}
+      
 
 
-      {/* Contact Sections */}
+      
       <div id="second-section" className="max-w-7xl mx-auto px-8 mt-16 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Left Column - Contact Information */}
+          
           <div className="space-y-12">
-            {/* Get in Touch Section */}
+            
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
               <h2 className="text-3xl font-bold text-green-600 mb-4">Get in Touch</h2>
               <div className="mb-6">
@@ -30,26 +30,26 @@ function ContactPage() {
                   <div className="bg-blue-100 p-3 rounded-full">
                     <FaEnvelope className="text-blue-600 text-lg" />
                   </div>
-                  <span className="text-gray-800 font-medium">support@vizhaa.com</span>
+                  <span className="text-gray-800 font-medium">harikrishnacsbs@gmail.com</span>
                 </div>
                 
                 <div className="flex items-center space-x-4">
                   <div className="bg-green-100 p-3 rounded-full">
                     <FaPhone className="text-green-600 text-lg" />
                   </div>
-                  <span className="text-gray-800 font-medium">Phone: +91 98765 43210</span>
+                  <span className="text-gray-800 font-medium">Phone: +91 73395 09611</span>
                 </div>
                 
                 <div className="flex items-center space-x-4">
                   <div className="bg-gray-100 p-3 rounded-full">
                     <FaClock className="text-gray-600 text-lg" />
                   </div>
-                  <span className="text-gray-800 font-medium">Hours: Mon - Sat, 9:00 AM - 6:00 PM</span>
+                  <span className="text-gray-800 font-medium">Hours: Mon - Sun, 9:00 AM - 6:00 PM</span>
                 </div>
               </div>
             </div>
 
-            {/* Technical Help Section */}
+            
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
               <h2 className="text-3xl font-bold text-green-600 mb-4">Need Technical Help?</h2>
               <div className="mb-6">
@@ -61,11 +61,11 @@ function ContactPage() {
                 <div className="bg-blue-100 p-3 rounded-full">
                   <FaEnvelope className="text-blue-600 text-lg" />
                 </div>
-                <span className="text-gray-800 font-medium">Email: techsupport@vizhaa.com</span>
+                <span className="text-gray-800 font-medium">Email: harikrishnacsbs@gmail.com</span>
               </div>
             </div>
 
-            {/* Partner With Us Section */}
+            
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
               <h2 className="text-3xl font-bold text-green-600 mb-4">Partner With Us</h2>
               <div className="mb-6">
@@ -79,7 +79,7 @@ function ContactPage() {
                   <div className="bg-blue-100 p-3 rounded-full">
                     <FaEnvelope className="text-blue-600 text-lg" />
                   </div>
-                  <span className="text-gray-800 font-medium">Email: partnerships@vizhaa.com</span>
+                  <span className="text-gray-800 font-medium">Email: harikrishnacsbs@gmail.com</span>
                 </div>
                 
                 <div className="flex items-start space-x-4">
@@ -88,23 +88,23 @@ function ContactPage() {
                   </div>
                   <div>
                     <span className="text-gray-800 font-medium block">Office Address:</span>
-                    <span className="text-gray-600">Vizhaa Technologies, 123 Event Avenue, Chennai, Tamil Nadu - 600001, India.</span>
+                    <span className="text-gray-600">123 Event Avenue, Coimbatore, Tamil Nadu - 600001, India.</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Illustration */}
+          
           <div className="flex items-center justify-center">
             <div className="relative w-full max-w-lg">
               <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-3xl p-8 shadow-xl">
                 <div className="relative">
-                  {/* Mobile Phone Illustration */}
+                  
                   <div className="mx-auto w-64 h-96 bg-green-400 rounded-3xl shadow-2xl relative overflow-hidden">
                     <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-black rounded-full opacity-20"></div>
                     
-                    {/* Screen Content */}
+                    
                     <div className="pt-16 px-6 text-white">
                       <div className="text-center mb-8">
                         <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -136,7 +136,7 @@ function ContactPage() {
                     </div>
                   </div>
                   
-                  {/* Floating Elements */}
+                 
                   <div className="absolute -top-4 -left-4 w-12 h-12 bg-yellow-400 rounded-lg shadow-lg transform rotate-12 flex items-center justify-center">
                     <span className="text-white font-bold">@</span>
                   </div>
@@ -149,7 +149,7 @@ function ContactPage() {
                     <span className="text-white text-xl">📧</span>
                   </div>
                   
-                  {/* Person Illustration */}
+                 
                   <div className="absolute bottom-0 right-12 w-24 h-32">
                     <div className="w-8 h-8 bg-yellow-300 rounded-full mx-auto mb-2"></div>
                     <div className="w-12 h-16 bg-green-600 rounded-t-lg mx-auto"></div>
@@ -165,7 +165,7 @@ function ContactPage() {
         </div>
       </div>
 
-      {/* Call to Action Section */}
+
       <div className="bg-gray-50 py-16 px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-gray-800 mb-4">Ready to Get Started?</h2>

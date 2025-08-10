@@ -301,15 +301,13 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
     e.preventDefault();
 
     // Dummy credentials
-    if (email === 'mani@gmail.com' && password === 'mani123') {
+    if (
+      (email === 'mani@gmail.com' && password === 'mani123') ||
+      (email === 'hari@gmail.com' && password === 'hari123')
+    ) {
       setError('');
-      router.push('/'); // Redirect to home page
-    }
-    else if (email === 'hari@gmail.com' && password === 'hari123') { 
-        setError('');
-        router.push('/event'); // Redirect to event page
-    }
-    else {
+      router.push('/home'); // Redirect to new home page
+    } else {
       setError('Invalid login credentials. Try: mani@gmail.com / mani123 or hari@gmail.com / hari123');
     }
   };
@@ -437,7 +435,7 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
           </form>
           <div className="text-center mt-6 text-gray-600">
             Don&apos;t Have an Account?{' '}
-            <a href="#" className="text-blue-600 font-medium">
+            <a href="/" className="text-blue-600 font-medium">
               Sign Up
             </a>
           </div>

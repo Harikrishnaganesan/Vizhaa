@@ -1,67 +1,92 @@
+// MyEvents.tsx
 import React from "react";
+import { useRouter } from "next/navigation";
 
-const MyEvents: React.FC = () => {
+interface MyEventsProps {
+  onStartNewEvent?: () => void;
+  currentEvent?: any;
+  pastEvents?: any[];
+}
+
+const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, currentEvent, pastEvents = [] }) => {
+  const router = useRouter();
+
+  const handleNewEvent = () => {
+    if (onStartNewEvent) {
+      onStartNewEvent();
+    } else {
+      router.push("/event-organizers/form");
+    }
+  };
+
+  if (!currentEvent) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl mx-auto mt-16 flex flex-col items-center justify-center min-h-[400px]">
+        <img src="/event-posted.svg" alt="No Event" className="w-32 h-32 mb-6" />
+        <h2 className="text-2xl font-bold text-gray-700 mb-2">No Current Event</h2>
+        <p className="text-gray-500 mb-6">You have not created any events yet. Start by adding a new event.</p>
+        <button
+          className="bg-[#2DBE60] hover:bg-[#249e4e] text-white font-semibold px-8 py-3 rounded shadow transition"
+          onClick={handleNewEvent}
+        >
+          New Event
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl mx-auto mt-8">
-      <h2 className="text-[#2DBE60] text-2xl font-bold mb-6">Current Event Details</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Event Planning</span><span className="text-green-600 font-semibold">In Progress</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Event Details</span><span className="text-gray-800">Marriage</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Number of Suppliers</span><span className="text-gray-800">15</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Time</span><span className="text-gray-800">6:30 PM</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Dress Code</span><span className="text-gray-800">Gold</span></div>
-        </div>
-        <div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Venue Booking</span><span className="text-green-600 font-semibold">Confirmed</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Location</span><span className="text-gray-800">AVC Marriage Hall, Mayiladuthurai</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Date</span><span className="text-gray-800">03-09-2025</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Number of Services</span><span className="text-gray-800">Evening, Night</span></div>
-          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Verification</span><span className="text-blue-600 underline cursor-pointer">Edit</span></div>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Total Payment</span><span className="text-gray-800">500</span></div>
-        <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Status</span><span className="text-red-600 font-semibold">Unpaid</span></div>
-        <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Advance Payment</span><span className="text-gray-800">50</span></div>
-        <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Status</span><span className="text-green-600 font-semibold">Paid</span></div>
-      </div>
-      <div className="flex justify-center mb-8">
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-8 py-2 rounded shadow">Update Status</button>
-      </div>
-      <hr className="my-8" />
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-[#2DBE60]">Past Events</h3>
-          <div className="flex items-center gap-2 text-gray-600 text-sm">
-            sort by : <span className="font-semibold">in progress</span>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M7 10l5 5 5-5H7z"/></svg>
+    <div className="w-full max-w-4xl mx-auto space-y-8">
+      {/* Current Event */}
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <h2 className="text-[#2DBE60] text-2xl font-bold mb-6">Current Event Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Event Planning</span><span className="text-green-600 font-semibold">In Progress</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Event Details</span><span className="text-gray-800">{currentEvent.eventName}</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Number of Suppliers</span><span className="text-gray-800">{currentEvent.numSuppliers}</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Time</span><span className="text-gray-800">{currentEvent.time}</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Dress Code</span><span className="text-gray-800">{currentEvent.selectedDressCode}</span></div>
+          </div>
+          <div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Venue Booking</span><span className="text-green-600 font-semibold">Confirmed</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Location</span><span className="text-gray-800">{currentEvent.location}</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Date</span><span className="text-gray-800">{currentEvent.date}</span></div>
+            <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Number of Services</span><span className="text-gray-800">{currentEvent.selectedServices}</span></div>
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50">
-            <div>
-              <div className="flex items-center gap-2 text-[#2DBE60] font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#2DBE60" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> Marriage</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> AVC Marriage Hall, Mayiladuthurai</div>
-            </div>
-            <span className="text-green-600 font-semibold">Done</span>
-          </div>
-          <div className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50">
-            <div>
-              <div className="flex items-center gap-2 text-[#2DBE60] font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#2DBE60" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> Marriage</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> AVC Marriage Hall, Mayiladuthurai</div>
-            </div>
-            <span className="text-red-500 font-semibold">In progress</span>
-          </div>
-          <div className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between bg-gray-50">
-            <div>
-              <div className="flex items-center gap-2 text-[#2DBE60] font-semibold"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#2DBE60" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> Marriage</div>
-              <div className="text-gray-600 text-sm flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#23364E" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg> AVC Marriage Hall, Mayiladuthurai</div>
-            </div>
-            <span className="text-yellow-500 font-semibold">Payment Pending</span>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Total Payment</span><span className="text-gray-800">5000</span></div>
+          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Status</span><span className={currentEvent.paymentStatus === 'Paid' ? 'text-green-600 font-semibold' : 'text-yellow-500 font-semibold'}>{currentEvent.paymentStatus}</span></div>
+          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Advance Payment</span><span className="text-gray-800">500</span></div>
+          <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Status</span><span className={currentEvent.paymentStatus === 'Paid' ? 'text-green-600 font-semibold' : 'text-yellow-500 font-semibold'}>{currentEvent.paymentStatus === 'Paid' ? 'Paid' : 'Advance Paid'}</span></div>
         </div>
       </div>
+
+      {/* Past Events */}
+      {pastEvents.length > 0 && (
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-[#2DBE60] text-2xl font-bold mb-6">Past Events</h2>
+          <div className="space-y-6">
+            {pastEvents.map((event, index) => (
+              <div key={index} className="border rounded-lg p-6 bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Event</span><span className="text-gray-800">{event.eventName}</span></div>
+                    <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Location</span><span className="text-gray-800">{event.location}</span></div>
+                    <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Date</span><span className="text-gray-800">{event.date}</span></div>
+                  </div>
+                  <div>
+                    <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Time</span><span className="text-gray-800">{event.time}</span></div>
+                    <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Dress Code</span><span className="text-gray-800">{event.selectedDressCode}</span></div>
+                    <div className="mb-2 flex justify-between"><span className="font-medium text-gray-600">Payment Status</span><span className={event.paymentStatus === 'Paid' ? 'text-green-600 font-semibold' : 'text-yellow-500 font-semibold'}>{event.paymentStatus}</span></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

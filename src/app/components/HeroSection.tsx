@@ -72,7 +72,7 @@ const HeroSection = () => {
         </button>
         <button
           onClick={handleScroll}
-          className="cursor-pointer animate-bounce text-white flex items-center absolute left-1/2 -translate-x-1/2 bottom-[-120px] z-30"
+          className="cursor-pointer animate-bounce text-white flex items-center absolute left-1/2 -translate-x-1/2 bottom-[-100px] z-30"
           style={{ zIndex: 30 }}
         >
           <p className={`${righteous.className} text-white text-xl md:text-2xl`}>

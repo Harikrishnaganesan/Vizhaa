@@ -32,7 +32,7 @@ const HeroWork: React.FC = () => {
   return (
     <div
       className="
-        relative h-[90vh] w-full flex flex-col justify-center items-center -top-2
+        relative h-[90vh] w-full flex flex-col justify-center items-center
         bg-cover bg-center
         text-white
       "
@@ -79,7 +79,7 @@ const HeroWork: React.FC = () => {
       {/* Scroll Down */}
       <button
         onClick={handleScroll}
-        className="cursor-pointer animate-bounce text-white flex items-center absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 hover:opacity-80 transition-opacity"
+        className="cursor-pointer animate-bounce text-white flex items-center absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 hover:opacity-80 transition-opacity"
       >
         <span className={`${righteous.className} text-white text-xl md:text-2xl`}>Scroll Down</span>
         <Image
