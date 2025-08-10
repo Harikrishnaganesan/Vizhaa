@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { EventData } from "./dashboard";
 
 interface EventFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: Partial<EventData>) => void;
 }
 
 const EventForm: React.FC<EventFormProps> = ({ onSubmit }) => {
@@ -99,7 +100,7 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit }) => {
         date,
         selectedServices: selectedServices.join(", "),
         selectedDressCode,
-        paymentStatus: paymentOption === "full" ? "Paid" : "Advance Paid"
+  paymentStatus: paymentOption === "full" ? "Paid" : "Advance Paid" as "Paid" | "Advance Paid"
       };
       localStorage.setItem('currentEvent', JSON.stringify(eventData));
       if (onSubmit) {

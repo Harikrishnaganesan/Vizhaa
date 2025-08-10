@@ -2,10 +2,12 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 
+import type { EventData } from "./dashboard";
+
 interface MyEventsProps {
   onStartNewEvent?: () => void;
-  currentEvent?: any;
-  pastEvents?: any[];
+  currentEvent?: EventData | null;
+  pastEvents?: EventData[];
 }
 
 const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, currentEvent, pastEvents = [] }) => {
