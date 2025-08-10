@@ -15,7 +15,7 @@ const sidebarItems = [
   { key: "payment", label: "Payment", icon: <img src="/poket.svg" alt="Payment" className="w-5 h-5" /> },
 ];
 
-interface EventData {
+export interface EventData {
   eventName: string;
   location: string;
   numSuppliers: number;

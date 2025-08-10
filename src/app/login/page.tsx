@@ -1,9 +1,11 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 // ---- RESET PASSWORD VIEW ----
 function ResetPasswordView({ onToast, onBack }: { onToast: (msg: string) => void; onBack: () => void }) {
@@ -435,9 +437,9 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
           </form>
           <div className="text-center mt-6 text-gray-600">
             Don&apos;t Have an Account?{' '}
-            <a href="/" className="text-blue-600 font-medium">
+            <Link href="/" className="text-blue-600 font-medium">
               Sign Up
-            </a>
+            </Link>
           </div>
         </div>
         <div className="hidden sm:flex w-1/2 bg-blue-50 items-center justify-center relative">

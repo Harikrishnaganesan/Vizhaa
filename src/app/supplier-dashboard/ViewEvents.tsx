@@ -29,7 +29,11 @@ const ViewEvents: React.FC = () => {
     <div>
       <h2 className="text-[#2DBE60] text-lg font-bold mb-6">AVAILABLE EVENTS</h2>
       {events.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center text-gray-500">No events available.</div>
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 text-center text-gray-500 w-full max-w-md sm:max-w-2xl mx-auto mt-8 sm:mt-16 flex flex-col items-center justify-center min-h-[200px] sm:min-h-[300px]">
+          <img src="/event-posted.svg" alt="No Event" className="w-16 h-16 sm:w-24 sm:h-24 mb-3 sm:mb-5" />
+          <h2 className="text-lg sm:text-xl font-bold text-gray-700 mb-1 sm:mb-2">No Events Available</h2>
+          <p className="text-gray-500 mb-2 sm:mb-4 text-sm sm:text-base">There are no events available for booking at the moment.</p>
+        </div>
       ) : (
         events.map((event, idx) => (
           <div key={idx} className="bg-white rounded-lg shadow-lg p-6 flex gap-6 items-center max-w-3xl mb-8">
