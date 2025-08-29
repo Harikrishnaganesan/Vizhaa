@@ -16,30 +16,42 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
+// Get the correct base path for API calls
+const getApiPath = (endpoint) => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return endpoint; // Direct endpoint for localhost
+    }
+    return endpoint; // Use proxy for production
+  }
+  return endpoint;
+};
+
 export const API_ENDPOINTS = {
   AUTH: {
-    SEND_OTP: '/auth/send-otp',
-    VERIFY_OTP: '/auth/verify-otp',
-    ORGANIZER_SIGNUP: '/auth/organizer/signup',
-    SUPPLIER_SIGNUP: '/auth/supplier/signup',
-    LOGIN: '/auth/login',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    VERIFY_PASSWORD_RESET_OTP: '/auth/verify-password-reset-otp',
-    RESET_PASSWORD: '/auth/reset-password',
+    SEND_OTP: getApiPath('/auth/send-otp'),
+    VERIFY_OTP: getApiPath('/auth/verify-otp'),
+    ORGANIZER_SIGNUP: getApiPath('/auth/organizer/signup'),
+    SUPPLIER_SIGNUP: getApiPath('/auth/supplier/signup'),
+    LOGIN: getApiPath('/auth/login'),
+    FORGOT_PASSWORD: getApiPath('/auth/forgot-password'),
+    VERIFY_PASSWORD_RESET_OTP: getApiPath('/auth/verify-password-reset-otp'),
+    RESET_PASSWORD: getApiPath('/auth/reset-password'),
   },
   ORGANIZER: {
-    DASHBOARD: '/organizer/dashboard',
-    EVENTS: '/organizer/events',
-    EVENT_SUPPLIERS: (eventId) => `/organizer/events/${eventId}/suppliers`,
-    BOOKINGS: '/organizer/bookings',
-    BOOKING_STATUS: (bookingId) => `/organizer/bookings/${bookingId}/status`,
-    BOOKING_DETAILS: (bookingId) => `/organizer/bookings/${bookingId}`,
+    DASHBOARD: getApiPath('/organizer/dashboard'),
+    EVENTS: getApiPath('/organizer/events'),
+    EVENT_SUPPLIERS: (eventId) => getApiPath(`/organizer/events/${eventId}/suppliers`),
+    BOOKINGS: getApiPath('/organizer/bookings'),
+    BOOKING_STATUS: (bookingId) => getApiPath(`/organizer/bookings/${bookingId}/status`),
+    BOOKING_DETAILS: (bookingId) => getApiPath(`/organizer/bookings/${bookingId}`),
   },
   SUPPLIER: {
-    DASHBOARD: '/supplier/dashboard',
-    EVENTS: '/supplier/events',
-    BOOK_EVENT: (eventId) => `/supplier/events/${eventId}/book`,
-    BOOKINGS: '/supplier/bookings',
+    DASHBOARD: getApiPath('/supplier/dashboard'),
+    EVENTS: getApiPath('/supplier/events'),
+    BOOK_EVENT: (eventId) => getApiPath(`/supplier/events/${eventId}/book`),
+    BOOKINGS: getApiPath('/supplier/bookings'),
   },
 };
 
@@ -60,7 +72,8 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
-    console.log('API Call:', `${API_BASE_URL}${endpoint}`, config);
+    console.log('API Call:', `${API_BASE_URL}${endpoint}`);
+    console.log('Request config:', config);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
     if (response.status === 401) {
@@ -72,8 +85,15 @@ const apiCall = async (endpoint, options = {}) => {
     }
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Network error' }));
-      throw new Error(errorData.message || `HTTP ${response.status}`);
+      const errorText = await response.text();
+      console.log('Error response:', response.status, errorText);
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { message: errorText || 'Network error' };
+      }
+      throw new Error(errorData.message || `HTTP ${response.status}: ${errorText}`);
     }
     
     const data = await response.json();
