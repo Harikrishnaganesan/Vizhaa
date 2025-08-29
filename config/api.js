@@ -1,4 +1,25 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// Determine API URL based on environment
+const getApiBaseUrl = () => {
+  // First check environment variable
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // Runtime detection for deployed sites
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3001/api';
+    }
+    // For any deployed domain, use production API
+    return 'https://vizhaa-backend-1.onrender.com/api';
+  }
+  
+  // Server-side fallback
+  return 'https://vizhaa-backend-1.onrender.com/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const API_ENDPOINTS = {
   AUTH: {
