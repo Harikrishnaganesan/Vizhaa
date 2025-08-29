@@ -1,22 +1,17 @@
 // Determine API URL based on environment
 const getApiBaseUrl = () => {
-  // First check environment variable
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-  
-  // Runtime detection for deployed sites
+  // Use proxy route for deployed sites to avoid CORS
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return 'http://localhost:3001/api';
     }
-    // For any deployed domain, use production API
-    return 'https://vizhaa-backend-1.onrender.com/api';
+    // Use Next.js proxy route for deployed sites
+    return '/api';
   }
   
-  // Server-side fallback
-  return 'https://vizhaa-backend-1.onrender.com/api';
+  // Server-side: use direct API URL
+  return process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -52,8 +47,12 @@ const apiCall = async (endpoint, options = {}) => {
   const token = localStorage.getItem('authToken');
   
   const config = {
+    method: 'GET',
+    mode: 'cors',
+    credentials: 'omit',
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers
     },
@@ -61,6 +60,7 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
+    console.log('API Call:', `${API_BASE_URL}${endpoint}`, config);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
     if (response.status === 401) {
