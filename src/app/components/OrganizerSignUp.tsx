@@ -72,15 +72,22 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       return;
     }
 
+    if (!sessionId) {
+      setMessage("Session expired. Please resend OTP.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
     
     try {
+      console.log('Verifying OTP with:', { sessionId, otp: form.otp, phone: form.phone });
       const { authAPI } = await import('../../../services/api.js');
       await authAPI.verifyOTP(sessionId, form.otp, form.phone);
       setStep(3);
       setMessage("Phone verified successfully! Please complete your registration.");
     } catch (error: unknown) {
+      console.error('OTP verification error:', error);
       setMessage(error instanceof Error ? error.message : "OTP verification failed. Please try again.");
     } finally {
       setLoading(false);

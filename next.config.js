@@ -9,6 +9,18 @@ const nextConfig = {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api'}/:path*`,
       },
+      {
+        source: '/auth/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api'}/auth/:path*`,
+      },
+      {
+        source: '/organizer/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api'}/organizer/:path*`,
+      },
+      {
+        source: '/supplier/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api'}/supplier/:path*`,
+      },
     ];
   },
   async headers() {
