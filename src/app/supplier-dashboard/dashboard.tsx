@@ -13,6 +13,29 @@ const sidebarItems = [
 
 export default function SupplierDashboard() {
   const [activeTab, setActiveTab] = useState("View Events");
+  const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    const loadUserData = async () => {
+      setLoading(true);
+      try {
+        const { supplierAPI } = await import('../../../services/api.js');
+        const dashboardData = await supplierAPI.getDashboard();
+        setUserData({
+          name: dashboardData.supplier?.fullName || 'User',
+          email: dashboardData.supplier?.email || ''
+        });
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+        setUserData({ name: 'User', email: '' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadUserData();
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -39,7 +62,7 @@ export default function SupplierDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <img src="/avatar1.png" alt="Profile" className="w-9 h-9 rounded-full object-cover border-2 border-white" />
-          <span className="text-white font-medium">John Doe</span>
+          <span className="text-white font-medium">{userData?.name || 'Loading...'}</span>
           <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
       </div>

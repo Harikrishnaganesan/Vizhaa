@@ -194,10 +194,70 @@ function OTPView({ onBack, onVerified }: { onBack: () => void; onVerified: () =>
 
 // ---- FORGOT PASSWORD VIEW ----
 function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
-  const [email, setEmail] = useState('');
+  const [step, setStep] = useState('phone');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [sessionId, setSessionId] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isConfirmFocused, setIsConfirmFocused] = useState(false);
 
-  const labelFloat = isFocused || email.length > 0;
+  const labelFloat = isFocused || phone.length > 0;
+
+  const sendResetOTP = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const { authAPI } = await import('../../../services/api.js');
+      const result = await authAPI.forgotPassword(phone);
+      setSessionId(result.sessionId);
+      setStep('otp');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyResetOTP = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const { authAPI } = await import('../../../services/api.js');
+      await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
+      setStep('newPassword');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async () => {
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const { authAPI } = await import('../../../services/api.js');
+      await authAPI.resetPassword(sessionId, phone, newPassword);
+      alert('Password reset successful! Please login with your new password.');
+      onBack();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 py-8 w-full">
@@ -212,73 +272,103 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
         />
         <div className="w-full md:w-1/2 flex flex-col justify-center p-10 pl-20">
           <div className="mt-20 mb-10">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Forget Password</h2>
-            <p className="text-sm text-gray-500">Enter Email to Reset Password</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              {step === 'phone' ? 'Forgot Password' : step === 'otp' ? 'Verify OTP' : 'Reset Password'}
+            </h2>
+            <p className="text-sm text-gray-500">
+              {step === 'phone' ? 'Enter mobile number to reset password' : 
+               step === 'otp' ? `OTP sent to ${phone}` : 'Enter your new password'}
+            </p>
           </div>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              onNext();
-            }}
-          >
-            <div className="relative mb-6 h-16 flex items-center">
+          
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+          
+          {step === 'phone' && (
+            <form onSubmit={e => { e.preventDefault(); sendResetOTP(); }}>
+              <div className="relative mb-6 h-16 flex items-center">
+                <input
+                  type="tel"
+                  value={phone}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="peer w-full pl-3 pr-3 py-4 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-transparent outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                  placeholder="Mobile Number"
+                  required
+                />
+                <label className={`absolute bg-white px-1 text-gray-500 transition-all duration-300 pointer-events-none z-20 ${
+                  labelFloat ? 'top-0 left-3 text-xs text-blue-600 transform translate-y-0' : 'top-1/2 left-3 text-base -translate-y-1/2'
+                }`}>
+                  Mobile Number
+                </label>
+              </div>
+              <button type="submit" disabled={loading} className="w-full bg-[#253C51] text-white text-lg font-semibold rounded-md py-2 mt-2 transition hover:bg-[#2A4F71] shadow disabled:opacity-50">
+                {loading ? 'Sending...' : 'Send Reset OTP'}
+              </button>
+            </form>
+          )}
+          
+          {step === 'otp' && (
+            <div>
               <input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`
-                  peer w-full pl-3 pr-3 py-4 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-transparent
-                  outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300
-                `}
-                placeholder="Email"
-                autoComplete="off"
-                required
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6}
+                className="w-full pl-3 pr-3 py-4 border border-gray-300 rounded-md mb-4"
+                placeholder="Enter 6-digit OTP"
               />
-              <label
-                htmlFor="email"
-                className={`
-                  absolute bg-white px-1 text-gray-500 transition-all duration-300 pointer-events-none z-20
-                  ${labelFloat
-                    ? 'top-0 left-3 text-xs text-blue-600 transform translate-y-0'
-                    : 'top-1/2 left-3 text-base -translate-y-1/2'}
-                `}
-                style={{ transitionProperty: 'top, left, font-size, transform' }}
-              >
-                Email
-              </label>
+              <button onClick={verifyResetOTP} disabled={loading} className="w-full bg-[#253C51] text-white text-lg font-semibold rounded-md py-2 mb-2 disabled:opacity-50">
+                {loading ? 'Verifying...' : 'Verify OTP'}
+              </button>
+              <button onClick={sendResetOTP} disabled={loading} className="w-full bg-gray-500 text-white text-sm rounded-md py-2">
+                Resend OTP
+              </button>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-[#253C51] text-white text-lg font-semibold rounded-md py-2 mt-2 transition hover:bg-[#2A4F71] shadow"
-            >
-              Send OTP
-            </button>
-          </form>
+          )}
+          
+          {step === 'newPassword' && (
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  className="w-full pl-3 pr-3 py-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="Enter new password"
+                  required
+                  minLength={6}
+                />
+              </div>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onFocus={() => setIsConfirmFocused(true)}
+                  onBlur={() => setIsConfirmFocused(false)}
+                  className="w-full pl-3 pr-3 py-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="Confirm new password"
+                  required
+                />
+              </div>
+              <button onClick={resetPassword} disabled={loading || !newPassword || !confirmPassword} className="w-full bg-[#253C51] text-white text-lg font-semibold rounded-md py-2 disabled:opacity-50 mt-4">
+                {loading ? 'Resetting...' : 'Reset Password'}
+              </button>
+            </div>
+          )}
+          
           <div className="flex justify-center mt-6">
-            <button
-              type="button"
-              onClick={onBack}
-              className="text-blue-600 hover:underline text-sm"
-            >
+            <button type="button" onClick={onBack} className="text-blue-600 hover:underline text-sm">
               Back to Login
             </button>
           </div>
         </div>
         <div className="hidden md:flex w-1/2 bg-blue-50 items-center justify-center relative">
           <div className="w-80 relative">
-            <Image
-              src="/logn.svg"
-              alt="Welcome Illustration"
-              width={320}
-              height={320}
-              className="w-full h-auto"
-              priority
-            />
-            
+            <Image src="/logn.svg" alt="Welcome Illustration" width={320} height={320} className="w-full h-auto" priority />
           </div>
         </div>
       </div>
@@ -286,31 +376,43 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
   );
 }
 
-// ---- LOGIN VIEW with dummy credentials and redirect ----
+// ---- LOGIN VIEW with API integration ----
 function LoginView({ onForgot }: { onForgot: () => void }) {
-  const [email, setEmail] = useState('');
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [isPhoneFocused, setIsPhoneFocused] = useState(false);
   const [password, setPassword] = useState('');
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const emailLabelFloat = isEmailFocused || email.length > 0;
+  const phoneLabelFloat = isPhoneFocused || phone.length > 0;
   const passwordLabelFloat = isPasswordFocused || password.length > 0;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    // Dummy credentials
-    if (
-      (email === 'mani@gmail.com' && password === 'mani123') ||
-      (email === 'hari@gmail.com' && password === 'hari123')
-    ) {
-      setError('');
-      router.push('/home'); // Redirect to new home page
-    } else {
-      setError('Invalid login credentials. Try: mani@gmail.com / mani123 or hari@gmail.com / hari123');
+    try {
+      const { authAPI } = await import('../../../services/api.js');
+      const result = await authAPI.login(phone, password);
+      
+      localStorage.setItem('authToken', result.token);
+      localStorage.setItem('userType', result.user.userType);
+      localStorage.setItem('userId', result.user.id);
+      
+      // Redirect based on user type
+      if (result.user.userType === 'organizer') {
+        router.push('/event-organizers');
+      } else {
+        router.push('/supplier-dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -331,45 +433,45 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
             <p className="text-gray-500 mt-1">Please enter log in details below</p>
           </div>
           <form onSubmit={handleLogin}>
-            {/* Email Input */}
+            {/* Phone Input */}
             <div className="mb-6 relative h-16 flex items-center">
               <button
                 type="button"
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg text-gray-400 hover:text-blue-500 focus:outline-none z-10"
-                aria-label="Clear email"
-                onClick={() => setEmail('')}
+                aria-label="Clear phone"
+                onClick={() => setPhone('')}
                 tabIndex={0}
               >
                 <FaEnvelope />
               </button>
               <input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => setIsEmailFocused(false)}
+                id="phone"
+                name="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                onFocus={() => setIsPhoneFocused(true)}
+                onBlur={() => setIsPhoneFocused(false)}
                 className={`
                   peer pl-11 pr-3 py-4 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-transparent outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300
-                  ${emailLabelFloat ? 'w-[110%]' : 'w-full'}
+                  ${phoneLabelFloat ? 'w-[110%]' : 'w-full'}
                 `}
-                placeholder="Email"
+                placeholder="Mobile Number"
                 autoComplete="off"
                 required
                 style={{ transitionProperty: 'width' }}
               />
               <label
-                htmlFor="email"
+                htmlFor="phone"
                 className={`
                   absolute bg-white px-1 text-gray-500 transition-all duration-300 pointer-events-none z-20
-                  ${emailLabelFloat
+                  ${phoneLabelFloat
                     ? 'top-0 left-3 text-xs text-blue-600 transform translate-y-0'
                     : 'top-1/2 left-11 text-base -translate-y-1/2'}
                 `}
                 style={{ transitionProperty: 'top, left, font-size, transform' }}
               >
-                Email
+                Mobile Number
               </label>
             </div>
             {/* Password Input */}
@@ -430,9 +532,10 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
             </div>
             <button
               type="submit"
-              className="w-full mt-2 py-3 rounded-md bg-[#253C51] text-white text-lg font-semibold transition hover:bg-[#2A4F71] shadow"
+              disabled={loading}
+              className="w-full mt-2 py-3 rounded-md bg-[#253C51] text-white text-lg font-semibold transition hover:bg-[#2A4F71] shadow disabled:opacity-50"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
           <div className="text-center mt-6 text-gray-600">

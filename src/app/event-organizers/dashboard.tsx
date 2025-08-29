@@ -34,15 +34,54 @@ const EventOrganizersDashboard: React.FC = () => {
   const [events, setEvents] = useState<EventData[]>([]);
   const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
   const [formData, setFormData] = useState<Partial<EventData> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
 
   useEffect(() => {
-    const storedEvents = localStorage.getItem("events");
-    if (storedEvents) {
-      const parsedEvents = JSON.parse(storedEvents);
-      setEvents(parsedEvents);
-      const current = parsedEvents.find((event: EventData) => !event.isPastEvent);
-      setCurrentEvent(current || null);
-    }
+    const loadDashboardData = async () => {
+      setLoading(true);
+      try {
+        // Load user data from API
+        const { organizerAPI } = await import('../../../services/api.js');
+        const dashboardData = await organizerAPI.getDashboard();
+        setUserData({
+          name: dashboardData.organizer?.fullName || 'User',
+          email: dashboardData.organizer?.email || ''
+        });
+        
+        // Load events from API or localStorage as fallback
+        const apiEvents = dashboardData.events || [];
+        if (apiEvents.length > 0) {
+          setEvents(apiEvents);
+          const current = apiEvents.find((event: EventData) => !event.isPastEvent);
+          setCurrentEvent(current || null);
+        } else {
+          // Fallback to localStorage
+          const storedEvents = localStorage.getItem("events");
+          if (storedEvents) {
+            const parsedEvents = JSON.parse(storedEvents);
+            setEvents(parsedEvents);
+            const current = parsedEvents.find((event: EventData) => !event.isPastEvent);
+            setCurrentEvent(current || null);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+        // Fallback to localStorage on API error
+        const storedEvents = localStorage.getItem("events");
+        if (storedEvents) {
+          const parsedEvents = JSON.parse(storedEvents);
+          setEvents(parsedEvents);
+          const current = parsedEvents.find((event: EventData) => !event.isPastEvent);
+          setCurrentEvent(current || null);
+        }
+        setUserData({ name: 'User', email: '' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadDashboardData();
   }, []);
 
   const handleStartNewEvent = () => {
@@ -78,8 +117,8 @@ const EventOrganizersDashboard: React.FC = () => {
       case "events":
         return <MyEvents 
                  onStartNewEvent={handleStartNewEvent} 
-                 currentEvent={currentEvent}
-                 pastEvents={events.filter(event => event.isPastEvent)}
+                 events={events}
+                 loading={loading}
                />;
       case "form":
         return <EventForm onSubmit={handleFormSubmit} />;
@@ -136,7 +175,7 @@ const EventOrganizersDashboard: React.FC = () => {
                 width={40} 
                 height={40}
                 className="h-10 w-10 rounded-full border-2 border-white" />
-              <span className="text-white font-semibold">John Doe</span>
+              <span className="text-white font-semibold">{userData?.name || 'Loading...'}</span>
               <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M7 10l5 5 5-5H7z"/></svg>
             </div>
           </div>
