@@ -24,14 +24,7 @@ const SupplierSignUp: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Debug function to log current state
-  const debugState = () => {
-    console.log("Current form state:", form);
-    console.log("Current step:", step);
-    console.log("Session ID:", sessionId);
-    console.log("Aadhar file:", aadharFile);
-    console.log("Validation errors:", validationErrors);
-  };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

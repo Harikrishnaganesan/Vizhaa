@@ -18,7 +18,7 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [step, setStep] = useState(1); // 1: Details, 2: OTP, 3: Complete
-  const [otpSent, setOtpSent] = useState(false);
+
   const [countdown, setCountdown] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -56,12 +56,11 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       const { authAPI } = await import('../../../services/api.js');
       const result = await authAPI.sendOTP(form.phone, 'organizer');
       setSessionId(result.sessionId);
-      setOtpSent(true);
       setStep(2);
       setCountdown(60);
       setMessage("OTP sent successfully to your phone!");
-    } catch (error: any) {
-      setMessage(error.message || "Failed to send OTP. Please try again.");
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -81,8 +80,8 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       await authAPI.verifyOTP(sessionId, form.otp, form.phone);
       setStep(3);
       setMessage("Phone verified successfully! Please complete your registration.");
-    } catch (error: any) {
-      setMessage(error.message || "OTP verification failed. Please try again.");
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : "OTP verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -100,8 +99,8 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       setSessionId(result.sessionId);
       setCountdown(60);
       setMessage("OTP resent successfully!");
-    } catch (error: any) {
-      setMessage(error.message || "Failed to resend OTP. Please try again.");
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : "Failed to resend OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -146,8 +145,8 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-    } catch (error: any) {
-      setMessage(error.message || "Registration failed. Please try again.");
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

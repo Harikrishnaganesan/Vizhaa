@@ -14,11 +14,9 @@ const sidebarItems = [
 export default function SupplierDashboard() {
   const [activeTab, setActiveTab] = useState("View Events");
   const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
-  const [loading, setLoading] = useState(false);
 
   React.useEffect(() => {
     const loadUserData = async () => {
-      setLoading(true);
       try {
         const { supplierAPI } = await import('../../../services/api.js');
         const dashboardData = await supplierAPI.getDashboard();
@@ -29,8 +27,6 @@ export default function SupplierDashboard() {
       } catch (error) {
         console.error('Failed to load user data:', error);
         setUserData({ name: 'User', email: '' });
-      } finally {
-        setLoading(false);
       }
     };
     

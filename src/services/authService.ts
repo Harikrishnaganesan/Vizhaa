@@ -5,7 +5,7 @@ const authService = {
   sendOTP: (phone: string, userType: string = 'organizer') => authAPI.sendOTP(phone, userType),
   verifyOTP: (sessionId: string, otp: string, phone: string) => authAPI.verifyOTP(sessionId, otp, phone),
   resendOTP: (phone: string, userType: string = 'organizer') => authAPI.sendOTP(phone, userType),
-  completeRegistration: (userData: any) => {
+  completeRegistration: (userData: {userType: string; [key: string]: unknown}) => {
     if (userData.userType === 'organizer') {
       return authAPI.organizerSignup(userData);
     } else {

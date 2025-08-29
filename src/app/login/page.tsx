@@ -193,7 +193,7 @@ function OTPView({ onBack, onVerified }: { onBack: () => void; onVerified: () =>
 }
 
 // ---- FORGOT PASSWORD VIEW ----
-function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+function ForgotPassword({ onBack }: { onBack: () => void; onNext?: () => void }) {
   const [step, setStep] = useState('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
@@ -203,7 +203,7 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [isConfirmFocused, setIsConfirmFocused] = useState(false);
+
 
   const labelFloat = isFocused || phone.length > 0;
 
@@ -215,8 +215,8 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
       const result = await authAPI.forgotPassword(phone);
       setSessionId(result.sessionId);
       setStep('otp');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -229,8 +229,8 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
       const { authAPI } = await import('../../../services/api.js');
       await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
       setStep('newPassword');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -252,8 +252,8 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
       await authAPI.resetPassword(sessionId, phone, newPassword);
       alert('Password reset successful! Please login with your new password.');
       onBack();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -347,8 +347,8 @@ function ForgotPassword({ onBack, onNext }: { onBack: () => void; onNext: () => 
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  onFocus={() => setIsConfirmFocused(true)}
-                  onBlur={() => setIsConfirmFocused(false)}
+                  onFocus={() => {}}
+                  onBlur={() => {}}
                   className="w-full pl-3 pr-3 py-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
                   placeholder="Confirm new password"
                   required
@@ -409,8 +409,8 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
       } else {
         router.push('/supplier-dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setLoading(false);
     }
