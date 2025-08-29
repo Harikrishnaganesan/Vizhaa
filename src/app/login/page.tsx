@@ -417,19 +417,19 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-8 w-full">
-      <div className="max-w-4xl bg-white rounded-2xl shadow-xl flex overflow-hidden relative w-full">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-4 px-4 w-full">
+      <div className="max-w-4xl bg-white rounded-2xl shadow-xl flex flex-col md:flex-row overflow-hidden relative w-full">
         <Image
           src="/lognlogo.png"
           alt="Vizhaa Logo"
           width={110}
           height={110}
-          className="absolute left-8 top-5 w-24 z-10"
+          className="absolute left-4 md:left-8 top-3 md:top-5 w-16 md:w-24 z-10"
           priority
         />
-        <div className="w-full sm:w-2/3 flex flex-col justify-center p-10 pl-20">
-          <div className="mb-8 mt-10">
-            <span className="text-3xl font-bold text-gray-800">Welcome Back</span>
+        <div className="w-full md:w-2/3 flex flex-col justify-center p-6 md:p-10 md:pl-20">
+          <div className="mb-6 md:mb-8 mt-16 md:mt-10">
+            <span className="text-2xl md:text-3xl font-bold text-gray-800">Welcome Back</span>
             <p className="text-gray-500 mt-1">Please enter log in details below</p>
           </div>
           <form onSubmit={handleLogin}>
