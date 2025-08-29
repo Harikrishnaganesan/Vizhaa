@@ -34,12 +34,10 @@ const EventOrganizersDashboard: React.FC = () => {
   const [events, setEvents] = useState<EventData[]>([]);
   const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
   const [formData, setFormData] = useState<Partial<EventData> | null>(null);
-  const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      setLoading(true);
       try {
         // Load user data from API
         const { organizerAPI } = await import('../../../services/api.js');
@@ -76,8 +74,6 @@ const EventOrganizersDashboard: React.FC = () => {
           setCurrentEvent(current || null);
         }
         setUserData({ name: 'User', email: '' });
-      } finally {
-        setLoading(false);
       }
     };
     
@@ -117,8 +113,8 @@ const EventOrganizersDashboard: React.FC = () => {
       case "events":
         return <MyEvents 
                  onStartNewEvent={handleStartNewEvent} 
-                 events={events}
-                 loading={loading}
+                 currentEvent={currentEvent}
+                 pastEvents={events.filter(event => event.isPastEvent)}
                />;
       case "form":
         return <EventForm onSubmit={handleFormSubmit} />;
