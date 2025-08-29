@@ -1,80 +1,230 @@
+// ViewEvents.tsx - Supplier sees ALL events from ALL organizers
+"use client";
+import React, { useState, useEffect } from "react";
 
-import React, { useEffect, useState } from "react";
-
-interface EventData {
+interface Event {
+  id: string;
   eventName: string;
+  eventType: string;
   location: string;
-  numSuppliers: number;
-  time: string;
-  date: string;
-  selectedServices: string;
-  selectedDressCode: string;
-  paymentStatus: string;
-  isPastEvent?: boolean;
+  eventDate: string;
+  budget: number;
+  organizer: {
+    id: string;
+    fullName: string;
+    companyName?: string;
+    phone: string;
+  };
+  isBooked: boolean;
+  bookingStatus: string | null;
 }
 
 const ViewEvents: React.FC = () => {
-  const [events, setEvents] = useState<EventData[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [bookingEvent, setBookingEvent] = useState<string | null>(null);
+  const [bookingData, setBookingData] = useState({
+    services: [] as string[],
+    proposedPrice: "",
+    message: "",
+  });
+
+  const availableServices = ["Catering", "Photography", "Decoration", "Music", "Transportation", "Security"];
 
   useEffect(() => {
-    const storedEvents = localStorage.getItem("events");
-    if (storedEvents) {
-      const parsedEvents = JSON.parse(storedEvents);
-      // Only show upcoming events (not past)
-      setEvents(parsedEvents.filter((event: EventData) => !event.isPastEvent));
-    }
+    loadEvents();
   }, []);
 
+  const loadEvents = async () => {
+    try {
+      const { supplierAPI } = await import('../../../services/api.js');
+      const result = await supplierAPI.getAvailableEvents();
+      setEvents(result.data || []);
+    } catch (error) {
+      console.error('Failed to load events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBookEvent = async (eventId: string) => {
+    if (!bookingData.services.length || !bookingData.proposedPrice) {
+      alert('Please select services and enter proposed price');
+      return;
+    }
+
+    try {
+      const { supplierAPI } = await import('../../../services/api.js');
+      await supplierAPI.bookEvent(eventId, {
+        services: bookingData.services,
+        proposedPrice: parseInt(bookingData.proposedPrice),
+        message: bookingData.message,
+      });
+      
+      // Update local state
+      setEvents(events.map(event => 
+        event.id === eventId 
+          ? { ...event, isBooked: true, bookingStatus: 'Pending' }
+          : event
+      ));
+      
+      setBookingEvent(null);
+      setBookingData({ services: [], proposedPrice: "", message: "" });
+      alert('Event booked successfully!');
+    } catch (error) {
+      console.error('Failed to book event:', error);
+      alert('Failed to book event. Please try again.');
+    }
+  };
+
+  const handleServiceToggle = (service: string) => {
+    const services = bookingData.services.includes(service)
+      ? bookingData.services.filter(s => s !== service)
+      : [...bookingData.services, service];
+    setBookingData({ ...bookingData, services });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-lg text-gray-600">Loading events...</div>
+      </div>
+    );
+  }
+
+  if (events.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+        <img src="/event-posted.svg" alt="No Events" className="w-32 h-32 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-700 mb-2">No Events Available</h2>
+        <p className="text-gray-500">There are no events available for booking at the moment.</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h2 className="text-[#2DBE60] text-lg font-bold mb-6">AVAILABLE EVENTS</h2>
-      {events.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 text-center text-gray-500 w-full max-w-md sm:max-w-2xl mx-auto mt-8 sm:mt-16 flex flex-col items-center justify-center min-h-[200px] sm:min-h-[300px]">
-          <img src="/event-posted.svg" alt="No Event" className="w-16 h-16 sm:w-24 sm:h-24 mb-3 sm:mb-5" />
-          <h2 className="text-lg sm:text-xl font-bold text-gray-700 mb-1 sm:mb-2">No Events Available</h2>
-          <p className="text-gray-500 mb-2 sm:mb-4 text-sm sm:text-base">There are no events available for booking at the moment.</p>
-        </div>
-      ) : (
-        events.map((event, idx) => (
-          <div key={idx} className="bg-white rounded-lg shadow-lg p-6 flex gap-6 items-center max-w-3xl mb-8">
-            {/* Left Section: Date & Book */}
-            <div className="flex flex-col items-center justify-between bg-[#E6F9ED] rounded-lg p-4 min-w-[120px] h-full">
-              <div className="text-xs text-gray-500 mb-2">{new Date(event.date).toLocaleString('en-US', { month: 'long' }).toUpperCase()}</div>
-              <div className="text-3xl font-bold text-[#2DBE60]">{new Date(event.date).getDate()}</div>
-              <div className="text-xs text-gray-500 mb-2">{new Date(event.date).toLocaleString('en-US', { weekday: 'long' }).toUpperCase()}</div>
-              <div className="text-xs text-gray-500 mb-2">{event.time}</div>
-              <button
-                className="bg-[#2DBE60] text-white font-semibold px-6 py-2 rounded mt-2 shadow"
-                onClick={() => {
-                  // Add event to supplierEvents in localStorage as current event
-                  const supplierEvents = JSON.parse(localStorage.getItem('supplierEvents') || '[]');
-                  // Prevent duplicate booking
-                  if (!supplierEvents.some((e: EventData) => e.eventName === event.eventName && e.date === event.date)) {
-                    supplierEvents.push({ ...event, isPastEvent: false });
-                    localStorage.setItem('supplierEvents', JSON.stringify(supplierEvents));
-                  }
-                }}
-              >
-                BOOK
-              </button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-[#2DBE60]">Available Events ({events.length})</h2>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event) => (
+          <div key={event.id} className="bg-white rounded-lg shadow-lg p-6 border">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-lg font-bold text-gray-800">{event.eventName}</h3>
+              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{event.eventType}</span>
             </div>
-            {/* Right Section: Event Details */}
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              <div>
-                <div className="font-semibold text-gray-700 mb-1">Event Details</div>
-                <div className="text-gray-700">{event.eventName}</div>
-                <div className="text-gray-700">Date<br/><span className="font-bold">{event.date}</span></div>
-                <div className="text-gray-700">Time<br/><span className="font-bold">{event.time}</span></div>
+            
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Organizer:</span>
+                <span className="text-gray-800 font-medium">{event.organizer.fullName}</span>
               </div>
+              {event.organizer.companyName && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Company:</span>
+                  <span className="text-gray-800">{event.organizer.companyName}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Phone:</span>
+                <span className="text-gray-800">{event.organizer.phone}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Location:</span>
+                <span className="text-gray-800">{event.location}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Date:</span>
+                <span className="text-gray-800">{new Date(event.eventDate).toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Budget:</span>
+                <span className="text-gray-800 font-semibold">₹{event.budget?.toLocaleString()}</span>
+              </div>
+            </div>
+            
+            {event.isBooked ? (
+              <div className="text-center">
+                <span className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  event.bookingStatus === 'Approved' ? 'bg-green-100 text-green-800' :
+                  event.bookingStatus === 'Rejected' ? 'bg-red-100 text-red-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {event.bookingStatus || 'Booked'}
+                </span>
+              </div>
+            ) : (
+              <button
+                onClick={() => setBookingEvent(event.id)}
+                className="w-full bg-[#2DBE60] hover:bg-green-600 text-white py-2 px-4 rounded font-medium"
+              >
+                Book Event
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      
+      {/* Booking Modal */}
+      {bookingEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-bold mb-4">Book Event</h3>
+            
+            <div className="space-y-4">
               <div>
-                <div className="font-semibold text-gray-700 mb-1">Location</div>
-                <div className="text-gray-700">{event.location}</div>
-                <div className="text-gray-700">Dress Code<br/><span className="font-bold">{event.selectedDressCode}</span></div>
-                <div className="text-gray-700">Number of Services<br/><span className="font-bold">{event.selectedServices}</span></div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Services</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {availableServices.map(service => (
+                    <label key={service} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={bookingData.services.includes(service)}
+                        onChange={() => handleServiceToggle(service)}
+                        className="rounded border-gray-300 text-green-600"
+                      />
+                      <span className="text-sm">{service}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              
+              <input
+                type="number"
+                placeholder="Proposed Price (₹)"
+                value={bookingData.proposedPrice}
+                onChange={(e) => setBookingData({ ...bookingData, proposedPrice: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-400"
+                required
+              />
+              
+              <textarea
+                placeholder="Message to organizer (optional)"
+                value={bookingData.message}
+                onChange={(e) => setBookingData({ ...bookingData, message: e.target.value })}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-400"
+              />
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleBookEvent(bookingEvent)}
+                  className="flex-1 bg-[#2DBE60] text-white py-2 px-4 rounded font-medium"
+                >
+                  Confirm Booking
+                </button>
+                <button
+                  onClick={() => setBookingEvent(null)}
+                  className="flex-1 bg-gray-500 text-white py-2 px-4 rounded font-medium"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
-        ))
+        </div>
       )}
     </div>
   );

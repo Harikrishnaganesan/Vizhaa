@@ -47,6 +47,7 @@ export const authAPI = {
 export const organizerAPI = {
   getDashboard: () => apiCall(API_ENDPOINTS.ORGANIZER.DASHBOARD),
   
+  // Event Management
   createEvent: (eventData) => apiCall(API_ENDPOINTS.ORGANIZER.EVENTS, {
     method: 'POST',
     body: JSON.stringify(eventData)
@@ -54,8 +55,19 @@ export const organizerAPI = {
   
   getEvents: () => apiCall(API_ENDPOINTS.ORGANIZER.EVENTS),
   
+  updateEvent: (eventId, eventData) => apiCall(`${API_ENDPOINTS.ORGANIZER.EVENTS}/${eventId}`, {
+    method: 'PUT',
+    body: JSON.stringify(eventData)
+  }),
+  
+  deleteEvent: (eventId) => apiCall(`${API_ENDPOINTS.ORGANIZER.EVENTS}/${eventId}`, {
+    method: 'DELETE'
+  }),
+  
+  // Supplier Management
   getEventSuppliers: (eventId) => apiCall(API_ENDPOINTS.ORGANIZER.EVENT_SUPPLIERS(eventId)),
   
+  // Booking Management
   getBookings: () => apiCall(API_ENDPOINTS.ORGANIZER.BOOKINGS),
   
   updateBookingStatus: (bookingId, status, message) => apiCall(API_ENDPOINTS.ORGANIZER.BOOKING_STATUS(bookingId), {
@@ -70,12 +82,15 @@ export const organizerAPI = {
 export const supplierAPI = {
   getDashboard: () => apiCall(API_ENDPOINTS.SUPPLIER.DASHBOARD),
   
+  // View ALL events from ALL organizers
   getAvailableEvents: () => apiCall(API_ENDPOINTS.SUPPLIER.EVENTS),
   
+  // Book event with services and pricing
   bookEvent: (eventId, bookingData) => apiCall(API_ENDPOINTS.SUPPLIER.BOOK_EVENT(eventId), {
     method: 'POST',
     body: JSON.stringify(bookingData)
   }),
   
+  // View my bookings
   getBookings: () => apiCall(API_ENDPOINTS.SUPPLIER.BOOKINGS)
 };

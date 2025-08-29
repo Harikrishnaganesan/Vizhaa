@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import MyEvents from "./MyEvents";
 import EventForm from "./EventForm";
 import StatusTab from "./StatusTab";
-import PaymentTab from "./PaymentTab";
+
 import Image from "next/image";
 // Removed unused imports
 
@@ -32,79 +32,52 @@ export interface EventData {
 const EventOrganizersDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("events");
   const [events, setEvents] = useState<EventData[]>([]);
-  const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
-  const [formData, setFormData] = useState<Partial<EventData> | null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
   const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        // Load user data from API
-        const { organizerAPI } = await import('../../../services/api.js');
-        const dashboardData = await organizerAPI.getDashboard();
-        setUserData({
-          name: dashboardData.organizer?.fullName || 'User',
-          email: dashboardData.organizer?.email || ''
-        });
-        
-        // Load events from API or localStorage as fallback
-        const apiEvents = dashboardData.events || [];
-        if (apiEvents.length > 0) {
-          setEvents(apiEvents);
-          const current = apiEvents.find((event: EventData) => !event.isPastEvent);
-          setCurrentEvent(current || null);
-        } else {
-          // Fallback to localStorage
-          const storedEvents = localStorage.getItem("events");
-          if (storedEvents) {
-            const parsedEvents = JSON.parse(storedEvents);
-            setEvents(parsedEvents);
-            const current = parsedEvents.find((event: EventData) => !event.isPastEvent);
-            setCurrentEvent(current || null);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load dashboard data:', error);
-        // Fallback to localStorage on API error
-        const storedEvents = localStorage.getItem("events");
-        if (storedEvents) {
-          const parsedEvents = JSON.parse(storedEvents);
-          setEvents(parsedEvents);
-          const current = parsedEvents.find((event: EventData) => !event.isPastEvent);
-          setCurrentEvent(current || null);
-        }
-        setUserData({ name: 'User', email: '' });
-      }
-    };
-    
     loadDashboardData();
   }, []);
 
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const { organizerAPI } = await import('../../../services/api.js');
+      
+      // Load user data and events from API
+      const [dashboardData, eventsData] = await Promise.all([
+        organizerAPI.getDashboard(),
+        organizerAPI.getEvents()
+      ]);
+      
+      setUserData({
+        name: dashboardData.organizer?.fullName || 'User',
+        email: dashboardData.organizer?.email || ''
+      });
+      
+      setEvents(eventsData.data || []);
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+      setUserData({ name: 'User', email: '' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleStartNewEvent = () => {
+    setEditingEvent(null);
     setActiveTab("form");
   };
 
-  const handleFormSubmit = (data: Partial<EventData>) => {
-    setFormData(data);
-    setActiveTab("payment");
+  const handleEditEvent = (event: EventData) => {
+    setEditingEvent(event);
+    setActiveTab("form");
   };
 
-  const handlePaymentComplete = (paymentStatus: 'Paid' | 'Advance Paid') => {
-    const newEvent = {
-      ...formData,
-      paymentStatus,
-      isPastEvent: false
-    } as EventData;
-
-    const updatedEvents = events.map(event => ({
-      ...event,
-      isPastEvent: true
-    }));
-
-    updatedEvents.unshift(newEvent);
-    setEvents(updatedEvents);
-    setCurrentEvent(newEvent);
-    localStorage.setItem("events", JSON.stringify(updatedEvents));
+  const handleFormSubmit = async () => {
+    // Reload events after form submission
+    await loadDashboardData();
     setActiveTab("events");
   };
 
@@ -112,25 +85,18 @@ const EventOrganizersDashboard: React.FC = () => {
     switch (activeTab) {
       case "events":
         return <MyEvents 
-                 onStartNewEvent={handleStartNewEvent} 
-                 currentEvent={currentEvent}
-                 pastEvents={events.filter(event => event.isPastEvent)}
+                 onStartNewEvent={handleStartNewEvent}
+                 onEditEvent={handleEditEvent}
+                 loading={loading}
                />;
       case "form":
-        return <EventForm onSubmit={handleFormSubmit} />;
-      case "payment":
-        return formData && <PaymentTab 
-                 formData={{
-                   eventName: formData.eventName ?? "",
-                   location: formData.location ?? "",
-                   date: formData.date ?? "",
-                   time: formData.time ?? ""
-                 }} 
-                 onPaymentComplete={handlePaymentComplete} 
+        return <EventForm 
+                 onSubmit={handleFormSubmit}
+                 initialData={editingEvent}
+                 isEdit={!!editingEvent}
                />;
       case "status":
-        // TODO: Replace with actual supplier data when available
-        return <StatusTab currentEvent={currentEvent} suppliers={[]} />;
+        return <StatusTab events={events} />;
       default:
         return null;
     }
@@ -206,7 +172,7 @@ const EventOrganizersDashboard: React.FC = () => {
               <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M7 10l5 5 5-5H7z"/></svg>
             </div>
           </div>
-          <main className="flex-1 bg-[#F8F9FA] flex flex-col items-center py-6 md:py-12 px-4">
+          <main className="flex-1 bg-[#F8F9FA] py-6 md:py-12 px-4">
             {renderTabContent()}
           </main>
         </div>

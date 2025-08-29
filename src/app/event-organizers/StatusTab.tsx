@@ -23,12 +23,13 @@ interface SupplierProfile {
 }
 
 interface StatusTabProps {
+  events?: EventData[];
   currentEvent?: EventData | null;
-  suppliers: SupplierProfile[];
+  suppliers?: SupplierProfile[];
 }
 
-const StatusTab: React.FC<StatusTabProps> = ({ currentEvent, suppliers }) => {
-  const totalSuppliers = currentEvent?.numSuppliers || 0;
+const StatusTab: React.FC<StatusTabProps> = ({ events, currentEvent, suppliers = [] }) => {
+  const totalSuppliers = currentEvent?.numSuppliers || events?.[0]?.numSuppliers || 0;
   const joinedSuppliers = suppliers.length;
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl mx-auto mt-8">

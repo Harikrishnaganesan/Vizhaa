@@ -1,6 +1,6 @@
 // Compatibility layer for authService - redirects to proper API
 import { authAPI } from '../../services/api.js';
-import { API_ENDPOINTS } from '../../config/api.js';
+
 
 const authService = {
   sendOTP: (phone: string, userType: string = 'organizer') => authAPI.sendOTP(phone, userType),
