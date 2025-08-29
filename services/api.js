@@ -1,43 +1,43 @@
-import apiCall from '../config/api.js';
+import apiCall, { API_ENDPOINTS } from '../config/api.js';
 
 // Authentication API
 export const authAPI = {
-  sendOTP: (phone, userType) => apiCall('/auth/send-otp', {
+  sendOTP: (phone, userType) => apiCall(API_ENDPOINTS.AUTH.SEND_OTP, {
     method: 'POST',
     body: JSON.stringify({ phone, userType })
   }),
   
-  verifyOTP: (sessionId, otp, phone) => apiCall('/auth/verify-otp', {
+  verifyOTP: (sessionId, otp, phone) => apiCall(API_ENDPOINTS.AUTH.VERIFY_OTP, {
     method: 'POST',
     body: JSON.stringify({ sessionId, otp, phone })
   }),
   
-  organizerSignup: (data) => apiCall('/auth/organizer/signup', {
+  organizerSignup: (data) => apiCall(API_ENDPOINTS.AUTH.ORGANIZER_SIGNUP, {
     method: 'POST',
     body: JSON.stringify(data)
   }),
   
-  supplierSignup: (data) => apiCall('/auth/supplier/signup', {
+  supplierSignup: (data) => apiCall(API_ENDPOINTS.AUTH.SUPPLIER_SIGNUP, {
     method: 'POST',
     body: JSON.stringify(data)
   }),
   
-  login: (phone, password) => apiCall('/auth/login', {
+  login: (phone, password) => apiCall(API_ENDPOINTS.AUTH.LOGIN, {
     method: 'POST',
     body: JSON.stringify({ phone, password })
   }),
   
-  forgotPassword: (phone) => apiCall('/auth/forgot-password', {
+  forgotPassword: (phone) => apiCall(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
     method: 'POST',
     body: JSON.stringify({ phone })
   }),
   
-  verifyPasswordResetOTP: (sessionId, otp, phone) => apiCall('/auth/verify-password-reset-otp', {
+  verifyPasswordResetOTP: (sessionId, otp, phone) => apiCall(API_ENDPOINTS.AUTH.VERIFY_PASSWORD_RESET_OTP, {
     method: 'POST',
     body: JSON.stringify({ sessionId, otp, phone })
   }),
 
-  resetPassword: (sessionId, phone, newPassword) => apiCall('/auth/reset-password', {
+  resetPassword: (sessionId, phone, newPassword) => apiCall(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
     method: 'POST',
     body: JSON.stringify({ sessionId, phone, newPassword })
   })
@@ -45,37 +45,37 @@ export const authAPI = {
 
 // Organizer API
 export const organizerAPI = {
-  getDashboard: () => apiCall('/organizer/dashboard'),
+  getDashboard: () => apiCall(API_ENDPOINTS.ORGANIZER.DASHBOARD),
   
-  createEvent: (eventData) => apiCall('/organizer/events', {
+  createEvent: (eventData) => apiCall(API_ENDPOINTS.ORGANIZER.EVENTS, {
     method: 'POST',
     body: JSON.stringify(eventData)
   }),
   
-  getEvents: () => apiCall('/organizer/events'),
+  getEvents: () => apiCall(API_ENDPOINTS.ORGANIZER.EVENTS),
   
-  getEventSuppliers: (eventId) => apiCall(`/organizer/events/${eventId}/suppliers`),
+  getEventSuppliers: (eventId) => apiCall(API_ENDPOINTS.ORGANIZER.EVENT_SUPPLIERS(eventId)),
   
-  getBookings: () => apiCall('/organizer/bookings'),
+  getBookings: () => apiCall(API_ENDPOINTS.ORGANIZER.BOOKINGS),
   
-  updateBookingStatus: (bookingId, status, message) => apiCall(`/organizer/bookings/${bookingId}/status`, {
+  updateBookingStatus: (bookingId, status, message) => apiCall(API_ENDPOINTS.ORGANIZER.BOOKING_STATUS(bookingId), {
     method: 'PUT',
     body: JSON.stringify({ status, organizerMessage: message })
   }),
   
-  getBookingDetails: (bookingId) => apiCall(`/organizer/bookings/${bookingId}`)
+  getBookingDetails: (bookingId) => apiCall(API_ENDPOINTS.ORGANIZER.BOOKING_DETAILS(bookingId))
 };
 
 // Supplier API
 export const supplierAPI = {
-  getDashboard: () => apiCall('/supplier/dashboard'),
+  getDashboard: () => apiCall(API_ENDPOINTS.SUPPLIER.DASHBOARD),
   
-  getAvailableEvents: () => apiCall('/supplier/events'),
+  getAvailableEvents: () => apiCall(API_ENDPOINTS.SUPPLIER.EVENTS),
   
-  bookEvent: (eventId, bookingData) => apiCall(`/supplier/events/${eventId}/book`, {
+  bookEvent: (eventId, bookingData) => apiCall(API_ENDPOINTS.SUPPLIER.BOOK_EVENT(eventId), {
     method: 'POST',
     body: JSON.stringify(bookingData)
   }),
   
-  getBookings: () => apiCall('/supplier/bookings')
+  getBookings: () => apiCall(API_ENDPOINTS.SUPPLIER.BOOKINGS)
 };
