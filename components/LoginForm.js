@@ -10,6 +10,10 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const result = await login(phone, password);
+      
+      // Set cookie for middleware
+      document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
+      
       const userType = result.user.userType;
       window.location.href = `/${userType}/dashboard`;
     } catch (err) {

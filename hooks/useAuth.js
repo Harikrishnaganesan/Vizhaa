@@ -13,6 +13,10 @@ export const useAuth = () => {
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userType', result.user.userType);
       localStorage.setItem('userId', result.user.id);
+      
+      // Set cookie for middleware
+      document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
+      
       return result;
     } catch (err) {
       setError(err.message);
@@ -60,6 +64,10 @@ export const useAuth = () => {
       
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userType', userType);
+      
+      // Set cookie for middleware
+      document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
+      
       return result;
     } catch (err) {
       setError(err.message);
@@ -71,6 +79,8 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.clear();
+    // Clear cookie
+    document.cookie = 'authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     window.location.href = '/login';
   };
 

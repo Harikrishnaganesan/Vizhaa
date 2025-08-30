@@ -399,12 +399,16 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
       const { authAPI } = await import('../../../services/api.js');
       const result = await authAPI.login(phone, password);
       
+      // Store in localStorage
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userType', result.user.userType);
       localStorage.setItem('userId', result.user.id);
       
-      // Force page refresh and redirect to home
-      window.location.href = '/home';
+      // Set cookie for middleware
+      document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
+      
+      // Navigate to home
+      router.push('/home');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
