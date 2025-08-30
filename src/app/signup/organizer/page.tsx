@@ -1,6 +1,8 @@
 "use client";
+import { useRouter } from "next/navigation";
 import OrganizerSignUp from "../../components/OrganizerSignUp";
 
 export default function OrganizerSignUpPage() {
-  return <OrganizerSignUp onBack={() => window.history.back()} />;
+  const router = useRouter();
+  return <OrganizerSignUp onBack={() => router.push('/signup/main')} />;
 }
