@@ -1,17 +1,13 @@
 // Determine API URL based on environment
 const getApiBaseUrl = () => {
-  // Use proxy route for deployed sites to avoid CORS
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:4000/api';
-    }
-    // Use Next.js proxy route for deployed sites
+    // Use Next.js API proxy for all environments
     return '/api';
   }
   
-  // Server-side: use direct API URL
-  return process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api';
+  // Server-side: use direct backend URL
+  return 'http://localhost:4000/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
