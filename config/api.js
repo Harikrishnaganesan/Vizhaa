@@ -4,7 +4,7 @@ const getApiBaseUrl = () => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:3001/api';
+      return 'http://localhost:4000/api';
     }
     // Use Next.js proxy route for deployed sites
     return '/api';

@@ -2,25 +2,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-interface Event {
-  id: string;
-  eventName: string;
-  eventType: string;
-  location: string;
-  eventDate: string;
-  budget: number;
-  organizer: {
-    id: string;
-    fullName: string;
-    companyName?: string;
-    phone: string;
-  };
-  isBooked: boolean;
-  bookingStatus: string | null;
-}
-
 const ViewEvents: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingEvent, setBookingEvent] = useState<string | null>(null);
   const [bookingData, setBookingData] = useState({
