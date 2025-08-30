@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const SupplierSignUp: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
+const SupplierSignUp: React.FC<{ onBack?: () => void }> = () => {
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
@@ -562,7 +562,7 @@ const SupplierSignUp: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
           <button 
             type="button" 
             className="w-full text-[#22364A] underline mt-4 py-2" 
-            onClick={onBack || (() => router.push("/login"))}
+            onClick={() => router.push('/login')}
             disabled={loading}
           >
             Back to Login

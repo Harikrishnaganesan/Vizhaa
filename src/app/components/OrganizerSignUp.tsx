@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const OrganizerSignUp: React.FC<{ onBack?: () => void }> = () => {
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
@@ -335,7 +335,7 @@ const OrganizerSignUp: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <button 
             type="button" 
             className="w-full text-[#22364A] underline mt-4 py-2" 
-            onClick={onBack}
+            onClick={() => router.push('/login')}
             disabled={loading}
           >
             Back to Login
