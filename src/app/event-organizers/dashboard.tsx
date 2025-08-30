@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import MyEvents from "./MyEvents";
 import EventForm from "./EventForm";
 import StatusTab from "./StatusTab";
-
+import ProfileCard from "../components/ProfileCard";
+import { useProfile } from "../contexts/ProfileContext";
 import Image from "next/image";
 // Removed unused imports
 
@@ -13,6 +14,7 @@ const sidebarItems = [
   { key: "form", label: "Form", icon: <img src="/my-event.svg" alt="Form" className="w-5 h-5" /> },
   { key: "status", label: "Status", icon: <img src="/status.svg" alt="Status" className="w-5 h-5" /> },
   { key: "payment", label: "Payment", icon: <img src="/poket.svg" alt="Payment" className="w-5 h-5" /> },
+  { key: "profile", label: "Profile", icon: <img src="/avatar1.png" alt="Profile" className="w-5 h-5 rounded-full" /> },
 ];
 
 export interface EventData {
@@ -33,8 +35,8 @@ const EventOrganizersDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("events");
   const [events, setEvents] = useState<EventData[]>([]);
   const [editingEvent, setEditingEvent] = useState<EventData | undefined>(undefined);
-  const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
   const [loading, setLoading] = useState(false);
+  const { profile } = useProfile();
 
   useEffect(() => {
     loadDashboardData();
@@ -45,21 +47,11 @@ const EventOrganizersDashboard: React.FC = () => {
     try {
       const { organizerAPI } = await import('../../../services/api.js');
       
-      // Load user data and events from API
-      const [dashboardData, eventsData] = await Promise.all([
-        organizerAPI.getDashboard(),
-        organizerAPI.getEvents()
-      ]);
-      
-      setUserData({
-        name: dashboardData.organizer?.fullName || 'User',
-        email: dashboardData.organizer?.email || ''
-      });
-      
+      // Load events from API
+      const eventsData = await organizerAPI.getEvents();
       setEvents(eventsData.data || []);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
-      setUserData({ name: 'User', email: '' });
     } finally {
       setLoading(false);
     }
@@ -97,6 +89,13 @@ const EventOrganizersDashboard: React.FC = () => {
                />;
       case "status":
         return <StatusTab events={events} />;
+      case "profile":
+        return (
+          <div className="max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
+            <ProfileCard />
+          </div>
+        );
       default:
         return null;
     }
@@ -112,7 +111,7 @@ const EventOrganizersDashboard: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           <Image src="/avatar1.png" alt="User" width={32} height={32} className="h-8 w-8 rounded-full border-2 border-white" />
-          <span className="text-white font-semibold text-sm">{userData?.name || 'Loading...'}</span>
+          <span className="text-white font-semibold text-sm">{profile?.fullName || 'Loading...'}</span>
         </div>
       </div>
       
@@ -168,7 +167,7 @@ const EventOrganizersDashboard: React.FC = () => {
                 width={40} 
                 height={40}
                 className="h-10 w-10 rounded-full border-2 border-white" />
-              <span className="text-white font-semibold">{userData?.name || 'Loading...'}</span>
+              <span className="text-white font-semibold">{profile?.fullName || 'Loading...'}</span>
               <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M7 10l5 5 5-5H7z"/></svg>
             </div>
           </div>
