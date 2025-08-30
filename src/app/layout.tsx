@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 
 function LayoutWithConditionalHeaderFooter({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideHeaderFooter = pathname === "/" || pathname.startsWith("/signup/organizer") || pathname.startsWith("/signup/supplier") || pathname.startsWith("/login");
+  const hideHeaderFooter = pathname === "/" || pathname.startsWith("/signup/organizer") || pathname.startsWith("/signup/supplier") || pathname.startsWith("/login") || pathname.startsWith("/event-organizers") || pathname.startsWith("/supplier-dashboard");
   // Set background color for sign-up and login pages
   const isSignupOrLoginPage = pathname.startsWith("/signup/organizer") || pathname.startsWith("/signup/supplier") || pathname.startsWith("/login");
   return (

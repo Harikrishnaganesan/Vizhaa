@@ -15,7 +15,7 @@ interface Event {
 
 interface MyEventsProps {
   onStartNewEvent?: () => void;
-  onEditEvent?: (event: EventData) => void;
+  onEditEvent?: (event: any) => void;
   loading?: boolean;
 }
 

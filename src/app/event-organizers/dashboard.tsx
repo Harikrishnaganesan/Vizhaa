@@ -32,7 +32,7 @@ export interface EventData {
 const EventOrganizersDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("events");
   const [events, setEvents] = useState<EventData[]>([]);
-  const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventData | undefined>(undefined);
   const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +66,7 @@ const EventOrganizersDashboard: React.FC = () => {
   };
 
   const handleStartNewEvent = () => {
-    setEditingEvent(null);
+    setEditingEvent(undefined);
     setActiveTab("form");
   };
 

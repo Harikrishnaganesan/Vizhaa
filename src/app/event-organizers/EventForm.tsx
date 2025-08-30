@@ -3,21 +3,9 @@
 import React, { useState } from "react";
 
 interface EventFormProps {
-  onSubmit: (data: EventData) => void;
-  initialData?: EventData;
+  onSubmit: (data: any) => void;
+  initialData?: any;
   isEdit?: boolean;
-}
-
-interface EventData {
-  eventName: string;
-  eventType: string;
-  location: string;
-  eventDate: string;
-  eventTime: string;
-  budget: number;
-  numberOfGuests: number;
-  servicesNeeded: string[];
-  description: string;
 }
 
 const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = false }) => {
@@ -43,9 +31,9 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
   };
 
   const handleServiceToggle = (service: string) => {
-    const services = formData.servicesNeeded.includes(service)
-      ? formData.servicesNeeded.filter((s: string) => s !== service)
-      : [...formData.servicesNeeded, service];
+    const services = (formData.servicesNeeded || []).includes(service)
+      ? (formData.servicesNeeded || []).filter((s: string) => s !== service)
+      : [...(formData.servicesNeeded || []), service];
     setFormData({ ...formData, servicesNeeded: services });
   };
 
@@ -157,7 +145,7 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
               <label key={service} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={formData.servicesNeeded.includes(service)}
+                  checked={(formData.servicesNeeded || []).includes(service)}
                   onChange={() => handleServiceToggle(service)}
                   className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                 />

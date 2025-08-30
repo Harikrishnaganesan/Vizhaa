@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,12 +8,32 @@ import { usePathname, useRouter } from "next/navigation";
 const Header: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  // Header mode state: 'supplier' or 'organizer'
-  const [headerMode, setHeaderMode] = useState(() => {
-    if (pathname.startsWith("/supplier")) return "supplier";
-    return "organizer";
-  });
-  const isSupplierMode = headerMode === "supplier";
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const type = localStorage.getItem('userType');
+    setIsLoggedIn(!!token);
+    setUserType(type);
+  }, [pathname]);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setIsLoggedIn(false);
+    setUserType(null);
+    router.push('/login');
+  };
+
+  const getDashboardLink = () => {
+    if (!isLoggedIn) return '/login';
+    return userType === 'supplier' ? '/supplier-dashboard' : '/event-organizers';
+  };
+
+  const getDashboardLabel = () => {
+    if (!isLoggedIn) return 'Dashboard';
+    return userType === 'supplier' ? 'Supplier Dashboard' : 'Event Organizer Dashboard';
+  };
   return (
     <header className="w-full z-50" aria-label="Main site header">
       {/* Top black bar */}
@@ -36,14 +56,10 @@ const Header: React.FC = () => {
           <Link href="/home" className={`font-medium pb-1 transition-all ${pathname === "/home" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/home" ? "page" : undefined}>Home</Link>
           <Link href="/howwork" className={`font-medium pb-1 transition-all ${pathname === "/howwork" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/howwork" ? "page" : undefined}>How It Works</Link>
           <Link href="/contact" className={`font-medium pb-1 transition-all ${pathname === "/contact" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/contact" ? "page" : undefined}>Contact</Link>
-          <Link href={pathname.startsWith("/supplier") ? "/supplier-dashboard" : "/event-organizers"} className={`font-medium pb-1 transition-all ${(pathname.startsWith("/supplier") && pathname === "/supplier-dashboard") || pathname === "/event-organizers" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`}>{pathname.startsWith("/supplier") ? "Supplier" : "Event Organizers"}</Link>
+          <Link href={getDashboardLink()} className={`font-medium pb-1 transition-all ${pathname === getDashboardLink() ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`}>{getDashboardLabel()}</Link>
         </nav>
-        {/* Right side: Change icon and profile icon with hover menu */}
+        {/* Right side: Profile icon with hover menu */}
         <div className="flex items-center gap-4 sm:gap-6 relative z-10 mt-2 sm:mt-0 w-full sm:w-auto justify-center sm:justify-end">
-          {/* Change icon for toggling user view */}
-          <button className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#22364A] transition group hover:bg-white hover:ring-2 hover:ring-[#2DBE60] hover:scale-110 hover:shadow-lg" title="Switch View" aria-label="Switch dashboard" onClick={() => { if (isSupplierMode) { setHeaderMode("organizer"); router.push("/event-organizers"); } else { setHeaderMode("supplier"); router.push("/supplier-dashboard"); } }}>
-            <Image src="/change.svg" alt="Change View" width={24} height={24} className="w-6 h-6 sm:w-7 sm:h-7 transition" style={{ filter: 'invert(1) brightness(2)' }} onMouseOver={e => (e.currentTarget.style.filter = 'invert(47%) sepia(99%) saturate(749%) hue-rotate(88deg) brightness(1.2)')} onMouseOut={e => (e.currentTarget.style.filter = 'invert(1) brightness(2)')} />
-          </button>
           {/* Profile icon with hover menu */}
           <div className="relative group">
             <button className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#22364A] text-white border border-gray-200 hover:bg-[#2DBE60] hover:text-white transition focus:outline-none" aria-label="Profile menu">
@@ -54,8 +70,17 @@ const Header: React.FC = () => {
             </button>
             {/* Hover menu */}
             <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-50">
-              <Link href="/login" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Log in">Log in</Link>
-              <Link href="/signup/organizer" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Sign up">Sign up</Link>
+              {isLoggedIn ? (
+                <>
+                  <Link href={getDashboardLink()} className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Dashboard">Dashboard</Link>
+                  <button onClick={handleLogout} className="block w-full text-left px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Log out">Log out</button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Log in">Log in</Link>
+                  <Link href="/signup/organizer" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Sign up">Sign up</Link>
+                </>
+              )}
             </div>
           </div>
         </div>
