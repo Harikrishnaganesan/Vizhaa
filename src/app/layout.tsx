@@ -31,7 +31,7 @@ function LayoutWithConditionalHeaderFooter({ children }: { children: React.React
     setIsAuthenticated(!!token);
   }, [pathname]);
   
-  const hideHeaderFooter = pathname === "/" || pathname.startsWith("/signup/organizer") || pathname.startsWith("/signup/supplier") || pathname.startsWith("/login") || pathname.startsWith("/event-organizers") || pathname.startsWith("/supplier-dashboard");
+  const hideHeaderFooter = pathname === "/" || pathname.startsWith("/signup") || pathname.startsWith("/login") || pathname.startsWith("/event-organizers") || pathname.startsWith("/supplier-dashboard") || pathname.startsWith("/landing");
   const showNavigation = isAuthenticated && (pathname.startsWith("/home") || pathname.startsWith("/howwork") || pathname.startsWith("/contact") || pathname.startsWith("/event-organizers") || pathname.startsWith("/supplier-dashboard"));
   // Set background color for sign-up and login pages
   const isSignupOrLoginPage = pathname.startsWith("/signup/organizer") || pathname.startsWith("/signup/supplier") || pathname.startsWith("/login");
