@@ -407,8 +407,8 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
       // Set cookie for middleware
       document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
       
-      // Navigate to home
-      router.push('/home');
+      // Navigate to landing page
+      router.push('/landing');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
