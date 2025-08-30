@@ -403,12 +403,8 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
       localStorage.setItem('userType', result.user.userType);
       localStorage.setItem('userId', result.user.id);
       
-      // Redirect based on user type
-      if (result.user.userType === 'organizer') {
-        router.push('/event-organizers');
-      } else {
-        router.push('/supplier-dashboard');
-      }
+      // Redirect to home page after successful login
+      router.push('/home');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {

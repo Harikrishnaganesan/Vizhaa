@@ -3,35 +3,19 @@ import React, { useState } from "react";
 import ViewEvents from "./ViewEvents";
 import MyEvents from "./MyEvents";
 import PocketTab from "./PocketTab";
+import ProfileCard from "../components/ProfileCard";
+import { useProfile } from "../contexts/ProfileContext";
 
 const sidebarItems = [
-
   { name: "View Events", icon: <img src="/view-event.svg" alt="View Events" className="w-5 h-5" /> },
   { name: "My Events", icon: <img src="/my-event.svg" alt="My Events" className="w-5 h-5" /> },
-  { name: "Pocket", icon: <img src="/poket.svg" alt="Pocket" className="w-5 h-5" /> }
+  { name: "Pocket", icon: <img src="/poket.svg" alt="Pocket" className="w-5 h-5" /> },
+  { name: "Profile", icon: <img src="/avatar1.png" alt="Profile" className="w-5 h-5 rounded-full" /> }
 ];
 
 export default function SupplierDashboard() {
   const [activeTab, setActiveTab] = useState("View Events");
-  const [userData, setUserData] = useState<{name: string; email: string} | null>(null);
-
-  React.useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const { supplierAPI } = await import('../../../services/api.js');
-        const dashboardData = await supplierAPI.getDashboard();
-        setUserData({
-          name: dashboardData.supplier?.fullName || 'User',
-          email: dashboardData.supplier?.email || ''
-        });
-      } catch (error) {
-        console.error('Failed to load user data:', error);
-        setUserData({ name: 'User', email: '' });
-      }
-    };
-    
-    loadUserData();
-  }, []);
+  const { profile } = useProfile();
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -41,6 +25,13 @@ export default function SupplierDashboard() {
         return <MyEvents />;
       case "Pocket":
         return <PocketTab />;
+      case "Profile":
+        return (
+          <div className="max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
+            <ProfileCard />
+          </div>
+        );
       default:
         return <ViewEvents />;
     }
@@ -58,7 +49,7 @@ export default function SupplierDashboard() {
         </div>
         <div className="flex items-center gap-2 md:gap-3">
           <img src="/avatar1.png" alt="Profile" className="w-7 md:w-9 h-7 md:h-9 rounded-full object-cover border-2 border-white" />
-          <span className="text-white font-medium text-sm md:text-base">{userData?.name || 'Loading...'}</span>
+          <span className="text-white font-medium text-sm md:text-base">{profile?.fullName || 'Loading...'}</span>
           <svg width="16" height="16" className="md:w-[18px] md:h-[18px]" fill="none" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
       </div>
