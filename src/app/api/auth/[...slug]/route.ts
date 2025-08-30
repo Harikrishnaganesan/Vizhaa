@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://vizhaa-backend-1.onrender.com/api'
+  : 'http://localhost:4000/api';
 
 export async function POST(request: NextRequest, { params }: { params: { slug: string[] } }) {
   try {
-    const slug = params.slug.join('/');
-    const url = `${API_BASE_URL}/auth/${slug}`;
+    const { slug } = await params;
+    const slugPath = slug.join('/');
+    const url = `${API_BASE_URL}/auth/${slugPath}`;
     
     const body = await request.text();
     

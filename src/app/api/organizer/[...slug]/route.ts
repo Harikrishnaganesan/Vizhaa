@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://vizhaa-backend-1.onrender.com/api'
+  : 'http://localhost:4000/api';
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string[] } }) {
   return handleRequest(request, params, 'GET');
@@ -20,8 +22,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
 
 async function handleRequest(request: NextRequest, params: { slug: string[] }, method: string) {
   try {
-    const slug = params.slug.join('/');
-    const url = `${API_BASE_URL}/organizer/${slug}`;
+    const { slug } = await params;
+    const slugPath = slug.join('/');
+    const url = `${API_BASE_URL}/organizer/${slugPath}`;
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
