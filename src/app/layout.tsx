@@ -1,10 +1,8 @@
 "use client";
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header";
-import Footer from "./components/footer";
-import Navigation from "./components/Navigation";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/footer";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -31,18 +29,32 @@ function LayoutWithConditionalHeaderFooter({ children }: { children: React.React
     setIsAuthenticated(!!token);
   }, [pathname]);
   
-  const hideHeaderFooter = pathname === "/" || pathname.startsWith("/signup") || pathname.startsWith("/login") || pathname.startsWith("/event-organizers") || pathname.startsWith("/supplier-dashboard") || pathname.startsWith("/landing");
-  const showNavigation = isAuthenticated && (pathname.startsWith("/home") || pathname.startsWith("/howwork") || pathname.startsWith("/contact") || pathname.startsWith("/event-organizers") || pathname.startsWith("/supplier-dashboard"));
-  // Set background color for sign-up and login pages
-  const isSignupOrLoginPage = pathname.startsWith("/signup/organizer") || pathname.startsWith("/signup/supplier") || pathname.startsWith("/login");
+  // Hide header/footer for auth pages and specific dashboards
+  const hideHeaderFooter = pathname === "/" || 
+    pathname.startsWith("/auth/") || 
+    pathname.startsWith("/dashboard/") || 
+    pathname.startsWith("/dashboards/") || 
+    pathname.startsWith("/event-organizers") || 
+    pathname.startsWith("/supplier-dashboard") || 
+    pathname === "/user-dashboard";
+    
+  const showNavigation = false; // Navigation handled internally by pages
+  
+  const showHeaderFooter = !hideHeaderFooter && !showNavigation;
+  
+  // Set background color for auth pages
+  const isAuthPage = pathname.startsWith("/auth/") || 
+    pathname.startsWith("/signup") || 
+    pathname.startsWith("/login") || 
+    pathname === "/";
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased${isSignupOrLoginPage ? ' bg-[#253C51]' : ''}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased${isAuthPage ? ' bg-[#253C51]' : ''}`}>
         <ProfileProvider>
-          {showNavigation && <Navigation />}
-          {!hideHeaderFooter && !showNavigation && <Header />}
+
+          {showHeaderFooter && <Header />}
           {children}
-          {!hideHeaderFooter && !showNavigation && <Footer />}
+          {showHeaderFooter && <Footer />}
         </ProfileProvider>
       </body>
     </html>
