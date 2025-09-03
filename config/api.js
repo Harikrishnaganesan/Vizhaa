@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   },
   ORGANIZER: {
     DASHBOARD: getApiPath('/organizer/dashboard'),
+    PROFILE: getApiPath('/organizer/profile'),
     EVENTS: getApiPath('/organizer/events'),
     EVENT_SUPPLIERS: (eventId) => getApiPath(`/organizer/events/${eventId}/suppliers`),
     BOOKINGS: getApiPath('/organizer/bookings'),
@@ -45,6 +46,7 @@ export const API_ENDPOINTS = {
   },
   SUPPLIER: {
     DASHBOARD: getApiPath('/supplier/dashboard'),
+    PROFILE: getApiPath('/supplier/profile'),
     EVENTS: getApiPath('/supplier/events'),
     BOOK_EVENT: (eventId) => getApiPath(`/supplier/events/${eventId}/book`),
     BOOKINGS: getApiPath('/supplier/bookings'),

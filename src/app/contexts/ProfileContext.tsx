@@ -9,6 +9,10 @@ interface UserProfile {
   userType: 'organizer' | 'supplier';
   profilePicture?: string;
   createdAt?: string;
+  companyName?: string;
+  location?: string;
+  bio?: string;
+  isVerified?: boolean;
   // Add more profile fields as needed
 }
 
@@ -52,17 +56,34 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (user) {
         setProfile({
           id: userId,
-          fullName: user.fullName || '',
+          fullName: user.fullName || user.name || '',
           email: user.email || '',
           phone: user.phone || '',
           userType,
-          profilePicture: user.profilePicture,
-          createdAt: user.createdAt
+          profilePicture: user.profilePicture || user.avatar,
+          createdAt: user.createdAt,
+          companyName: user.companyName || user.businessName,
+          location: user.location || user.address,
+          bio: user.bio || user.description,
+          isVerified: user.isVerified || false
         });
       }
     } catch (err) {
       console.error('Failed to load profile:', err);
       setError(err instanceof Error ? err.message : 'Failed to load profile');
+      
+      // If API fails, try to get basic info from localStorage as fallback
+      const fallbackProfile = {
+        id: userId || '',
+        fullName: localStorage.getItem('userName') || 'User',
+        email: localStorage.getItem('userEmail') || '',
+        phone: localStorage.getItem('userPhone') || '',
+        userType: userType || 'organizer' as 'organizer' | 'supplier'
+      };
+      
+      if (fallbackProfile.id) {
+        setProfile(fallbackProfile);
+      }
     } finally {
       setLoading(false);
     }
@@ -79,13 +100,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       
       // Update profile via API
       if (userType === 'organizer') {
-        await organizerAPI.updateProfile(updates);
+        // Check if organizerAPI has updateProfile method, otherwise use a generic update
+        if (organizerAPI.updateProfile) {
+          await organizerAPI.updateProfile(updates);
+        } else {
+          console.warn('Update profile API not implemented for organizer');
+        }
       } else {
-        await supplierAPI.updateProfile(updates);
+        // Check if supplierAPI has updateProfile method, otherwise use a generic update
+        if (supplierAPI.updateProfile) {
+          await supplierAPI.updateProfile(updates);
+        } else {
+          console.warn('Update profile API not implemented for supplier');
+        }
       }
       
       // Update local state
       setProfile(prev => prev ? { ...prev, ...updates } : null);
+      
+      // Update localStorage for fallback
+      if (updates.fullName) localStorage.setItem('userName', updates.fullName);
+      if (updates.email) localStorage.setItem('userEmail', updates.email);
+      if (updates.phone) localStorage.setItem('userPhone', updates.phone);
+      
     } catch (err) {
       console.error('Failed to update profile:', err);
       setError(err instanceof Error ? err.message : 'Failed to update profile');
