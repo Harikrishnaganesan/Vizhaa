@@ -17,9 +17,10 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
     try {
       const { organizerAPI } = await import('../../../services/api.js');
       const result = await organizerAPI.getBookings();
-      setBookings(result.data || []);
+      setBookings(Array.isArray(result.data) ? result.data : []);
     } catch (error) {
       console.error('Failed to load bookings:', error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }

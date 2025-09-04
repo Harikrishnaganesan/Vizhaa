@@ -4,10 +4,9 @@ import React, { useState, useEffect } from "react";
 import MyEvents from "./MyEvents";
 import EventForm from "./EventForm";
 import StatusTab from "./StatusTab";
-import ProfileCard from "../components/ProfileCard";
+import Header from "../components/header/header";
 import { useProfile } from "../contexts/ProfileContext";
 import Image from "next/image";
-// Removed unused imports
 
 const sidebarItems = [
   { key: "events", label: "My Events", icon: <img src="/view-event.svg" alt="My Events" className="w-5 h-5" /> },
@@ -28,8 +27,6 @@ export interface EventData {
   paymentStatus: 'Paid' | 'Advance Paid' | 'Unpaid';
   isPastEvent: boolean;
 }
-
-
 
 const EventOrganizersDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("events");
@@ -93,7 +90,7 @@ const EventOrganizersDashboard: React.FC = () => {
         return (
           <div className="max-w-md mx-auto">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
-            <ProfileCard />
+            <div className="bg-white p-6 rounded-lg shadow">Profile component placeholder</div>
           </div>
         );
       default:
@@ -102,18 +99,8 @@ const EventOrganizersDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#23364E] flex flex-col">
-      {/* Mobile Header */}
-      <div className="md:hidden bg-[#23364E] p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img src="/dashboard.svg" alt="Dashboard" className="w-5 h-5" />
-          <span className="font-semibold text-lg text-white">Dashboard</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Image src="/avatar1.png" alt="User" width={32} height={32} className="h-8 w-8 rounded-full border-2 border-white" />
-          <span className="text-white font-semibold text-sm">{profile?.fullName || 'Loading...'}</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white flex flex-col">
+      <Header />
       
       <div className="flex flex-1 flex-col md:flex-row">
         {/* Mobile Navigation */}
@@ -160,17 +147,6 @@ const EventOrganizersDashboard: React.FC = () => {
         
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
-          {/* Desktop header profile bar */}
-          <div className="hidden md:flex w-full justify-end items-center bg-[#23364E] px-8 py-4" style={{ minHeight: '64px' }}>
-            <div className="flex items-center gap-3">
-              <Image src="/avatar1.png" alt="User"
-                width={40} 
-                height={40}
-                className="h-10 w-10 rounded-full border-2 border-white" />
-              <span className="text-white font-semibold">{profile?.fullName || 'Loading...'}</span>
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M7 10l5 5 5-5H7z"/></svg>
-            </div>
-          </div>
           <main className="flex-1 bg-[#F8F9FA] py-6 md:py-12 px-4">
             {renderTabContent()}
           </main>

@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   },
   ORGANIZER: {
     DASHBOARD: getApiPath('/organizer/dashboard'),
+    PROFILE: getApiPath('/organizer/profile'),
     EVENTS: getApiPath('/organizer/events'),
     EVENT_SUPPLIERS: (eventId) => getApiPath(`/organizer/events/${eventId}/suppliers`),
     BOOKINGS: getApiPath('/organizer/bookings'),
@@ -45,6 +46,7 @@ export const API_ENDPOINTS = {
   },
   SUPPLIER: {
     DASHBOARD: getApiPath('/supplier/dashboard'),
+    PROFILE: getApiPath('/supplier/profile'),
     EVENTS: getApiPath('/supplier/events'),
     BOOK_EVENT: (eventId) => getApiPath(`/supplier/events/${eventId}/book`),
     BOOKINGS: getApiPath('/supplier/bookings'),
@@ -68,8 +70,6 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
-    console.log('API Call:', `${API_BASE_URL}${endpoint}`);
-    console.log('Request config:', config);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
     if (response.status === 401) {
@@ -82,14 +82,13 @@ const apiCall = async (endpoint, options = {}) => {
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.log('Error response:', response.status, errorText);
       let errorData;
       try {
         errorData = JSON.parse(errorText);
       } catch {
         errorData = { message: errorText || 'Network error' };
       }
-      throw new Error(errorData.message || `HTTP ${response.status}: ${errorText}`);
+      throw new Error(errorData.message || `HTTP ${response.status}`);
     }
     
     const data = await response.json();

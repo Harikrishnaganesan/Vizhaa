@@ -20,15 +20,56 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
       body,
     });
 
-    const data = await response.text();
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `HTTP ${response.status}: ${errorText}` };
+      }
+      return NextResponse.json(errorData, { status: response.status });
+    }
 
-    return new NextResponse(data, {
-      status: response.status,
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    console.error('Auth API Error:', error);
+    return NextResponse.json(
+      { success: false, message: 'Connection failed' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  try {
+    const { slug } = await params;
+    const slugPath = slug.join('/');
+    const url = `${API_BASE_URL}/auth/${slugPath}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { success: false, message: `HTTP ${response.status}: ${errorText}` };
+      }
+      return NextResponse.json(errorData, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
+    console.error('Auth API Error:', error);
     return NextResponse.json(
       { success: false, message: 'Connection failed' },
       { status: 500 }

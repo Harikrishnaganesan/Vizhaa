@@ -47,6 +47,13 @@ export const authAPI = {
 export const organizerAPI = {
   getDashboard: () => apiCall(API_ENDPOINTS.ORGANIZER.DASHBOARD),
   
+  // Profile Management
+  getProfile: () => apiCall(API_ENDPOINTS.ORGANIZER.PROFILE),
+  updateProfile: (profileData) => apiCall(API_ENDPOINTS.ORGANIZER.PROFILE, {
+    method: 'PUT',
+    body: JSON.stringify(profileData)
+  }),
+  
   // Event Management
   createEvent: (eventData) => apiCall(API_ENDPOINTS.ORGANIZER.EVENTS, {
     method: 'POST',
@@ -81,6 +88,13 @@ export const organizerAPI = {
 // Supplier API
 export const supplierAPI = {
   getDashboard: () => apiCall(API_ENDPOINTS.SUPPLIER.DASHBOARD),
+  
+  // Profile Management
+  getProfile: () => apiCall(API_ENDPOINTS.SUPPLIER.PROFILE),
+  updateProfile: (profileData) => apiCall(API_ENDPOINTS.SUPPLIER.PROFILE, {
+    method: 'PUT',
+    body: JSON.stringify(profileData)
+  }),
   
   // View ALL events from ALL organizers
   getAvailableEvents: () => apiCall(API_ENDPOINTS.SUPPLIER.EVENTS),

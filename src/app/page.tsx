@@ -1,27 +1,26 @@
-
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import React from "react";
+import Header from "./components/header/header";
+import Footer from "./components/footer/footer";
+import HeroSection from "./components/HomePageComponent/HeroSection";
+import SecondSection from "./components/HomePageComponent/SecondSection";
+import LaptopSection from "./components/HomePageComponent/LaptopSection";
+import CountReview from "./components/HomePageComponent/CountReview";
+import ReviewSection from "./components/HomePageComponent/ReviewSection";
+import Download from "./components/HomePageComponent/Download";
 
 export default function HomePage() {
-  const router = useRouter();
-  
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    
-    if (token) {
-      // User is logged in, redirect to landing page
-      router.push('/landing');
-    } else {
-      // User is not logged in, redirect to signup selection
-      router.push('/signup/main');
-    }
-  }, [router]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#253C51]">
-      <div className="text-white text-lg">Redirecting...</div>
+    <div className="min-h-screen bg-white">
+      <Header />
+      <HeroSection />
+      <SecondSection />
+      <LaptopSection />
+      <CountReview />
+      <ReviewSection />
+      <Download />
+      <Footer />
     </div>
   );
 }

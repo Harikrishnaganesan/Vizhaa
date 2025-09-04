@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import ViewEvents from "./ViewEvents";
 import MyEvents from "./MyEvents";
 import PocketTab from "./PocketTab";
-import ProfileCard from "../components/ProfileCard";
+import Header from "../components/header/header";
 import { useProfile } from "../contexts/ProfileContext";
 
 const sidebarItems = [
@@ -29,7 +29,7 @@ export default function SupplierDashboard() {
         return (
           <div className="max-w-md mx-auto">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
-            <ProfileCard />
+            <div className="bg-white p-6 rounded-lg shadow">Profile component placeholder</div>
           </div>
         );
       default:
@@ -39,20 +39,8 @@ export default function SupplierDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
-      {/* Top Bar - Supplier Dashboard */}
-      <div className="bg-[#23364E] px-4 md:px-8 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-2 text-white text-base md:text-lg font-semibold">
-            <img src="/dashboard.svg" alt="Dashboard" className="w-4 md:w-5 h-4 md:h-5" />
-            Dashboard
-          </span>
-        </div>
-        <div className="flex items-center gap-2 md:gap-3">
-          <img src="/avatar1.png" alt="Profile" className="w-7 md:w-9 h-7 md:h-9 rounded-full object-cover border-2 border-white" />
-          <span className="text-white font-medium text-sm md:text-base">{profile?.fullName || 'Loading...'}</span>
-          <svg width="16" height="16" className="md:w-[18px] md:h-[18px]" fill="none" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        </div>
-      </div>
+      <Header />
+      
       <div className="flex flex-col md:flex-row">
         {/* Mobile Navigation */}
         <div className="md:hidden bg-[#23364E] p-4">
@@ -76,7 +64,6 @@ export default function SupplierDashboard() {
         
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex bg-[#23364E] w-64 min-h-screen flex-shrink-0 flex-col pt-8">
-          
           <nav className="flex-1 flex flex-col gap-2 px-4">
             {sidebarItems.map((item) => (
               <button
@@ -94,6 +81,7 @@ export default function SupplierDashboard() {
             ))}
           </nav>
         </aside>
+        
         {/* Main Content */}
         <main className="flex-1 px-4 md:px-10 py-4 md:py-8">
           {renderTabContent()}
