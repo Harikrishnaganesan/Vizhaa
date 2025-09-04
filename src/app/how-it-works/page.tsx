@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Header from "../components/header/header";
-import Footer from "../components/footer/footer";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/footer";
 import HeroWork from "../components/HowItWorkPageComponent/heroWork";
 import SecondWork from "../components/HowItWorkPageComponent/secondWork";
 import SupplierHowItWorks from "../components/HowItWorkPageComponent/SupplierHowItWorks";

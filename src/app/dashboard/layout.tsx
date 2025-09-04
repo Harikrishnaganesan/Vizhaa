@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation/Navigation";
-import Footer from "../components/footer/footer";
+import Footer from "../components/Footer/footer";
 import { ProfileProvider } from "../contexts/ProfileContext";
 
 export default function DashboardLayout({

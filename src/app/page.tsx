@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Header from "./components/header/header";
-import Footer from "./components/footer/footer";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/footer";
 import HeroSection from "./components/HomePageComponent/HeroSection";
 import SecondSection from "./components/HomePageComponent/SecondSection";
 import LaptopSection from "./components/HomePageComponent/LaptopSection";
