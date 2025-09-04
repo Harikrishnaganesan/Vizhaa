@@ -9,7 +9,7 @@ import LaptopSection from "../components/HomePageComponent/LaptopSection";
 import CountReview from "../components/HomePageComponent/CountReview";
 import ReviewSection from "../components/HomePageComponent/ReviewSection";
 import Download from "../components/HomePageComponent/Download";
-import Footer from "../components/Footer/footer";
+import Footer from "../components/footer/footer";
 import { ProfileProvider } from "../contexts/ProfileContext";
 
 export default function UserDashboardPage() {
