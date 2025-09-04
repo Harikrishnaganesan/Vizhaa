@@ -1,8 +1,8 @@
 "use client";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header/Header";
-import Footer from "./components/Footer/footer";
+import Header from "./components/header/header";
+import Footer from "./components/footer/footer";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -30,13 +30,16 @@ function LayoutWithConditionalHeaderFooter({ children }: { children: React.React
   }, [pathname]);
   
   // Hide header/footer for auth pages and specific dashboards
-  const hideHeaderFooter = pathname === "/" || 
+  const hideHeaderFooter = 
     pathname.startsWith("/auth/") || 
     pathname.startsWith("/dashboard/") || 
     pathname.startsWith("/dashboards/") || 
     pathname.startsWith("/event-organizers") || 
     pathname.startsWith("/supplier-dashboard") || 
-    pathname === "/user-dashboard";
+    pathname === "/user-dashboard" ||
+    pathname === "/" ||
+    pathname === "/how-it-works" ||
+    pathname === "/contact";
     
   const showNavigation = false; // Navigation handled internally by pages
   

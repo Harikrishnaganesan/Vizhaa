@@ -20,12 +20,13 @@ const EventSuppliersPage: React.FC = () => {
 
   const loadEventSuppliers = async () => {
     try {
-      const { organizerAPI } = await import('../../services/api.js');
+      const { organizerAPI } = await import('../../../services/api.js');
       const result = await organizerAPI.getEventSuppliers(eventId);
-      setSuppliers(result.data.suppliers || []);
-      setEvent(result.data.event || null);
+      setSuppliers(result.data?.suppliers || []);
+      setEvent(result.data?.event || { eventName: 'Event', location: 'Unknown', eventDate: new Date(), budget: 0 });
     } catch (error) {
-      console.error('Failed to load event suppliers:', error);
+      setSuppliers([]);
+      setEvent({ eventName: 'Event', location: 'Unknown', eventDate: new Date(), budget: 0 });
     } finally {
       setLoading(false);
     }
@@ -33,9 +34,8 @@ const EventSuppliersPage: React.FC = () => {
 
   const handleUpdateBookingStatus = async (bookingId: string, status: string) => {
     try {
-      const { organizerAPI } = await import('../../services/api.js');
+      const { organizerAPI } = await import('../../../services/api.js');
       await organizerAPI.updateBookingStatus(bookingId, status);
-      // Reload suppliers
       loadEventSuppliers();
     } catch (error) {
       console.error('Failed to update booking status:', error);
