@@ -74,7 +74,7 @@ export default function EventSuppliersPage() {
               ← Back to Events
             </button>
             <h1 className="text-2xl font-bold text-gray-800">
-              Suppliers for "{eventName}"
+              Suppliers for &quot;{eventName}&quot;
             </h1>
           </div>
           <div className="text-gray-600">

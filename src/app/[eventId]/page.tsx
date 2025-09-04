@@ -8,8 +8,8 @@ const EventSuppliersPage: React.FC = () => {
   const router = useRouter();
   const eventId = params.eventId as string;
   
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [event, setEvent] = useState<any>(null);
+  const [suppliers, setSuppliers] = useState<unknown[]>([]);
+  const [event, setEvent] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ const EventSuppliersPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-[#2DBE60] mb-2">
-                Suppliers for "{event.eventName}"
+                Suppliers for &quot;{event.eventName}&quot;
               </h1>
               <div className="text-gray-600">
                 <span className="font-medium">Location:</span> {event.location} | 
