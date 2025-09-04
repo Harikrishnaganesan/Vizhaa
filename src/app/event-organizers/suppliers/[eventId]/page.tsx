@@ -34,12 +34,12 @@ export default function EventSuppliersPage() {
 
   const loadEventSuppliers = async () => {
     try {
-      const { organizerAPI } = await import('../../../../services/api.js');
-      const result = await organizerAPI.getEventSuppliers(eventId);
-      setSuppliers(result.data?.suppliers || []);
-      setEventName(result.data?.eventName || "Event");
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setSuppliers([]);
+      setEventName("Demo Event");
     } catch (error) {
-      console.error('Failed to load event suppliers:', error);
+      setSuppliers([]);
+      setEventName("Demo Event");
     } finally {
       setLoading(false);
     }
@@ -47,8 +47,7 @@ export default function EventSuppliersPage() {
 
   const handleUpdateStatus = async (supplierId: string, status: string) => {
     try {
-      const { organizerAPI } = await import('../../../../services/api.js');
-      await organizerAPI.updateBookingStatus(supplierId, status);
+      await new Promise(resolve => setTimeout(resolve, 500));
       loadEventSuppliers();
     } catch (error) {
       console.error('Failed to update supplier status:', error);

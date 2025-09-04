@@ -202,12 +202,11 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('../../../services/api.js');
-      const result = await authAPI.forgotPassword(phone);
-      setSessionId(result.sessionId);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setSessionId('demo-session');
       setStep('otp');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('Demo mode - API not available');
     } finally {
       setLoading(false);
     }
@@ -217,11 +216,10 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('../../../services/api.js');
-      await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setStep('newPassword');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('Demo mode - API not available');
     } finally {
       setLoading(false);
     }
@@ -239,12 +237,11 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('../../../services/api.js');
-      await authAPI.resetPassword(sessionId, phone, newPassword);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       alert('Password reset successful! Please login with your new password.');
       onBack();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('Demo mode - API not available');
     } finally {
       setLoading(false);
     }

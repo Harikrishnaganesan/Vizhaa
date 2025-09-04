@@ -22,11 +22,11 @@ const Header: React.FC = () => {
     localStorage.clear();
     setIsLoggedIn(false);
     setUserType(null);
-    router.push('/login');
+    router.push('/auth/user-login');
   };
 
   const getDashboardLink = () => {
-    if (!isLoggedIn) return '/login';
+    if (!isLoggedIn) return '/auth/user-login';
     return userType === 'supplier' ? '/supplier-dashboard' : '/event-organizers';
   };
 
@@ -48,13 +48,13 @@ const Header: React.FC = () => {
       {/* Main white bar */}
       <div className="w-full bg-white flex flex-col sm:flex-row items-center justify-between px-2 sm:px-8 py-4 sm:py-6 shadow relative" style={{ minHeight: '70px' }}>
         {/* Logo */}
-        <Link href="/home" className="flex items-center gap-2 z-10 min-w-[90px] mb-2 sm:mb-0" aria-label="Home">
+        <Link href="/" className="flex items-center gap-2 z-10 min-w-[90px] mb-2 sm:mb-0" aria-label="Home">
           <Image src="/vizha-header-logo.svg" alt="Vizhaa Logo" width={110} height={30} className="h-8 w-auto sm:h-10" priority />
         </Link>
         {/* Navigation */}
         <nav className="flex flex-wrap gap-4 sm:gap-8 items-center justify-center flex-1 min-w-[180px] sm:min-w-[320px] text-xs sm:text-base ml-2 sm:ml-0 mb-2 sm:mb-0" aria-label="Main navigation">
-          <Link href="/home" className={`font-medium pb-1 transition-all ${pathname === "/home" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/home" ? "page" : undefined}>Home</Link>
-          <Link href="/howwork" className={`font-medium pb-1 transition-all ${pathname === "/howwork" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/howwork" ? "page" : undefined}>How It Works</Link>
+          <Link href="/" className={`font-medium pb-1 transition-all ${pathname === "/" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/" ? "page" : undefined}>Home</Link>
+          <Link href="/how-it-works" className={`font-medium pb-1 transition-all ${pathname === "/how-it-works" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/how-it-works" ? "page" : undefined}>How It Works</Link>
           <Link href="/contact" className={`font-medium pb-1 transition-all ${pathname === "/contact" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/contact" ? "page" : undefined}>Contact</Link>
           <Link href={getDashboardLink()} className={`font-medium pb-1 transition-all ${pathname === getDashboardLink() ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`}>{getDashboardLabel()}</Link>
         </nav>
@@ -77,8 +77,8 @@ const Header: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Log in">Log in</Link>
-                  <Link href="/signup/organizer" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Sign up">Sign up</Link>
+                  <Link href="/auth/user-login" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Log in">Log in</Link>
+                  <Link href="/auth/role-selection" className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Sign up">Sign up</Link>
                 </>
               )}
             </div>
