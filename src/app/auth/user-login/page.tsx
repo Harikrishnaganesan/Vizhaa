@@ -553,7 +553,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
           </form>
           
           <div className="text-center mt-6 text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/auth/role-selection" className="text-blue-600 font-medium hover:underline">
               Sign Up
             </Link>
