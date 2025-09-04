@@ -26,6 +26,15 @@ export default function UserDashboardPage() {
       return;
     }
     
+    // Redirect to appropriate dashboard based on user type
+    if (userType === 'organizer') {
+      router.push('/event-organizers');
+      return;
+    } else if (userType === 'supplier') {
+      router.push('/supplier-dashboard');
+      return;
+    }
+    
     // Ensure user data is properly initialized
     const initializeUserData = async () => {
       try {

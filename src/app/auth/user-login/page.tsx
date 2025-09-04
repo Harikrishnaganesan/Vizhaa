@@ -426,8 +426,14 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
       document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
       
       console.log('Login successful, redirecting...');
-      // Navigate to user dashboard
-      router.push('/user-dashboard');
+      // Navigate based on user type
+      if (result.user.userType === 'organizer') {
+        router.push('/event-organizers');
+      } else if (result.user.userType === 'supplier') {
+        router.push('/supplier-dashboard');
+      } else {
+        router.push('/user-dashboard');
+      }
     } catch (err: unknown) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Login failed');
