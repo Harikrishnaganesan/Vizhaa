@@ -24,7 +24,7 @@ async function handleRequest(request: NextRequest, params: Promise<{ slug: strin
   try {
     const { slug } = await params;
     const slugPath = slug.join('/');
-    const url = `${API_BASE_URL}/organizer/${slugPath}`;
+    const url = `${API_BASE_URL}/events/${slugPath}`;
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

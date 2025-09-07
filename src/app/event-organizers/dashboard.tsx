@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import MyEvents from "./MyEvents";
 import EventForm from "./EventForm";
 import StatusTab from "./StatusTab";
-import Header from "../components/header/header";
+import Header from "../components/Header/Header";
 import { useProfile } from "../contexts/ProfileContext";
 import Image from "next/image";
 

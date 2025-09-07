@@ -78,7 +78,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         fullName: localStorage.getItem('userName') || 'User',
         email: localStorage.getItem('userEmail') || '',
         phone: localStorage.getItem('userPhone') || '',
-        userType: userType || 'organizer' as 'organizer' | 'supplier'
+        userType: (userType || 'organizer') as 'organizer' | 'supplier'
       };
       
       if (fallbackProfile.id) {

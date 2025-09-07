@@ -4,23 +4,23 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? 'https://vizhaa-backend-1.onrender.com/api'
   : 'http://localhost:4000/api';
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string[] } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
   return handleRequest(request, params, 'GET');
 }
 
-export async function POST(request: NextRequest, { params }: { params: { slug: string[] } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
   return handleRequest(request, params, 'POST');
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { slug: string[] } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
   return handleRequest(request, params, 'PUT');
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { slug: string[] } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
   return handleRequest(request, params, 'DELETE');
 }
 
-async function handleRequest(request: NextRequest, params: { slug: string[] }, method: string) {
+async function handleRequest(request: NextRequest, params: Promise<{ slug: string[] }>, method: string) {
   try {
     const { slug } = await params;
     const slugPath = slug.join('/');

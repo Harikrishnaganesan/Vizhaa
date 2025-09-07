@@ -8,8 +8,8 @@ const EventSuppliersPage: React.FC = () => {
   const router = useRouter();
   const eventId = params.eventId as string;
   
-  const [suppliers, setSuppliers] = useState<unknown[]>([]);
-  const [event, setEvent] = useState<unknown>(null);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const EventSuppliersPage: React.FC = () => {
               </h2>
             </div>
             
-            {suppliers.map((supplier) => (
+            {suppliers.map((supplier: any) => (
               <div key={supplier.id} className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                   <div className="flex-shrink-0">
@@ -122,39 +122,39 @@ const EventSuppliersPage: React.FC = () => {
                   <div className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <h3 className="font-bold text-lg text-gray-800">{supplier.fullName}</h3>
-                        {supplier.businessName && (
+                        <h3 className="font-bold text-lg text-gray-800">{supplier?.fullName || 'Unknown'}</h3>
+                        {supplier?.businessName && (
                           <p className="text-gray-500 text-sm">{supplier.businessName}</p>
                         )}
                         <div className="mt-2 space-y-1">
                           <div className="text-gray-600 text-sm">
-                            <span className="font-medium">Phone:</span> {supplier.phone}
+                            <span className="font-medium">Phone:</span> {supplier?.phone || 'N/A'}
                           </div>
                           <div className="text-gray-600 text-sm">
-                            <span className="font-medium">Email:</span> {supplier.email}
+                            <span className="font-medium">Email:</span> {supplier?.email || 'N/A'}
                           </div>
                         </div>
                       </div>
                       
                       <div>
                         <div className="text-gray-600 text-sm mb-2">
-                          <span className="font-medium">Services:</span> {supplier.services.join(', ')}
+                          <span className="font-medium">Services:</span> {supplier?.services?.join(', ') || 'N/A'}
                         </div>
                         <div className="text-gray-600 text-sm mb-2">
                           <span className="font-medium">Proposed Price:</span> 
-                          <span className="font-bold text-green-600"> ₹{supplier.proposedPrice.toLocaleString()}</span>
+                          <span className="font-bold text-green-600"> ₹{supplier?.proposedPrice?.toLocaleString() || '0'}</span>
                         </div>
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-gray-600 text-sm font-medium">Status:</span>
                           <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            supplier.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                            supplier.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                            supplier?.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                            supplier?.status === 'Rejected' ? 'bg-red-100 text-red-800' :
                             'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {supplier.status}
+                            {supplier?.status || 'Pending'}
                           </span>
                         </div>
-                        {supplier.message && (
+                        {supplier?.message && (
                           <div className="text-gray-600 text-sm">
                             <span className="font-medium">Message:</span> {supplier.message}
                           </div>
@@ -163,16 +163,16 @@ const EventSuppliersPage: React.FC = () => {
                     </div>
                     
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {supplier.status === 'Pending' && (
+                      {supplier?.status === 'Pending' && (
                         <>
                           <button 
-                            onClick={() => handleUpdateBookingStatus(supplier.id, 'Approved')}
+                            onClick={() => handleUpdateBookingStatus(supplier?.id, 'Approved')}
                             className="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded text-sm"
                           >
                             Approve
                           </button>
                           <button 
-                            onClick={() => handleUpdateBookingStatus(supplier.id, 'Rejected')}
+                            onClick={() => handleUpdateBookingStatus(supplier?.id, 'Rejected')}
                             className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded text-sm"
                           >
                             Reject

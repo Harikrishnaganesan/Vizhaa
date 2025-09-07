@@ -1,8 +1,8 @@
 "use client";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/header/header";
-import Footer from "./components/footer/footer";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/footer";
 import { ProfileProvider } from "./contexts/ProfileContext";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
