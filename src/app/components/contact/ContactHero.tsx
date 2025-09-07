@@ -1,0 +1,82 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { Righteous } from 'next/font/google';
+import Image from 'next/image';
+
+const righteous = Righteous({
+  subsets: ['latin'],
+  weight: '400',
+});
+
+export default function ContactHero() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoaded(true), 100);
+  }, []);
+
+  const handleScroll = () => {
+    const nextSection = document.getElementById("contact-content");
+    if (nextSection) {
+      const sectionPosition = nextSection.getBoundingClientRect().top + window.pageYOffset;
+      const offset = 120;
+
+      window.scrollTo({
+        top: sectionPosition - offset,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  return (
+    <div className="relative h-[90vh] w-full flex flex-col justify-center items-center -top-2 bg-cover bg-center text-white">
+      <Image
+        src="/hero-contact.svg"
+        alt="Hero background"
+        fill
+        style={{ objectFit: 'cover', zIndex: 0 }}
+        priority
+        draggable={false}
+      />
+      <div className="absolute inset-0 bg-black/40 z-0" />
+      <div className={`relative z-10 flex flex-col items-center justify-center py-16 px-6 rounded-lg md:relative md:bottom-8 transition-all duration-1000 ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
+        <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-center transition-all duration-1000 delay-300 ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}>
+          Get in Touch,<br />Let's Connect
+        </h1>
+        <p className={`text-base sm:text-lg md:text-xl mb-7 text-center transition-all duration-1000 delay-500 ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}>
+          Ready to plan your next event? We're here to help.
+        </p>
+        <button
+          onClick={handleScroll}
+          className={`bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded px-12 py-3 transition-all duration-1000 delay-700 shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-300 ${
+            isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
+          Contact Us
+        </button>
+      </div>
+
+      <button
+        onClick={handleScroll}
+        className="cursor-pointer animate-bounce text-white flex items-center absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 hover:opacity-80 transition-opacity"
+      >
+        <span className={`${righteous.className} text-white text-xl md:text-2xl`}>Scroll Down</span>
+        <Image
+          src="/scroll-down.svg"
+          alt="Scroll Down Icon"
+          width={24}
+          height={24}
+          className="w-6 h-6 mt-1"
+          draggable={false}
+        />
+      </button>
+    </div>
+  );
+}
