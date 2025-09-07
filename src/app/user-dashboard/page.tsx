@@ -9,7 +9,11 @@ import LaptopSection from "../components/HomePageComponent/LaptopSection";
 import CountReview from "../components/HomePageComponent/CountReview";
 import ReviewSection from "../components/HomePageComponent/ReviewSection";
 import Download from "../components/HomePageComponent/Download";
+<<<<<<< HEAD
 import Footer from "../components/Footer/footer";
+=======
+import Footer from "../components/footer/footer";
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
 import { ProfileProvider } from "../contexts/ProfileContext";
 
 export default function UserDashboardPage() {

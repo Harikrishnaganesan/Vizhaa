@@ -78,7 +78,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         fullName: localStorage.getItem('userName') || 'User',
         email: localStorage.getItem('userEmail') || '',
         phone: localStorage.getItem('userPhone') || '',
+<<<<<<< HEAD
         userType: (userType || 'organizer') as 'organizer' | 'supplier'
+=======
+        userType: userType || 'organizer' as 'organizer' | 'supplier'
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
       };
       
       if (fallbackProfile.id) {

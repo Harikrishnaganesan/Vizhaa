@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import ViewEvents from "./ViewEvents";
 import MyEvents from "./MyEvents";
 import PocketTab from "./PocketTab";
+<<<<<<< HEAD
 import Header from "../components/Header/Header";
+=======
+import Header from "../components/header/header";
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
 import { useProfile } from "../contexts/ProfileContext";
 
 const sidebarItems = [

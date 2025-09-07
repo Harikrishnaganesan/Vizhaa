@@ -1,6 +1,10 @@
 "use client";
 
+<<<<<<< HEAD
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+=======
+import React, { useState, useEffect } from "react";
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,13 +20,20 @@ const Header: React.FC = () => {
     const type = localStorage.getItem('userType');
     setIsLoggedIn(!!token);
     setUserType(type);
+<<<<<<< HEAD
   }, []);
 
   const handleLogout = useCallback(() => {
+=======
+  }, [pathname]);
+
+  const handleLogout = () => {
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
     localStorage.clear();
     setIsLoggedIn(false);
     setUserType(null);
     router.push('/auth/user-login');
+<<<<<<< HEAD
   }, [router]);
 
   const dashboardLink = useMemo(() => {
@@ -34,6 +45,19 @@ const Header: React.FC = () => {
     if (!isLoggedIn) return 'Dashboard';
     return userType === 'supplier' ? 'Supplier Dashboard' : 'Event Organizer Dashboard';
   }, [isLoggedIn, userType]);
+=======
+  };
+
+  const getDashboardLink = () => {
+    if (!isLoggedIn) return '/auth/user-login';
+    return userType === 'supplier' ? '/supplier-dashboard' : '/event-organizers';
+  };
+
+  const getDashboardLabel = () => {
+    if (!isLoggedIn) return 'Dashboard';
+    return userType === 'supplier' ? 'Supplier Dashboard' : 'Event Organizer Dashboard';
+  };
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
   return (
     <header className="w-full z-50" aria-label="Main site header">
       {/* Top black bar */}
@@ -56,7 +80,11 @@ const Header: React.FC = () => {
           <Link href="/" className={`font-medium pb-1 transition-all ${pathname === "/" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/" ? "page" : undefined}>Home</Link>
           <Link href="/how-it-works" className={`font-medium pb-1 transition-all ${pathname === "/how-it-works" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/how-it-works" ? "page" : undefined}>How It Works</Link>
           <Link href="/contact" className={`font-medium pb-1 transition-all ${pathname === "/contact" ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`} aria-current={pathname === "/contact" ? "page" : undefined}>Contact</Link>
+<<<<<<< HEAD
           <Link href={dashboardLink} className={`font-medium pb-1 transition-all ${pathname === dashboardLink ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`}>{dashboardLabel}</Link>
+=======
+          <Link href={getDashboardLink()} className={`font-medium pb-1 transition-all ${pathname === getDashboardLink() ? "border-b-2 border-[#22364A] text-[#22364A]" : "text-[#22364A] hover:text-[#2DBE60] hover:border-b-2 hover:border-[#2DBE60]"}`}>{getDashboardLabel()}</Link>
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
         </nav>
         {/* Right side: Profile icon with hover menu */}
         <div className="flex items-center gap-4 sm:gap-6 relative z-10 mt-2 sm:mt-0 w-full sm:w-auto justify-center sm:justify-end">
@@ -72,7 +100,11 @@ const Header: React.FC = () => {
             <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-50">
               {isLoggedIn ? (
                 <>
+<<<<<<< HEAD
                   <Link href={dashboardLink} className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Dashboard">Dashboard</Link>
+=======
+                  <Link href={getDashboardLink()} className="block px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Dashboard">Dashboard</Link>
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
                   <button onClick={handleLogout} className="block w-full text-left px-5 py-3 text-[#22364A] hover:bg-[#F3F4F6] hover:text-[#2DBE60] font-medium transition" aria-label="Log out">Log out</button>
                 </>
               ) : (

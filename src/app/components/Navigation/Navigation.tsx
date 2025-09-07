@@ -30,9 +30,15 @@ export default function Navigation() {
     { name: 'Dashboard', path: getDashboardPath() }
   ];
 
+<<<<<<< HEAD
   const getInitials = (name: string) => {
     if (!name) return 'U';
     return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+=======
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
   };
 
   const getUserTypeLabel = () => {

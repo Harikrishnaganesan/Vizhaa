@@ -4,12 +4,17 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? 'https://vizhaa-backend-1.onrender.com/api'
   : 'http://localhost:4000/api';
 
+<<<<<<< HEAD
 export async function POST(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
+=======
+export async function POST(request: NextRequest, { params }: { params: { slug: string[] } }) {
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
   try {
     const { slug } = await params;
     const slugPath = slug.join('/');
     const url = `${API_BASE_URL}/auth/${slugPath}`;
     
+<<<<<<< HEAD
     const contentType = request.headers.get('content-type');
     let body;
     let headers: Record<string, string> = {};
@@ -24,6 +29,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const response = await fetch(url, {
       method: 'POST',
       headers,
+=======
+    const body = await request.text();
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
       body,
     });
 
@@ -49,7 +63,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
+<<<<<<< HEAD
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
+=======
+export async function GET(request: NextRequest, { params }: { params: { slug: string[] } }) {
+>>>>>>> 7e92d227ae97a43368f963625d0168584731c60c
   try {
     const { slug } = await params;
     const slugPath = slug.join('/');
