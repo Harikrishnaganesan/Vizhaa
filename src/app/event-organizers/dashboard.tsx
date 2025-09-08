@@ -42,7 +42,7 @@ const EventOrganizersDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const { organizerAPI } = await import('../../../services/api.js');
+      const { organizerAPI } = await import('/services/api.js');
       
       // Load events from API
       const eventsData = await organizerAPI.getEvents();

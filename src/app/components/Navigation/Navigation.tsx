@@ -13,10 +13,17 @@ export default function Navigation() {
   const { profile, loading } = useProfile();
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userType');
-    localStorage.removeItem('userId');
-    router.push('/auth/user-login');
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
+      }
+      router.push('/auth/user-login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      router.push('/auth/user-login');
+    }
   };
 
   const getDashboardPath = () => {

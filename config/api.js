@@ -1,28 +1,10 @@
-// Determine API URL based on environment
-const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    // Use Next.js API proxy for all environments
-    return '/api';
-  }
-  
-  // Server-side: use direct backend URL
-  return 'http://localhost:4000/api';
-};
+// API Base Configuration
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://vizhaa-backend-1.onrender.com/api'
+  : 'http://localhost:4000/api';
 
-const API_BASE_URL = getApiBaseUrl();
-
-// Get the correct base path for API calls
-const getApiPath = (endpoint) => {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return endpoint; // Direct endpoint for localhost
-    }
-    return endpoint; // Use proxy for production
-  }
-  return endpoint;
-};
+// Direct API calls without proxy
+const getApiPath = (endpoint) => endpoint;
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -34,6 +16,15 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: getApiPath('/auth/forgot-password'),
     VERIFY_PASSWORD_RESET_OTP: getApiPath('/auth/verify-password-reset-otp'),
     RESET_PASSWORD: getApiPath('/auth/reset-password'),
+  },
+  EVENTS: {
+    BASE: getApiPath('/events'),
+    DETAIL: (id) => getApiPath(`/events/${id}`),
+    AVAILABLE: getApiPath('/events/available/events'),
+    BOOK: getApiPath('/events/book'),
+    APPLICATIONS: (eventId) => getApiPath(`/events/applications/${eventId}`),
+    APPLICATION_STATUS: (bookingId) => getApiPath(`/events/application/${bookingId}/status`),
+    SUPPLIER_BOOKINGS: getApiPath('/events/supplier/bookings'),
   },
   ORGANIZER: {
     DASHBOARD: getApiPath('/organizer/dashboard'),
@@ -51,18 +42,24 @@ export const API_ENDPOINTS = {
     BOOK_EVENT: (eventId) => getApiPath(`/supplier/events/${eventId}/book`),
     BOOKINGS: getApiPath('/supplier/bookings'),
   },
+  USERS: {
+    DASHBOARD: getApiPath('/users/dashboard'),
+    PROFILE: getApiPath('/users/profile'),
+  },
+  OTP: {
+    SEND: getApiPath('/otp/send'),
+    VERIFY: getApiPath('/otp/verify'),
+  },
 };
 
+// API Client with comprehensive error handling
 const apiCall = async (endpoint, options = {}) => {
   const token = localStorage.getItem('authToken');
   
   const config = {
     method: 'GET',
-    mode: 'cors',
-    credentials: 'omit',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers
     },
@@ -72,37 +69,61 @@ const apiCall = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
+    // Handle different response types
+    let data;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      data = { success: false, message: await response.text() };
+    }
+    
+    // Handle authentication errors
     if (response.status === 401) {
       localStorage.removeItem('authToken');
       localStorage.removeItem('userType');
       localStorage.removeItem('userId');
-      window.location.href = '/login';
-      return;
-    }
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { message: errorText || 'Network error' };
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/user-login';
       }
-      throw new Error(errorData.message || `HTTP ${response.status}`);
+      throw new Error('Session expired. Please login again.');
     }
     
-    const data = await response.json();
+    // Handle other HTTP errors
+    if (!response.ok) {
+      const errorMessage = data.message || getErrorMessage(response.status);
+      throw new Error(errorMessage);
+    }
     
-    if (!data.success) {
-      throw new Error(data.message || 'API Error');
+    // Validate response structure
+    if (!data || typeof data.success !== 'boolean') {
+      throw new Error('Invalid response format from server');
     }
     
     return data;
   } catch (error) {
+    // Handle network errors
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
       throw new Error('Network connection failed. Please check your internet connection.');
     }
     throw error;
+  }
+};
+
+// Get user-friendly error messages based on status codes
+const getErrorMessage = (status) => {
+  switch (status) {
+    case 400: return 'Invalid request. Please check your input.';
+    case 401: return 'Authentication required. Please login.';
+    case 403: return 'Access denied. You do not have permission.';
+    case 404: return 'Resource not found.';
+    case 409: return 'Conflict. Resource already exists.';
+    case 422: return 'Validation failed. Please check your input.';
+    case 429: return 'Too many requests. Please try again later.';
+    case 500: return 'Server error. Please try again later.';
+    case 502: return 'Service temporarily unavailable.';
+    case 503: return 'Service maintenance. Please try again later.';
+    default: return `Request failed with status ${status}`;
   }
 };
 

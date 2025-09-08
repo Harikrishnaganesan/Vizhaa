@@ -23,6 +23,7 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!parentLoading) {
@@ -32,12 +33,14 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
 
   const loadEvents = async () => {
     setLoading(true);
+    setLoading(true);
+    setError('');
     try {
-      const { organizerAPI } = await import('../../../services/api.js');
+      const { organizerAPI } = await import('/services/api.js');
       const result = await organizerAPI.getEvents();
       setEvents(result.data || []);
-    } catch (error) {
-      console.error('Failed to load events:', error);
+    } catch (error: any) {
+      setError(error.message || 'Failed to load events');
     } finally {
       setLoading(false);
     }
@@ -47,11 +50,12 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
     if (!confirm('Are you sure you want to delete this event?')) return;
     
     try {
-      const { organizerAPI } = await import('../../../services/api.js');
+      const { organizerAPI } = await import('/services/api.js');
       await organizerAPI.deleteEvent(eventId);
       setEvents(events.filter(e => e.id !== eventId));
-    } catch (error) {
-      console.error('Failed to delete event:', error);
+      setError('');
+    } catch (error: any) {
+      setError(error.message || 'Failed to delete event');
     }
   };
 
@@ -98,6 +102,12 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
           Create New Event
         </button>
       </div>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event, index) => (

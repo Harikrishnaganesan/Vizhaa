@@ -12,17 +12,34 @@ const Header: React.FC = () => {
   const [userType, setUserType] = useState<string | null>(null);
   
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const type = localStorage.getItem('userType');
-    setIsLoggedIn(!!token);
-    setUserType(type);
+    try {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken');
+        const type = localStorage.getItem('userType');
+        setIsLoggedIn(!!token);
+        setUserType(type);
+      }
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      setIsLoggedIn(false);
+      setUserType(null);
+    }
   }, [pathname]);
 
   const handleLogout = () => {
-    localStorage.clear();
-    setIsLoggedIn(false);
-    setUserType(null);
-    router.push('/auth/user-login');
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+      }
+      setIsLoggedIn(false);
+      setUserType(null);
+      router.push('/auth/user-login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      setIsLoggedIn(false);
+      setUserType(null);
+      router.push('/auth/user-login');
+    }
   };
 
   const getDashboardLink = () => {

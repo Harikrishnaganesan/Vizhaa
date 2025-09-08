@@ -18,41 +18,59 @@ export function useAuth() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('authToken');
-      const userType = localStorage.getItem('userType') as 'organizer' | 'supplier';
-      const userId = localStorage.getItem('userId');
-      const userName = localStorage.getItem('userName');
-      const userEmail = localStorage.getItem('userEmail');
-      const userPhone = localStorage.getItem('userPhone');
+      try {
+        if (typeof window === 'undefined') {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        
+        const token = localStorage.getItem('authToken');
+        const userType = localStorage.getItem('userType') as 'organizer' | 'supplier';
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        const userEmail = localStorage.getItem('userEmail');
+        const userPhone = localStorage.getItem('userPhone');
 
-      if (token && userType && userId) {
-        setUser({
-          id: userId,
-          fullName: userName || 'User',
-          email: userEmail || '',
-          phone: userPhone || '',
-          userType,
-          token
-        });
-      } else {
+        if (token && userType && userId) {
+          setUser({
+            id: userId,
+            fullName: userName || 'User',
+            email: userEmail || '',
+            phone: userPhone || '',
+            userType,
+            token
+          });
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     checkAuth();
   }, []);
 
   const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userType');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userPhone');
-    setUser(null);
-    router.push('/auth/user-login');
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userPhone');
+      }
+    } catch (error) {
+      console.error('Error clearing auth data:', error);
+    } finally {
+      setUser(null);
+      router.push('/auth/user-login');
+    }
   };
 
   const updateUser = (updates: Partial<AuthUser>) => {
@@ -61,9 +79,15 @@ export function useAuth() {
       setUser(updatedUser);
       
       // Update localStorage
-      if (updates.fullName) localStorage.setItem('userName', updates.fullName);
-      if (updates.email) localStorage.setItem('userEmail', updates.email);
-      if (updates.phone) localStorage.setItem('userPhone', updates.phone);
+      try {
+        if (typeof window !== 'undefined') {
+          if (updates.fullName) localStorage.setItem('userName', updates.fullName);
+          if (updates.email) localStorage.setItem('userEmail', updates.email);
+          if (updates.phone) localStorage.setItem('userPhone', updates.phone);
+        }
+      } catch (error) {
+        console.error('Error updating user data in localStorage:', error);
+      }
     }
   };
 

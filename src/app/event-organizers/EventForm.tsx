@@ -1,6 +1,7 @@
 // EventForm.tsx - Create/Edit Event Form
 "use client";
 import React, { useState } from "react";
+import { useEvents } from "../hooks/useAPI";
 
 interface EventFormProps {
   onSubmit: (data: any) => void;
@@ -16,12 +17,14 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
     eventDate: initialData?.eventDate || "",
     eventTime: initialData?.eventTime || "",
     budget: initialData?.budget || "",
-    numberOfGuests: initialData?.numberOfGuests || "",
+    numberOfSuppliers: initialData?.numberOfSuppliers || "",
     servicesNeeded: initialData?.servicesNeeded || [],
     description: initialData?.description || "",
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const eventTypes = ["Wedding", "Corporate", "Birthday", "Anniversary", "Conference", "Other"];
   const availableServices = ["Catering", "Photography", "Decoration", "Music", "Transportation", "Security"];
@@ -40,19 +43,29 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+    setSuccess('');
     
     try {
       const { organizerAPI } = await import('../../../services/api.js');
       
+      const eventData = {
+        ...formData,
+        budget: parseInt(formData.budget),
+        numberOfSuppliers: parseInt(formData.numberOfSuppliers)
+      };
+      
       if (isEdit && initialData?.id) {
-        await organizerAPI.updateEvent(initialData.id, formData);
+        await organizerAPI.updateEvent(initialData.id, eventData);
+        setSuccess('Event updated successfully!');
       } else {
-        await organizerAPI.createEvent(formData);
+        await organizerAPI.createEvent(eventData);
+        setSuccess('Event created successfully!');
       }
       
-      onSubmit(formData);
-    } catch (error) {
-      console.error('Event operation failed:', error);
+      setTimeout(() => onSubmit(formData), 1000);
+    } catch (error: any) {
+      setError(error.message || 'Failed to save event');
     } finally {
       setLoading(false);
     }
@@ -63,6 +76,18 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
       <h2 className="text-2xl font-bold text-[#2DBE60] mb-6">
         {isEdit ? 'Edit Event' : 'Create New Event'}
       </h2>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+      
+      {success && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {success}
+        </div>
+      )}
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -128,10 +153,10 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
           />
           
           <input
-            name="numberOfGuests"
+            name="numberOfSuppliers"
             type="number"
-            placeholder="Number of Guests"
-            value={formData.numberOfGuests}
+            placeholder="Number of Suppliers"
+            value={formData.numberOfSuppliers}
             onChange={handleChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400"
             required

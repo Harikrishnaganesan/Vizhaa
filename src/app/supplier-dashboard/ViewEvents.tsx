@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 const ViewEvents: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [bookingEvent, setBookingEvent] = useState<string | null>(null);
   const [bookingData, setBookingData] = useState({
     services: [] as string[],
@@ -23,8 +24,9 @@ const ViewEvents: React.FC = () => {
       const { supplierAPI } = await import('../../../services/api.js');
       const result = await supplierAPI.getAvailableEvents();
       setEvents(result.data || []);
-    } catch (error) {
-      console.error('Failed to load events:', error);
+      setError('');
+    } catch (error: any) {
+      setError(error.message || 'Failed to load events');
     } finally {
       setLoading(false);
     }
@@ -38,25 +40,14 @@ const ViewEvents: React.FC = () => {
 
     try {
       const { supplierAPI } = await import('../../../services/api.js');
-      await supplierAPI.bookEvent(eventId, {
-        services: bookingData.services,
-        proposedPrice: parseInt(bookingData.proposedPrice),
-        message: bookingData.message,
-      });
-      
-      // Update local state
-      setEvents(events.map(event => 
-        event.id === eventId 
-          ? { ...event, isBooked: true, bookingStatus: 'Pending' }
-          : event
-      ));
+      await supplierAPI.bookEvent(eventId, bookingData.message);
       
       setBookingEvent(null);
       setBookingData({ services: [], proposedPrice: "", message: "" });
       alert('Event booked successfully!');
-    } catch (error) {
-      console.error('Failed to book event:', error);
-      alert('Failed to book event. Please try again.');
+      loadEvents();
+    } catch (error: any) {
+      alert('Failed to book event: ' + error.message);
     }
   };
 
@@ -90,6 +81,12 @@ const ViewEvents: React.FC = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-[#2DBE60]">Available Events ({events.length})</h2>
       </div>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event) => (

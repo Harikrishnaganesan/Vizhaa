@@ -49,7 +49,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden -top-2 m-0 [p-0">
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden -top-2 m-0 p-0">
       <Image
         src={slides[current].image}
         alt="Hero Background"
@@ -73,7 +73,6 @@ const HeroSection = () => {
         <button
           onClick={handleScroll}
           className="cursor-pointer animate-bounce text-white flex items-center absolute left-1/2 -translate-x-1/2 bottom-[-100px] z-30"
-          style={{ zIndex: 30 }}
         >
           <p className={`${righteous.className} text-white text-xl md:text-2xl`}>
             Scroll Down
