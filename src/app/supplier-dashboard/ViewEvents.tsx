@@ -101,48 +101,56 @@ const ViewEvents: React.FC = () => {
         </div>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {events.map((event) => (
-          <div key={event.id} className="bg-white rounded-lg shadow-lg p-6 border">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-bold text-gray-800">{event.eventName}</h3>
-              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{event.eventType}</span>
+          <div key={event.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-gray-200 transform hover:-translate-y-1">
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="text-xl font-bold text-gray-800 leading-tight">{event.eventName}</h3>
+              <span className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full font-semibold">{event.eventType}</span>
             </div>
             
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Organizer:</span>
-                <span className="text-gray-800 font-medium">{event.organizer?.fullName || 'N/A'}</span>
-              </div>
-              {event.organizer?.companyName && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Company:</span>
-                  <span className="text-gray-800">{event.organizer.companyName}</span>
+            <div className="space-y-4 mb-6">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center mb-2">
+                  <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span className="text-sm font-semibold text-gray-700">Organizer</span>
                 </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Phone:</span>
-                <span className="text-gray-800">{event.organizer?.phone || 'N/A'}</span>
+                <p className="text-gray-800 font-medium">{event.organizer?.fullName || 'N/A'}</p>
+                {event.organizer?.companyName && (
+                  <p className="text-gray-600 text-sm">{event.organizer.companyName}</p>
+                )}
+                <p className="text-gray-600 text-sm">{event.organizer?.phone || 'N/A'}</p>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Location:</span>
-                <span className="text-gray-800">{event.location}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Date:</span>
-                <span className="text-gray-800">{new Date(event.eventDate).toLocaleDateString()}</span>
-              </div>
-              {event.budget > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Budget:</span>
-                  <span className="text-gray-800 font-semibold">₹{event.budget?.toLocaleString()}</span>
+              
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  <span className="text-gray-800 text-sm">{event.location}</span>
                 </div>
-              )}
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-gray-800 text-sm font-medium">{new Date(event.eventDate).toLocaleDateString()}</span>
+                </div>
+                {event.budget > 0 && (
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    <span className="text-gray-800 text-sm font-semibold">₹{event.budget?.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
             </div>
             
             {event.isBooked ? (
               <div className="text-center">
-                <span className={`px-4 py-2 rounded-full text-sm font-medium ${
+                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
                   event.bookingStatus === 'Confirmed' ? 'bg-green-100 text-green-800' :
                   event.bookingStatus === 'Rejected' ? 'bg-red-100 text-red-800' :
                   'bg-yellow-100 text-yellow-800'
@@ -153,7 +161,7 @@ const ViewEvents: React.FC = () => {
             ) : (
               <button
                 onClick={() => setBookingEvent(event.id)}
-                className="w-full bg-[#2DBE60] hover:bg-green-600 text-white py-2 px-4 rounded font-medium"
+                className="w-full bg-gradient-to-r from-[#2DBE60] to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Book Event
               </button>

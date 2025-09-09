@@ -213,40 +213,40 @@ export default function SupplierDashboard() {
       
       <div className="flex flex-col md:flex-row">
         {/* Mobile Navigation */}
-        <div className="md:hidden bg-[#23364E] p-4">
-          <nav className="flex gap-2 overflow-x-auto">
+        <div className="md:hidden bg-[#23364E] p-4 shadow-lg">
+          <nav className="flex gap-2 overflow-x-auto pb-2">
             {sidebarItems.map((item) => (
               <button
                 key={item.name}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 whitespace-nowrap transform hover:scale-105 ${
                   activeTab === item.name
-                    ? "bg-[#1A2A3A] text-white border-b-2 border-[#2DBE60]"
+                    ? "bg-[#2DBE60] text-white shadow-lg"
                     : "text-white hover:bg-[#22364A] hover:text-[#2DBE60]"
                 }`}
                 onClick={() => setActiveTab(item.name)}
               >
                 {item.icon}
-                <span className="text-sm">{item.name}</span>
+                <span className="text-sm font-semibold">{item.name}</span>
               </button>
             ))}
           </nav>
         </div>
         
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex bg-[#23364E] w-64 min-h-screen flex-shrink-0 flex-col pt-8">
-          <nav className="flex-1 flex flex-col gap-2 px-4">
+        <aside className="hidden md:flex bg-[#23364E] w-64 min-h-screen flex-shrink-0 flex-col pt-8 shadow-xl">
+          <nav className="flex-1 flex flex-col gap-3 px-6">
             {sidebarItems.map((item) => (
               <button
                 key={item.name}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all border-l-4 ${
+                className={`flex items-center gap-4 px-5 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
                   activeTab === item.name
-                    ? "bg-[#1A2A3A] text-white border-[#2DBE60] shadow"
-                    : "text-white border-transparent hover:bg-[#22364A] hover:text-[#2DBE60]"
+                    ? "bg-[#2DBE60] text-white shadow-lg"
+                    : "text-white hover:bg-[#22364A] hover:text-[#2DBE60]"
                 }`}
                 onClick={() => setActiveTab(item.name)}
               >
                 {item.icon}
-                {item.name}
+                <span className="font-semibold">{item.name}</span>
               </button>
             ))}
           </nav>
