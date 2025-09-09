@@ -1,11 +1,185 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ViewEvents from "./ViewEvents";
 import MyEvents from "./MyEvents";
 import PocketTab from "./PocketTab";
 import Header from "../components/Header/Header";
 import ProfileCard from "../components/ProfileCard";
 import { useProfile } from "../contexts/ProfileContext";
+
+const SupplierProfileTab = () => {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({});
+
+  const availableServices = ['catering', 'decoration', 'photography', 'music', 'venue', 'transportation', 'flowers', 'security'];
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:4000/api/auth/profile', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
+      if (result.success) {
+        setProfile(result.data);
+        setEditData(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:4000/api/auth/profile', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editData)
+      });
+      const result = await response.json();
+      if (result.success) {
+        setProfile(result.data);
+        setEditing(false);
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
+
+  const handleServiceToggle = (service) => {
+    const services = editData.services?.includes(service)
+      ? editData.services.filter(s => s !== service)
+      : [...(editData.services || []), service];
+    setEditData({...editData, services});
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading profile...</div>;
+  }
+
+  if (!profile) {
+    return <div className="text-center py-8">Failed to load profile</div>;
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">My Profile</h2>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Edit Profile
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              Save
+            </button>
+            <button onClick={() => { setEditing(false); setEditData(profile); }} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-600">{profile.fullName?.charAt(0)}</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold">{profile.fullName}</h3>
+              <p className="text-gray-600">Service Supplier</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
+              {editing ? (
+                <input
+                  type="text"
+                  value={editData.fullName || ''}
+                  onChange={(e) => setEditData({...editData, fullName: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.fullName}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              {editing ? (
+                <input
+                  type="email"
+                  value={editData.email || ''}
+                  onChange={(e) => setEditData({...editData, email: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.email}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              {editing ? (
+                <input
+                  type="tel"
+                  value={editData.phone || ''}
+                  onChange={(e) => setEditData({...editData, phone: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.phone}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Member Since</label>
+              <p className="mt-1 text-gray-900">{new Date(profile.createdAt).toLocaleDateString()}</p>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Services</label>
+              {editing ? (
+                <div className="mt-1 grid grid-cols-2 gap-2">
+                  {availableServices.map(service => (
+                    <label key={service} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editData.services?.includes(service) || false}
+                        onChange={() => handleServiceToggle(service)}
+                        className="rounded border-gray-300 text-blue-600"
+                      />
+                      <span className="text-sm capitalize">{service}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {profile.services?.map((service, index) => (
+                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm capitalize">
+                      {service}
+                    </span>
+                  )) || <span className="text-gray-500">No services specified</span>}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const sidebarItems = [
   { name: "View Events", icon: <img src="/view-event.svg" alt="View Events" className="w-5 h-5" /> },
@@ -27,12 +201,7 @@ export default function SupplierDashboard() {
       case "Pocket":
         return <PocketTab />;
       case "Profile":
-        return (
-          <div className="max-w-md mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
-            <ProfileCard />
-          </div>
-        );
+        return <SupplierProfileTab />;
       default:
         return <ViewEvents />;
     }

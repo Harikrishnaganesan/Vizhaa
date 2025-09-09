@@ -156,7 +156,7 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
                 Delete
               </button>
               <button
-                onClick={() => router.push(`/event-organizers/suppliers/${event.id}`)}
+                onClick={() => onEditEvent?.({ ...event, viewSuppliers: true })}
                 className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded text-sm font-medium"
               >
                 Suppliers

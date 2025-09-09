@@ -8,6 +8,147 @@ import Header from "../components/Header/Header";
 import { useProfile } from "../contexts/ProfileContext";
 import Image from "next/image";
 
+const ProfileTab = () => {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({});
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const { organizerAPI } = await import('/services/api.js');
+      const result = await organizerAPI.getProfile();
+      if (result.success) {
+        setProfile(result.data);
+        setEditData(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const { organizerAPI } = await import('/services/api.js');
+      const result = await organizerAPI.updateProfile(editData);
+      if (result.success) {
+        setProfile(result.data);
+        setEditing(false);
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading profile...</div>;
+  }
+
+  if (!profile) {
+    return <div className="text-center py-8">Failed to load profile</div>;
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">My Profile</h2>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Edit Profile
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              Save
+            </button>
+            <button onClick={() => { setEditing(false); setEditData(profile); }} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-600">{profile.fullName?.charAt(0)}</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold">{profile.fullName}</h3>
+              <p className="text-gray-600">Event Organizer</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
+              {editing ? (
+                <input
+                  type="text"
+                  value={editData.fullName || ''}
+                  onChange={(e) => setEditData({...editData, fullName: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.fullName}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              {editing ? (
+                <input
+                  type="email"
+                  value={editData.email || ''}
+                  onChange={(e) => setEditData({...editData, email: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.email}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              {editing ? (
+                <input
+                  type="tel"
+                  value={editData.phone || ''}
+                  onChange={(e) => setEditData({...editData, phone: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.phone}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Company</label>
+              {editing ? (
+                <input
+                  type="text"
+                  value={editData.companyName || ''}
+                  onChange={(e) => setEditData({...editData, companyName: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.companyName || 'Not specified'}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Member Since</label>
+              <p className="mt-1 text-gray-900">{new Date(profile.createdAt).toLocaleDateString()}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const sidebarItems = [
   { key: "events", label: "My Events", icon: <img src="/view-event.svg" alt="My Events" className="w-5 h-5" /> },
   { key: "form", label: "Form", icon: <img src="/my-event.svg" alt="Form" className="w-5 h-5" /> },
@@ -60,8 +201,12 @@ const EventOrganizersDashboard: React.FC = () => {
   };
 
   const handleEditEvent = (event: EventData) => {
-    setEditingEvent(event);
-    setActiveTab("form");
+    if (event.viewSuppliers) {
+      setActiveTab("status");
+    } else {
+      setEditingEvent(event);
+      setActiveTab("form");
+    }
   };
 
   const handleFormSubmit = async () => {
@@ -87,12 +232,7 @@ const EventOrganizersDashboard: React.FC = () => {
       case "status":
         return <StatusTab events={events} />;
       case "profile":
-        return (
-          <div className="max-w-md mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
-            <div className="bg-white p-6 rounded-lg shadow">Profile component placeholder</div>
-          </div>
-        );
+        return <ProfileTab />;
       default:
         return null;
     }
