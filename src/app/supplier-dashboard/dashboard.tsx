@@ -208,20 +208,20 @@ export default function SupplierDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Header />
       
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col lg:flex-row">
         {/* Mobile Navigation */}
-        <div className="md:hidden bg-[#23364E] p-4 shadow-lg">
-          <nav className="flex gap-2 overflow-x-auto pb-2">
+        <div className="lg:hidden bg-gradient-to-r from-[#23364E] to-[#1a2b3d] p-4 shadow-xl sticky top-0 z-40">
+          <nav className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {sidebarItems.map((item) => (
               <button
                 key={item.name}
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 whitespace-nowrap transform hover:scale-105 ${
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 whitespace-nowrap transform hover:scale-105 shadow-md ${
                   activeTab === item.name
-                    ? "bg-[#2DBE60] text-white shadow-lg"
-                    : "text-white hover:bg-[#22364A] hover:text-[#2DBE60]"
+                    ? "bg-gradient-to-r from-[#2DBE60] to-green-600 text-white shadow-lg scale-105"
+                    : "text-white hover:bg-white hover:bg-opacity-10 hover:text-[#2DBE60]"
                 }`}
                 onClick={() => setActiveTab(item.name)}
               >
@@ -233,28 +233,61 @@ export default function SupplierDashboard() {
         </div>
         
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex bg-[#23364E] w-64 min-h-screen flex-shrink-0 flex-col pt-8 shadow-xl">
-          <nav className="flex-1 flex flex-col gap-3 px-6">
+        <aside className="hidden lg:flex bg-gradient-to-b from-[#23364E] to-[#1a2b3d] w-72 min-h-screen flex-shrink-0 flex-col pt-8 shadow-2xl">
+          {/* Profile Section */}
+          <div className="px-6 mb-8">
+            <div className="bg-white bg-opacity-10 rounded-2xl p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-[#2DBE60] to-green-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                  {profile?.fullName?.charAt(0) || 'S'}
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-sm">{profile?.fullName || 'Supplier'}</h3>
+                  <p className="text-gray-300 text-xs">Service Provider</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Navigation */}
+          <nav className="flex-1 flex flex-col gap-2 px-6">
             {sidebarItems.map((item) => (
               <button
                 key={item.name}
-                className={`flex items-center gap-4 px-5 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`flex items-center gap-4 px-5 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 group ${
                   activeTab === item.name
-                    ? "bg-[#2DBE60] text-white shadow-lg"
-                    : "text-white hover:bg-[#22364A] hover:text-[#2DBE60]"
+                    ? "bg-gradient-to-r from-[#2DBE60] to-green-600 text-white shadow-lg scale-105"
+                    : "text-white hover:bg-white hover:bg-opacity-10 hover:text-[#2DBE60]"
                 }`}
                 onClick={() => setActiveTab(item.name)}
               >
-                {item.icon}
+                <div className={`transition-all duration-300 ${
+                  activeTab === item.name ? "scale-110" : "group-hover:scale-110"
+                }`}>
+                  {item.icon}
+                </div>
                 <span className="font-semibold">{item.name}</span>
+                {activeTab === item.name && (
+                  <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                )}
               </button>
             ))}
           </nav>
+          
+          {/* Footer */}
+          <div className="p-6 border-t border-white border-opacity-10">
+            <div className="text-center text-gray-400 text-xs">
+              <p>Vizhaa Supplier Dashboard</p>
+              <p className="mt-1">v1.0.0</p>
+            </div>
+          </div>
         </aside>
         
         {/* Main Content */}
-        <main className="flex-1 px-4 md:px-10 py-4 md:py-8">
-          {renderTabContent()}
+        <main className="flex-1 p-4 lg:p-8 min-h-screen">
+          <div className="max-w-full">
+            {renderTabContent()}
+          </div>
         </main>
       </div>
     </div>
