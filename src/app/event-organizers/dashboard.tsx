@@ -8,12 +8,153 @@ import Header from "../components/Header/Header";
 import { useProfile } from "../contexts/ProfileContext";
 import Image from "next/image";
 
+const ProfileTab = () => {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({});
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const { organizerAPI } = await import('/services/api.js');
+      const result = await organizerAPI.getProfile();
+      if (result.success) {
+        setProfile(result.data);
+        setEditData(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const { organizerAPI } = await import('/services/api.js');
+      const result = await organizerAPI.updateProfile(editData);
+      if (result.success) {
+        setProfile(result.data);
+        setEditing(false);
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading profile...</div>;
+  }
+
+  if (!profile) {
+    return <div className="text-center py-8">Failed to load profile</div>;
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">My Profile</h2>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Edit Profile
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              Save
+            </button>
+            <button onClick={() => { setEditing(false); setEditData(profile); }} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-600">{profile.fullName?.charAt(0)}</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold">{profile.fullName}</h3>
+              <p className="text-gray-600">Event Organizer</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
+              {editing ? (
+                <input
+                  type="text"
+                  value={editData.fullName || ''}
+                  onChange={(e) => setEditData({...editData, fullName: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.fullName}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              {editing ? (
+                <input
+                  type="email"
+                  value={editData.email || ''}
+                  onChange={(e) => setEditData({...editData, email: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.email}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              {editing ? (
+                <input
+                  type="tel"
+                  value={editData.phone || ''}
+                  onChange={(e) => setEditData({...editData, phone: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.phone}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Company</label>
+              {editing ? (
+                <input
+                  type="text"
+                  value={editData.companyName || ''}
+                  onChange={(e) => setEditData({...editData, companyName: e.target.value})}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <p className="mt-1 text-gray-900">{profile.companyName || 'Not specified'}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Member Since</label>
+              <p className="mt-1 text-gray-900">{new Date(profile.createdAt).toLocaleDateString()}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const sidebarItems = [
   { key: "events", label: "My Events", icon: <img src="/view-event.svg" alt="My Events" className="w-5 h-5" /> },
   { key: "form", label: "Form", icon: <img src="/my-event.svg" alt="Form" className="w-5 h-5" /> },
   { key: "status", label: "Status", icon: <img src="/status.svg" alt="Status" className="w-5 h-5" /> },
   { key: "payment", label: "Payment", icon: <img src="/poket.svg" alt="Payment" className="w-5 h-5" /> },
-  { key: "profile", label: "Profile", icon: <img src="/avatar1.png" alt="Profile" className="w-5 h-5 rounded-full" /> },
+  { key: "profile", label: "Profile", icon: <div className="w-5 h-5 rounded-full bg-current flex items-center justify-center"><svg className="w-3 h-3 text-gray-800" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2"/><path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="currentColor" strokeWidth="2"/></svg></div> },
 ];
 
 export interface EventData {
@@ -42,7 +183,7 @@ const EventOrganizersDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const { organizerAPI } = await import('../../../services/api.js');
+      const { organizerAPI } = await import('/services/api.js');
       
       // Load events from API
       const eventsData = await organizerAPI.getEvents();
@@ -60,8 +201,12 @@ const EventOrganizersDashboard: React.FC = () => {
   };
 
   const handleEditEvent = (event: EventData) => {
-    setEditingEvent(event);
-    setActiveTab("form");
+    if (event.viewSuppliers) {
+      setActiveTab("status");
+    } else {
+      setEditingEvent(event);
+      setActiveTab("form");
+    }
   };
 
   const handleFormSubmit = async () => {
@@ -87,12 +232,7 @@ const EventOrganizersDashboard: React.FC = () => {
       case "status":
         return <StatusTab events={events} />;
       case "profile":
-        return (
-          <div className="max-w-md mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
-            <div className="bg-white p-6 rounded-lg shadow">Profile component placeholder</div>
-          </div>
-        );
+        return <ProfileTab />;
       default:
         return null;
     }
@@ -104,43 +244,43 @@ const EventOrganizersDashboard: React.FC = () => {
       
       <div className="flex flex-1 flex-col md:flex-row">
         {/* Mobile Navigation */}
-        <div className="md:hidden bg-[#23364E] p-4">
-          <nav className="flex gap-2 overflow-x-auto">
+        <div className="md:hidden bg-[#23364E] p-4 shadow-lg">
+          <nav className="flex gap-2 overflow-x-auto pb-2">
             {sidebarItems.map(item => (
               <button
                 key={item.key}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 whitespace-nowrap transform hover:scale-105 ${
                   activeTab === item.key
-                    ? "bg-[#1A2A3A] text-white border-b-2 border-[#2DBE60]"
+                    ? "bg-[#2DBE60] text-white shadow-lg"
                     : "text-white hover:bg-[#22364A] hover:text-[#2DBE60]"
                 }`}
                 onClick={() => setActiveTab(item.key)}
               >
-                <span className="w-4 h-4 flex items-center justify-center">{item.icon}</span>
-                <span className="text-sm">{item.label}</span>
+                <span className="w-5 h-5 flex items-center justify-center">{item.icon}</span>
+                <span className="text-sm font-semibold">{item.label}</span>
               </button>
             ))}
           </nav>
         </div>
         
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex w-56 bg-[#23364E] text-white py-8 px-4 flex-col gap-2 shadow-lg min-h-full">
-          <div className="flex items-center gap-2 mb-6 px-3">
-            <img src="/dashboard.svg" alt="Dashboard" className="w-5 h-5" />
-            <span className="font-semibold text-lg">Dash Board</span>
+        <aside className="hidden md:flex w-64 bg-[#23364E] text-white py-8 px-6 flex-col gap-3 shadow-xl min-h-full">
+          <div className="flex items-center gap-3 mb-8 px-4 py-3 bg-[#1A2A3A] rounded-xl">
+            <img src="/dashboard.svg" alt="Dashboard" className="w-6 h-6" />
+            <span className="font-bold text-xl">Dashboard</span>
           </div>
           {sidebarItems.map(item => (
             <button
               key={item.key}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all border-l-4 ${
+              className={`flex items-center gap-4 px-5 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
                 activeTab === item.key
-                  ? "bg-[#1A2A3A] text-white border-[#2DBE60] shadow"
-                  : "text-white border-transparent hover:bg-[#22364A] hover:text-[#2DBE60]"
+                  ? "bg-[#2DBE60] text-white shadow-lg"
+                  : "text-white hover:bg-[#22364A] hover:text-[#2DBE60]"
               }`}
               onClick={() => setActiveTab(item.key)}
             >
               <span className="w-6 h-6 flex items-center justify-center">{item.icon}</span>
-              <span className="text-base">{item.label}</span>
+              <span className="text-base font-semibold">{item.label}</span>
             </button>
           ))}
         </aside>

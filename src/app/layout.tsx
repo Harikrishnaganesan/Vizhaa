@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/footer";
 import { ProfileProvider } from "./contexts/ProfileContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
@@ -25,8 +26,15 @@ function LayoutWithConditionalHeaderFooter({ children }: { children: React.React
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setIsAuthenticated(!!token);
+    try {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken');
+        setIsAuthenticated(!!token);
+      }
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      setIsAuthenticated(false);
+    }
   }, [pathname]);
   
   // Hide header/footer for auth pages and specific dashboards
@@ -53,12 +61,13 @@ function LayoutWithConditionalHeaderFooter({ children }: { children: React.React
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased${isAuthPage ? ' bg-[#253C51]' : ''}`}>
-        <ProfileProvider>
-
-          {showHeaderFooter && <Header />}
-          {children}
-          {showHeaderFooter && <Footer />}
-        </ProfileProvider>
+        <AuthProvider>
+          <ProfileProvider>
+            {showHeaderFooter && <Header />}
+            {children}
+            {showHeaderFooter && <Footer />}
+          </ProfileProvider>
+        </AuthProvider>
       </body>
     </html>
   );

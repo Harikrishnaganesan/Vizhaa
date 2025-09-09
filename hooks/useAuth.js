@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { authAPI } from '../services/api.js';
+import { backendApi } from '../src/services/backendApi.js';
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +9,7 @@ export const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await authAPI.login(phone, password);
+      const result = await backendApi.auth.login(phone, password);
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userType', result.user.userType);
       localStorage.setItem('userId', result.user.id);
@@ -30,7 +30,7 @@ export const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await authAPI.sendOTP(phone, userType);
+      const result = await backendApi.auth.sendOTP(phone, userType);
       return result;
     } catch (err) {
       setError(err.message);
@@ -44,7 +44,7 @@ export const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await authAPI.verifyOTP(sessionId, otp, phone);
+      const result = await backendApi.auth.verifyOTP(sessionId, otp, phone);
       return result;
     } catch (err) {
       setError(err.message);
@@ -59,8 +59,8 @@ export const useAuth = () => {
     setError(null);
     try {
       const result = userType === 'organizer' 
-        ? await authAPI.organizerSignup(userData)
-        : await authAPI.supplierSignup(userData);
+        ? await backendApi.auth.organizerSignup(userData)
+        : await backendApi.auth.supplierSignup(userData);
       
       localStorage.setItem('authToken', result.token);
       localStorage.setItem('userType', userType);

@@ -78,7 +78,7 @@ const SupplierHowItWorks: React.FC = () => {
         </div>
         {/* Illustration */}
         <Image
-          src="/Supllier.svg" // Replace with your path
+          src="/Supplier.svg" // Replace with your path
           alt="Supplier working illustration"
           width={160}
           height={160}

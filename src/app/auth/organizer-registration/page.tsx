@@ -38,24 +38,21 @@ export default function EventOrganizerRegistrationPage() {
     setError("");
   };
 
-  // API call helper
+  // API call helper using direct backend calls
   const apiCall = async (endpoint: string, data: any) => {
     try {
-      const response = await fetch(`/api/auth/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
+      const { authAPI } = await import('/services/api.js');
       
-      if (!response.ok) {
-        throw new Error(result.message || `HTTP ${response.status}`);
+      switch (endpoint) {
+        case 'send-otp':
+          return await authAPI.sendOTP(data.phone, data.userType);
+        case 'verify-otp':
+          return await authAPI.verifyOTP(data.sessionId, data.otp, data.phone);
+        case 'organizer/signup':
+          return await authAPI.organizerSignup(data);
+        default:
+          throw new Error(`Unknown endpoint: ${endpoint}`);
       }
-
-      return result;
     } catch (err) {
       console.error(`API Error (${endpoint}):`, err);
       throw err;
@@ -143,19 +140,28 @@ export default function EventOrganizerRegistrationPage() {
     setError("");
 
     try {
-      await apiCall('organizer/signup', {
+      const result = await apiCall('organizer/signup', {
         fullName: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
         companyName: formData.companyName,
-        city: formData.city,
-        sessionId,
-        userType: 'organizer'
+        sessionId
       });
       
-      alert('Registration successful! Please login.');
-      router.push('/auth/user-login');
+      if (result.success) {
+        // Store auth token if provided
+        if (result.token) {
+          localStorage.setItem('authToken', result.token);
+          localStorage.setItem('userType', 'organizer');
+          localStorage.setItem('userId', result.user.id);
+        }
+        
+        alert('Registration successful!');
+        router.push(result.token ? '/event-organizers' : '/auth/user-login');
+      } else {
+        setError(result.message || 'Registration failed');
+      }
     } catch (err: any) {
       setError(err.message || "Registration failed");
     } finally {

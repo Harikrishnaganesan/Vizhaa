@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { organizerAPI } from '../services/api.js';
+import { backendApi } from '../src/services/backendApi.js';
 
 export const useOrganizer = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -11,9 +11,9 @@ export const useOrganizer = () => {
     setLoading(true);
     try {
       const [dashboard, eventsData, bookingsData] = await Promise.all([
-        organizerAPI.getDashboard(),
-        organizerAPI.getEvents(),
-        organizerAPI.getBookings()
+        backendApi.organizer.getDashboard(),
+        backendApi.organizer.getEvents(),
+        backendApi.organizer.getBookings()
       ]);
       
       setDashboardData(dashboard.data);
@@ -27,12 +27,12 @@ export const useOrganizer = () => {
   };
 
   const createEvent = async (eventData) => {
-    await organizerAPI.createEvent(eventData);
+    await backendApi.organizer.createEvent(eventData);
     loadDashboardData();
   };
 
   const updateBookingStatus = async (bookingId, status, message = '') => {
-    await organizerAPI.updateBookingStatus(bookingId, status, message);
+    await backendApi.organizer.updateBookingStatus(bookingId, status, message);
     loadDashboardData();
   };
 

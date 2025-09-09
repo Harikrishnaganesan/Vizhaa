@@ -10,11 +10,18 @@ const MyEvents: React.FC = () => {
 
   const loadMyBookings = async () => {
     try {
-      const { supplierAPI } = await import('../../../services/api.js');
+      const { supplierAPI } = await import('/services/api.js');
       const result = await supplierAPI.getBookings();
-      setBookings(result.data || []);
+      
+      if (result.success) {
+        setBookings(result.data || []);
+      } else {
+        console.error('Failed to load bookings:', result.message);
+        setBookings([]);
+      }
     } catch (error) {
       console.error('Failed to load bookings:', error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -38,39 +45,72 @@ const MyEvents: React.FC = () => {
         <div className="bg-white rounded-lg shadow-lg p-8 text-center text-gray-500">No current bookings.</div>
       ) : (
         currentBookings.map((booking) => (
-          <div key={booking.id} className="bg-white rounded-lg shadow-lg p-6 flex gap-6 items-center max-w-4xl mb-8">
-            {/* Left Section: Date & Time */}
-            <div className="flex flex-col items-center justify-between bg-[#E6F9ED] rounded-lg p-4 min-w-[120px] h-full">
-              <div className="text-xs text-gray-500 mb-2">{new Date(booking.event.eventDate).toLocaleString('en-US', { month: 'long' }).toUpperCase()}</div>
-              <div className="text-3xl font-bold text-[#2DBE60]">{new Date(booking.event.eventDate).getDate()}</div>
-              <div className="text-xs text-gray-500 mb-2">{new Date(booking.event.eventDate).toLocaleString('en-US', { weekday: 'long' }).toUpperCase()}</div>
-              <div className="text-xs text-gray-500 mb-2">{booking.event.eventTime}</div>
-            </div>
-            {/* Right Section: Event Details */}
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              <div>
-                <div className="font-semibold text-gray-700 mb-1">Event Details</div>
-                <div className="text-gray-700 font-bold">{booking.event.eventName}</div>
-                <div className="text-gray-700">Organizer: <span className="font-bold">{booking.event.organizer.fullName}</span></div>
-                {booking.event.organizer.companyName && (
-                  <div className="text-gray-700">Company: <span className="font-bold">{booking.event.organizer.companyName}</span></div>
-                )}
-                <div className="text-gray-700">Date: <span className="font-bold">{new Date(booking.event.eventDate).toLocaleDateString()}</span></div>
+          <div key={booking.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-gray-200 mb-6 transform hover:-translate-y-1">
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Left Section: Date & Time */}
+              <div className="flex flex-col items-center justify-center bg-gradient-to-br from-[#2DBE60] to-green-600 rounded-2xl p-6 min-w-[140px] text-white shadow-lg">
+                <div className="text-xs font-semibold mb-2 opacity-90">{new Date(booking.event.eventDate).toLocaleString('en-US', { month: 'long' }).toUpperCase()}</div>
+                <div className="text-4xl font-bold mb-2">{new Date(booking.event.eventDate).getDate()}</div>
+                <div className="text-xs font-semibold mb-2 opacity-90">{new Date(booking.event.eventDate).toLocaleString('en-US', { weekday: 'long' }).toUpperCase()}</div>
+                <div className="text-sm font-medium bg-white bg-opacity-20 px-3 py-1 rounded-full">{booking.event.eventTime}</div>
               </div>
-              <div>
-                <div className="font-semibold text-gray-700 mb-1">Booking Details</div>
-                <div className="text-gray-700">Location: <span className="font-bold">{booking.event.location}</span></div>
-                <div className="text-gray-700">Services: <span className="font-bold">{booking.services.join(', ')}</span></div>
-                <div className="text-gray-700">Proposed Price: <span className="font-bold">₹{booking.proposedPrice.toLocaleString()}</span></div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-700">Status:</span>
-                  <span className={`px-2 py-1 rounded text-sm font-medium ${
-                    booking.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                    booking.status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {booking.status}
-                  </span>
+              
+              {/* Right Section: Event Details */}
+              <div className="flex-1">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{booking.event.eventName}</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center">
+                          <svg className="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          <span className="text-gray-700 font-semibold">{booking.event.organizer.fullName}</span>
+                        </div>
+                        {booking.event.organizer.companyName && (
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <span className="text-gray-600">{booking.event.organizer.companyName}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <svg className="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          </svg>
+                          <span className="text-gray-700">{booking.event.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <h4 className="font-semibold text-gray-700 mb-3">Booking Details</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-gray-600 text-sm">Services:</span>
+                          <p className="text-gray-800 font-medium">{booking.services?.join(', ') || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 text-sm">Proposed Price:</span>
+                          <p className="text-gray-800 font-bold text-lg">₹{booking.proposedPrice?.toLocaleString() || '0'}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600 text-sm">Status:</span>
+                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                            booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
+                            booking.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {booking.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -83,28 +123,61 @@ const MyEvents: React.FC = () => {
         <div className="bg-white rounded-lg shadow-lg p-8 text-center text-gray-500">No past bookings.</div>
       ) : (
         pastBookings.map((booking) => (
-          <div key={booking.id} className="bg-white rounded-lg shadow-lg p-6 flex gap-6 items-center max-w-4xl mb-8 opacity-75">
-            {/* Left Section: Date & Time */}
-            <div className="flex flex-col items-center justify-between bg-gray-100 rounded-lg p-4 min-w-[120px] h-full">
-              <div className="text-xs text-gray-500 mb-2">{new Date(booking.event.eventDate).toLocaleString('en-US', { month: 'long' }).toUpperCase()}</div>
-              <div className="text-3xl font-bold text-gray-600">{new Date(booking.event.eventDate).getDate()}</div>
-              <div className="text-xs text-gray-500 mb-2">{new Date(booking.event.eventDate).toLocaleString('en-US', { weekday: 'long' }).toUpperCase()}</div>
-              <div className="text-xs text-gray-500 mb-2">{booking.event.eventTime}</div>
-            </div>
-            {/* Right Section: Event Details */}
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              <div>
-                <div className="font-semibold text-gray-700 mb-1">Event Details</div>
-                <div className="text-gray-700 font-bold">{booking.event.eventName}</div>
-                <div className="text-gray-700">Organizer: <span className="font-bold">{booking.event.organizer.fullName}</span></div>
-                <div className="text-gray-700">Date: <span className="font-bold">{new Date(booking.event.eventDate).toLocaleDateString()}</span></div>
+          <div key={booking.id} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 mb-6 opacity-80">
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Left Section: Date & Time */}
+              <div className="flex flex-col items-center justify-center bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl p-6 min-w-[140px] text-white shadow-lg">
+                <div className="text-xs font-semibold mb-2 opacity-90">{new Date(booking.event.eventDate).toLocaleString('en-US', { month: 'long' }).toUpperCase()}</div>
+                <div className="text-4xl font-bold mb-2">{new Date(booking.event.eventDate).getDate()}</div>
+                <div className="text-xs font-semibold mb-2 opacity-90">{new Date(booking.event.eventDate).toLocaleString('en-US', { weekday: 'long' }).toUpperCase()}</div>
+                <div className="text-sm font-medium bg-white bg-opacity-20 px-3 py-1 rounded-full">{booking.event.eventTime}</div>
               </div>
-              <div>
-                <div className="font-semibold text-gray-700 mb-1">Booking Details</div>
-                <div className="text-gray-700">Location: <span className="font-bold">{booking.event.location}</span></div>
-                <div className="text-gray-700">Services: <span className="font-bold">{booking.services.join(', ')}</span></div>
-                <div className="text-gray-700">Final Price: <span className="font-bold">₹{booking.proposedPrice.toLocaleString()}</span></div>
-                <div className="text-gray-700">Status: <span className="font-bold text-gray-600">Completed</span></div>
+              
+              {/* Right Section: Event Details */}
+              <div className="flex-1">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-700 mb-2">{booking.event.eventName}</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center">
+                          <svg className="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          <span className="text-gray-600 font-semibold">{booking.event.organizer.fullName}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <svg className="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          </svg>
+                          <span className="text-gray-600">{booking.event.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <h4 className="font-semibold text-gray-600 mb-3">Final Details</h4>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-gray-500 text-sm">Services:</span>
+                          <p className="text-gray-700 font-medium">{booking.services?.join(', ') || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 text-sm">Final Price:</span>
+                          <p className="text-gray-700 font-bold text-lg">₹{booking.proposedPrice?.toLocaleString() || '0'}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 text-sm">Status:</span>
+                          <span className="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-700">
+                            Completed
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

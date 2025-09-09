@@ -5,6 +5,7 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '../../contexts/AuthContext';
 
 // ---- PASSWORD RESET COMPONENTS ----
 function PasswordResetView({ onToast, onBack }: { onToast: (msg: string) => void; onBack: () => void }) {
@@ -202,11 +203,17 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSessionId('demo-session');
-      setStep('otp');
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.forgotPassword(phone);
+      
+      if (result.success) {
+        setSessionId(result.sessionId);
+        setStep('otp');
+      } else {
+        setError(result.message || 'Failed to send OTP');
+      }
     } catch (err: unknown) {
-      setError('Demo mode - API not available');
+      setError(err instanceof Error ? err.message : 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -216,10 +223,16 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setStep('newPassword');
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
+      
+      if (result.success) {
+        setStep('newPassword');
+      } else {
+        setError(result.message || 'Invalid OTP');
+      }
     } catch (err: unknown) {
-      setError('Demo mode - API not available');
+      setError(err instanceof Error ? err.message : 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -237,11 +250,17 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Password reset successful! Please login with your new password.');
-      onBack();
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.resetPassword(sessionId, phone, newPassword);
+      
+      if (result.success) {
+        alert('Password reset successful! Please login with your new password.');
+        onBack();
+      } else {
+        setError(result.message || 'Failed to reset password');
+      }
     } catch (err: unknown) {
-      setError('Demo mode - API not available');
+      setError(err instanceof Error ? err.message : 'Failed to reset password');
     } finally {
       setLoading(false);
     }
@@ -366,6 +385,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const phoneLabelFloat = isPhoneFocused || phone.length > 0;
   const passwordLabelFloat = isPasswordFocused || password.length > 0;
@@ -375,55 +395,19 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
     setLoading(true);
     setError('');
 
-    console.log('Login attempt with:', { phone, password: '***' });
-
     try {
-      // Test direct API call first
-      const loginData = { phone, password };
-      console.log('Sending login request:', loginData);
+
       
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData)
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-
-      let result;
-      try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Failed to parse response:', parseError);
-        throw new Error('Invalid response from server');
-      }
-
-      console.log('Parsed result:', result);
-
-      if (!response.ok) {
-        throw new Error(result.message || `HTTP ${response.status}`);
-      }
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.login(phone, password);
 
       if (!result.success) {
         throw new Error(result.message || 'Login failed');
       }
       
-      // Store authentication data
-      localStorage.setItem('authToken', result.token);
-      localStorage.setItem('userType', result.user.userType);
-      localStorage.setItem('userId', result.user.id);
+      // Use AuthContext login method
+      login(result.token, result.user);
       
-      // Set cookie for middleware
-      document.cookie = `authToken=${result.token}; path=/; max-age=86400; SameSite=Lax`;
-      
-      console.log('Login successful, redirecting...');
-      // Navigate based on user type
       if (result.user.userType === 'organizer') {
         router.push('/event-organizers');
       } else if (result.user.userType === 'supplier') {
@@ -432,8 +416,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
         router.push('/user-dashboard');
       }
     } catch (err: unknown) {
-      console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : 'Invalid credentials');
     } finally {
       setLoading(false);
     }
