@@ -1,4 +1,4 @@
-// Complete API service with all endpoints
+// Direct backend API service
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://vizhaa-backend-1.onrender.com/api'
   : 'http://localhost:4000/api';
@@ -7,9 +7,11 @@ interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data?: T;
+  token?: string;
+  user?: any;
 }
 
-class ApiService {
+class BackendApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const token = localStorage.getItem('authToken');
     
@@ -30,7 +32,7 @@ class ApiService {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userType');
         localStorage.removeItem('userId');
-        window.location.href = '/auth/login';
+        window.location.href = '/auth/user-login';
         throw new Error('Unauthorized');
       }
       
@@ -139,14 +141,6 @@ class ApiService {
   organizer = {
     getDashboard: () => this.request('/organizer/dashboard'),
 
-    getProfile: () => this.request('/organizer/profile'),
-
-    updateProfile: (profileData: any) =>
-      this.request('/organizer/profile', {
-        method: 'PUT',
-        body: JSON.stringify(profileData),
-      }),
-
     getEvents: () => this.request('/organizer/events'),
 
     createEvent: (eventData: any) =>
@@ -185,20 +179,12 @@ class ApiService {
   supplier = {
     getDashboard: () => this.request('/supplier/dashboard'),
 
-    getProfile: () => this.request('/supplier/profile'),
-
-    updateProfile: (profileData: any) =>
-      this.request('/supplier/profile', {
-        method: 'PUT',
-        body: JSON.stringify(profileData),
-      }),
-
     getEvents: () => this.request('/supplier/events'),
 
-    bookEvent: (eventId: string, bookingData: any) =>
+    bookEvent: (eventId: string, message: string) =>
       this.request(`/supplier/events/${eventId}/book`, {
         method: 'POST',
-        body: JSON.stringify(bookingData),
+        body: JSON.stringify({ message }),
       }),
 
     getBookings: () => this.request('/supplier/bookings'),
@@ -206,8 +192,6 @@ class ApiService {
 
   // Users endpoints
   users = {
-    getDashboard: () => this.request('/users/dashboard'),
-
     getProfile: () => this.request('/users/profile'),
 
     updateProfile: (profileData: any) =>
@@ -216,22 +200,7 @@ class ApiService {
         body: JSON.stringify(profileData),
       }),
   };
-
-  // OTP endpoints
-  otp = {
-    send: (phone: string, purpose: string) =>
-      this.request('/otp/send', {
-        method: 'POST',
-        body: JSON.stringify({ phone, purpose }),
-      }),
-
-    verify: (sessionId: string, otp: string) =>
-      this.request('/otp/verify', {
-        method: 'POST',
-        body: JSON.stringify({ sessionId, otp }),
-      }),
-  };
 }
 
-export const api = new ApiService();
-export default api;
+export const backendApi = new BackendApiService();
+export default backendApi;

@@ -1,168 +1,86 @@
 import { useState, useCallback } from 'react';
+import { backendApi } from '../src/services/backendApi';
 
-interface APIResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-}
-
-interface APIState<T = any> {
+interface UseApiState<T> {
   data: T | null;
   loading: boolean;
   error: string | null;
 }
 
-export const useAPI = <T = any>() => {
-  const [state, setState] = useState<APIState<T>>({
+export function useAPI<T>() {
+  const [state, setState] = useState<UseApiState<T>>({
     data: null,
     loading: false,
-    error: null
+    error: null,
   });
 
-  const execute = useCallback(async (apiCall: () => Promise<APIResponse<T>>) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+  const execute = useCallback(async (apiCall: () => Promise<any>) => {
+    setState({ data: null, loading: true, error: null });
     
     try {
-      const result = await apiCall();
-      
-      if (result.success) {
-        setState({
-          data: result.data || null,
-          loading: false,
-          error: null
-        });
-        return { success: true, data: result.data };
+      const response = await apiCall();
+      if (response.success) {
+        setState({ data: response.data || response, loading: false, error: null });
+        return response;
       } else {
-        setState(prev => ({
-          ...prev,
-          loading: false,
-          error: result.message || 'Operation failed'
-        }));
-        return { success: false, message: result.message };
+        setState({ data: null, loading: false, error: response.message });
+        throw new Error(response.message);
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Network error occurred';
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: errorMessage
-      }));
-      return { success: false, message: errorMessage };
+      setState({ data: null, loading: false, error: error.message });
+      throw error;
     }
   }, []);
 
-  const reset = useCallback(() => {
-    setState({
-      data: null,
-      loading: false,
-      error: null
-    });
-  }, []);
+  return { ...state, execute };
+}
 
+// Specific hooks for different services
+export const useAuth = () => {
+  const { execute, ...state } = useAPI();
+  
   return {
     ...state,
-    execute,
-    reset
-  };
-};
-
-// Specific hooks for different API operations
-export const useAuth = () => {
-  const api = useAPI();
-  
-  const login = async (phone: string, password: string) => {
-    const { authAPI } = await import('../services/api.js');
-    return api.execute(() => authAPI.login(phone, password));
-  };
-
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userType');
-    localStorage.removeItem('userId');
-    window.location.href = '/auth/user-login';
-  };
-
-  return {
-    ...api,
-    login,
-    logout
+    sendOTP: (phone: string, userType: string) => execute(() => backendApi.auth.sendOTP(phone, userType)),
+    verifyOTP: (sessionId: string, otp: string, phone: string) => execute(() => backendApi.auth.verifyOTP(sessionId, otp, phone)),
+    login: (phone: string, password: string) => execute(() => backendApi.auth.login(phone, password)),
+    organizerSignup: (data: any) => execute(() => backendApi.auth.organizerSignup(data)),
+    supplierSignup: (data: any) => execute(() => backendApi.auth.supplierSignup(data)),
   };
 };
 
 export const useEvents = () => {
-  const api = useAPI();
-
-  const createEvent = async (eventData: any) => {
-    const { eventsAPI } = await import('../services/api.js');
-    return api.execute(() => eventsAPI.createEvent(eventData));
-  };
-
-  const getEvents = async () => {
-    const { eventsAPI } = await import('../services/api.js');
-    return api.execute(() => eventsAPI.getAllEvents());
-  };
-
-  const updateEvent = async (eventId: string, eventData: any) => {
-    const { eventsAPI } = await import('../services/api.js');
-    return api.execute(() => eventsAPI.updateEvent(eventId, eventData));
-  };
-
-  const deleteEvent = async (eventId: string) => {
-    const { eventsAPI } = await import('../services/api.js');
-    return api.execute(() => eventsAPI.deleteEvent(eventId));
-  };
-
+  const { execute, ...state } = useAPI();
+  
   return {
-    ...api,
-    createEvent,
-    getEvents,
-    updateEvent,
-    deleteEvent
-  };
-};
-
-export const useSupplier = () => {
-  const api = useAPI();
-
-  const getDashboard = async () => {
-    const { supplierAPI } = await import('../services/api.js');
-    return api.execute(() => supplierAPI.getDashboard());
-  };
-
-  const getAvailableEvents = async () => {
-    const { eventsAPI } = await import('../services/api.js');
-    return api.execute(() => eventsAPI.getAvailableEvents());
-  };
-
-  const bookEvent = async (eventId: string, message: string) => {
-    const { eventsAPI } = await import('../services/api.js');
-    return api.execute(() => eventsAPI.bookEvent(eventId, message));
-  };
-
-  return {
-    ...api,
-    getDashboard,
-    getAvailableEvents,
-    bookEvent
+    ...state,
+    getAll: () => execute(() => backendApi.events.getAll()),
+    getAvailable: () => execute(() => backendApi.events.getAvailable()),
+    create: (eventData: any) => execute(() => backendApi.events.create(eventData)),
+    book: (eventId: string, message: string) => execute(() => backendApi.events.book(eventId, message)),
   };
 };
 
 export const useOrganizer = () => {
-  const api = useAPI();
-
-  const getDashboard = async () => {
-    const { organizerAPI } = await import('../services/api.js');
-    return api.execute(() => organizerAPI.getDashboard());
-  };
-
-  const getBookings = async () => {
-    const { organizerAPI } = await import('../services/api.js');
-    return api.execute(() => organizerAPI.getBookings());
-  };
-
+  const { execute, ...state } = useAPI();
+  
   return {
-    ...api,
-    getDashboard,
-    getBookings
+    ...state,
+    getDashboard: () => execute(() => backendApi.organizer.getDashboard()),
+    getEvents: () => execute(() => backendApi.organizer.getEvents()),
+    createEvent: (eventData: any) => execute(() => backendApi.organizer.createEvent(eventData)),
+    getBookings: () => execute(() => backendApi.organizer.getBookings()),
+  };
+};
+
+export const useSupplier = () => {
+  const { execute, ...state } = useAPI();
+  
+  return {
+    ...state,
+    getDashboard: () => execute(() => backendApi.supplier.getDashboard()),
+    getEvents: () => execute(() => backendApi.supplier.getEvents()),
+    bookEvent: (eventId: string, message: string) => execute(() => backendApi.supplier.bookEvent(eventId, message)),
+    getBookings: () => execute(() => backendApi.supplier.getBookings()),
   };
 };

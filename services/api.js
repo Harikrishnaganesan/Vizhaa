@@ -1,4 +1,40 @@
-import apiCall, { API_ENDPOINTS } from '../config/api.js';
+// Direct backend API calls
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://vizhaa-backend-1.onrender.com/api'
+  : 'http://localhost:4000/api';
+
+const apiCall = async (endpoint, options = {}) => {
+  const token = localStorage.getItem('authToken');
+  
+  const config = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers
+    },
+    ...options
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    
+    if (response.status === 401) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userType');
+      localStorage.removeItem('userId');
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/user-login';
+      }
+      throw new Error('Session expired. Please login again.');
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 // Authentication API
 export const authAPI = {

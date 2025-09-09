@@ -3,7 +3,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   ? 'https://vizhaa-backend-1.onrender.com/api'
   : 'http://localhost:4000/api';
 
-// Direct API calls without proxy
+// Direct API calls to backend
 const getApiPath = (endpoint) => endpoint;
 
 export const API_ENDPOINTS = {
