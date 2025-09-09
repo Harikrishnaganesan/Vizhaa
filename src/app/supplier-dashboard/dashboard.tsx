@@ -4,13 +4,14 @@ import ViewEvents from "./ViewEvents";
 import MyEvents from "./MyEvents";
 import PocketTab from "./PocketTab";
 import Header from "../components/Header/Header";
+import ProfileCard from "../components/ProfileCard";
 import { useProfile } from "../contexts/ProfileContext";
 
 const sidebarItems = [
   { name: "View Events", icon: <img src="/view-event.svg" alt="View Events" className="w-5 h-5" /> },
   { name: "My Events", icon: <img src="/my-event.svg" alt="My Events" className="w-5 h-5" /> },
   { name: "Pocket", icon: <img src="/poket.svg" alt="Pocket" className="w-5 h-5" /> },
-  { name: "Profile", icon: <img src="/avatar1.png" alt="Profile" className="w-5 h-5 rounded-full" /> }
+  { name: "Profile", icon: <div className="w-5 h-5 rounded-full bg-current flex items-center justify-center"><svg className="w-3 h-3 text-gray-800" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2"/><path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="currentColor" strokeWidth="2"/></svg></div> }
 ];
 
 export default function SupplierDashboard() {
@@ -29,7 +30,7 @@ export default function SupplierDashboard() {
         return (
           <div className="max-w-md mx-auto">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
-            <div className="bg-white p-6 rounded-lg shadow">Profile component placeholder</div>
+            <ProfileCard />
           </div>
         );
       default:

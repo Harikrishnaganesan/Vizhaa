@@ -47,7 +47,7 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
     setSuccess('');
     
     try {
-      const { organizerAPI } = await import('../../../services/api.js');
+      const { organizerAPI } = await import('/services/api.js');
       
       const eventData = {
         ...formData,

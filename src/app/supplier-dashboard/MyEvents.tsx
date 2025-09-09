@@ -10,8 +10,11 @@ const MyEvents: React.FC = () => {
 
   const loadMyBookings = async () => {
     try {
-      const { supplierAPI } = await import('../../../services/api.js');
-      const result = await supplierAPI.getBookings();
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/supplier/bookings', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
       setBookings(result.data || []);
     } catch (error) {
       console.error('Failed to load bookings:', error);

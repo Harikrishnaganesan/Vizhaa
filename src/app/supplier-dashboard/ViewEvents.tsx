@@ -21,8 +21,11 @@ const ViewEvents: React.FC = () => {
 
   const loadEvents = async () => {
     try {
-      const { supplierAPI } = await import('../../../services/api.js');
-      const result = await supplierAPI.getAvailableEvents();
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/supplier/events', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
       setEvents(result.data || []);
       setError('');
     } catch (error: any) {
@@ -33,21 +36,33 @@ const ViewEvents: React.FC = () => {
   };
 
   const handleBookEvent = async (eventId: string) => {
-    if (!bookingData.services.length || !bookingData.proposedPrice) {
-      alert('Please select services and enter proposed price');
+    if (!bookingData.message) {
+      alert('Please enter a message');
       return;
     }
 
     try {
-      const { supplierAPI } = await import('../../../services/api.js');
-      await supplierAPI.bookEvent(eventId, bookingData.message);
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/supplier/events/${eventId}/book`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: bookingData.message })
+      });
       
-      setBookingEvent(null);
-      setBookingData({ services: [], proposedPrice: "", message: "" });
-      alert('Event booked successfully!');
-      loadEvents();
+      const result = await response.json();
+      if (result.success) {
+        setBookingEvent(null);
+        setBookingData({ services: [], proposedPrice: "", message: "" });
+        alert('Application submitted successfully!');
+        loadEvents();
+      } else {
+        alert('Failed to apply: ' + result.message);
+      }
     } catch (error: any) {
-      alert('Failed to book event: ' + error.message);
+      alert('Failed to apply: ' + error.message);
     }
   };
 
