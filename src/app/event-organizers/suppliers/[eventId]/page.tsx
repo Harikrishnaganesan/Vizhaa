@@ -34,21 +34,35 @@ export default function EventSuppliersPage() {
 
   const loadEventSuppliers = async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSuppliers([]);
-      setEventName("Demo Event");
+      const { organizerAPI } = await import('/services/api.js');
+      const result = await organizerAPI.getEventSuppliers(eventId);
+      
+      if (result.success && result.data) {
+        setSuppliers(result.data.suppliers || []);
+        setEventName(result.data.event?.eventName || "Event");
+      } else {
+        setSuppliers([]);
+        setEventName("Event");
+      }
     } catch (error) {
+      console.error('Failed to load event suppliers:', error);
       setSuppliers([]);
-      setEventName("Demo Event");
+      setEventName("Event");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateStatus = async (supplierId: string, status: string) => {
+  const handleUpdateStatus = async (bookingId: string, status: string) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      loadEventSuppliers();
+      const { organizerAPI } = await import('/services/api.js');
+      const result = await organizerAPI.updateBookingStatus(bookingId, status);
+      
+      if (result.success) {
+        loadEventSuppliers();
+      } else {
+        console.error('Failed to update supplier status:', result.message);
+      }
     } catch (error) {
       console.error('Failed to update supplier status:', error);
     }
@@ -107,14 +121,14 @@ export default function EventSuppliersPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <h3 className="text-lg font-bold text-gray-800">
-                          {supplier.fullName}
+                          {supplier.supplier?.fullName || 'Unknown Supplier'}
                         </h3>
-                        {supplier.businessName && (
-                          <p className="text-gray-600 text-sm">{supplier.businessName}</p>
+                        {supplier.supplier?.businessName && (
+                          <p className="text-gray-600 text-sm">{supplier.supplier.businessName}</p>
                         )}
                         <div className="mt-2 space-y-1 text-sm text-gray-600">
-                          <div>📞 {supplier.phone}</div>
-                          <div>✉️ {supplier.email}</div>
+                          <div>📞 {supplier.supplier?.phone || 'N/A'}</div>
+                          <div>✉️ {supplier.supplier?.email || 'N/A'}</div>
                           <div>📅 Booked: {new Date(supplier.bookedAt).toLocaleDateString()}</div>
                         </div>
                       </div>
@@ -123,13 +137,13 @@ export default function EventSuppliersPage() {
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700">Services:</span>
                           <div className="text-sm text-gray-600 mt-1">
-                            {supplier.services.join(', ')}
+                            {supplier.bookedServices?.join(', ') || supplier.supplier?.services?.join(', ') || 'N/A'}
                           </div>
                         </div>
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700">Proposed Price:</span>
                           <div className="text-lg font-bold text-green-600">
-                            ₹{supplier.proposedPrice.toLocaleString()}
+                            ₹{supplier.proposedPrice?.toLocaleString() || '0'}
                           </div>
                         </div>
                         {supplier.message && (
@@ -147,7 +161,7 @@ export default function EventSuppliersPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-gray-700">Status:</span>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          supplier.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                          supplier.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
                           supplier.status === 'Rejected' ? 'bg-red-100 text-red-800' :
                           'bg-yellow-100 text-yellow-800'
                         }`}>
@@ -158,13 +172,13 @@ export default function EventSuppliersPage() {
                       {supplier.status === 'Pending' && (
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleUpdateStatus(supplier.id, 'Approved')}
+                            onClick={() => handleUpdateStatus(supplier.bookingId, 'Confirmed')}
                             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm font-medium"
                           >
                             Approve
                           </button>
                           <button
-                            onClick={() => handleUpdateStatus(supplier.id, 'Rejected')}
+                            onClick={() => handleUpdateStatus(supplier.bookingId, 'Rejected')}
                             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium"
                           >
                             Reject

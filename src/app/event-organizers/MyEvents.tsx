@@ -126,9 +126,15 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
                 <span className="text-gray-600">Date:</span>
                 <span className="text-gray-800">{new Date(event.eventDate).toLocaleDateString()}</span>
               </div>
+              {event.budget > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Budget:</span>
+                  <span className="text-gray-800">₹{event.budget?.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Budget:</span>
-                <span className="text-gray-800">₹{event.budget?.toLocaleString()}</span>
+                <span className="text-gray-600">Suppliers Needed:</span>
+                <span className="text-blue-600 font-semibold">{event.numberOfSuppliers || 0}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Suppliers Booked:</span>

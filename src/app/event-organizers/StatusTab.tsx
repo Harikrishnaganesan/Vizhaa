@@ -17,7 +17,15 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
     try {
       const { organizerAPI } = await import('../../../services/api.js');
       const result = await organizerAPI.getBookings();
-      setBookings(Array.isArray(result.data) ? result.data : []);
+      console.log('Bookings result:', result);
+      
+      // Handle the response format from backend
+      if (result.success && result.data) {
+        const bookingsData = result.data.allBookings || result.data.bookingsByEvent || result.data || [];
+        setBookings(Array.isArray(bookingsData) ? bookingsData : []);
+      } else {
+        setBookings([]);
+      }
     } catch (error) {
       console.error('Failed to load bookings:', error);
       setBookings([]);
@@ -29,9 +37,14 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
   const handleUpdateBookingStatus = async (bookingId: string, status: string, message = '') => {
     try {
       const { organizerAPI } = await import('../../../services/api.js');
-      await organizerAPI.updateBookingStatus(bookingId, status, message);
-      // Reload bookings
-      loadBookings();
+      const result = await organizerAPI.updateBookingStatus(bookingId, status, message);
+      
+      if (result.success) {
+        // Reload bookings
+        loadBookings();
+      } else {
+        console.error('Failed to update booking status:', result.message);
+      }
     } catch (error) {
       console.error('Failed to update booking status:', error);
     }
@@ -75,20 +88,20 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
             <div className="flex-1">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-bold text-lg text-gray-800">{booking.supplier.fullName}</h3>
-                  {booking.supplier.businessName && (
-                    <span className="text-gray-500 text-sm">{booking.supplier.businessName}</span>
+                  <h3 className="font-bold text-lg text-gray-800">{booking.supplierId?.fullName || 'Unknown Supplier'}</h3>
+                  {booking.supplierId?.businessName && (
+                    <span className="text-gray-500 text-sm">{booking.supplierId.businessName}</span>
                   )}
-                  <div className="mt-2 text-gray-600 text-sm">Phone: {booking.supplier.phone}</div>
-                  <div className="text-gray-600 text-sm">Email: {booking.supplier.email}</div>
-                  <div className="text-gray-600 text-sm">Event: <span className="font-semibold">{booking.event.eventName}</span></div>
+                  <div className="mt-2 text-gray-600 text-sm">Phone: {booking.supplierId?.phone || 'N/A'}</div>
+                  <div className="text-gray-600 text-sm">Email: {booking.supplierId?.email || 'N/A'}</div>
+                  <div className="text-gray-600 text-sm">Event: <span className="font-semibold">{booking.eventId?.eventName || 'N/A'}</span></div>
                 </div>
                 <div>
                   <div className="text-gray-600 text-sm mb-2">
-                    <span className="font-semibold">Services:</span> {booking.services.join(', ')}
+                    <span className="font-semibold">Services:</span> {booking.services?.join(', ') || 'N/A'}
                   </div>
                   <div className="text-gray-600 text-sm mb-2">
-                    <span className="font-semibold">Proposed Price:</span> ₹{booking.proposedPrice.toLocaleString()}
+                    <span className="font-semibold">Proposed Price:</span> ₹{booking.proposedPrice?.toLocaleString() || '0'}
                   </div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-gray-600 text-sm font-semibold">Status:</span>
@@ -111,13 +124,13 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
                 {booking.status === 'Pending' && (
                   <>
                     <button 
-                      onClick={() => handleUpdateBookingStatus(booking.id, 'Approved')}
+                      onClick={() => handleUpdateBookingStatus(booking._id, 'Confirmed')}
                       className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded text-sm"
                     >
                       Approve
                     </button>
                     <button 
-                      onClick={() => handleUpdateBookingStatus(booking.id, 'Rejected')}
+                      onClick={() => handleUpdateBookingStatus(booking._id, 'Rejected')}
                       className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded text-sm"
                     >
                       Reject

@@ -31,21 +31,17 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneData.phone, userType: 'supplier' })
-      });
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.sendOTP(phoneData.phone, 'supplier');
       
-      const result = await response.json();
       if (result.success) {
         setSessionId(result.sessionId);
         setCurrentStep('otp');
       } else {
         setError(result.message || 'Failed to send OTP');
       }
-    } catch (err) {
-      setError('Network error. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -57,20 +53,16 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, otp: otpData.otp, phone: phoneData.phone })
-      });
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.verifyOTP(sessionId, otpData.otp, phoneData.phone);
       
-      const result = await response.json();
       if (result.success && result.phoneVerified) {
         setCurrentStep('details');
       } else {
         setError(result.message || 'Invalid OTP');
       }
-    } catch (err) {
-      setError('Network error. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -82,31 +74,31 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('phone', phoneData.phone);
-      formDataToSend.append('sessionId', sessionId);
-      formDataToSend.append('fullName', formData.fullName);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('password', formData.password);
-      formDataToSend.append('services', JSON.stringify(formData.services));
-      if (formData.aadharCard) {
-        formDataToSend.append('aadharCard', formData.aadharCard);
-      }
-
-      const response = await fetch('/api/auth/supplier/signup', {
-        method: 'POST',
-        body: formDataToSend
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.supplierSignup({
+        phone: phoneData.phone,
+        sessionId,
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        services: formData.services
       });
       
-      const result = await response.json();
       if (result.success) {
-        alert('Registration successful! Please login with your credentials.');
-        router.push('/auth/user-login');
+        // Store auth token if provided
+        if (result.token) {
+          localStorage.setItem('authToken', result.token);
+          localStorage.setItem('userType', 'supplier');
+          localStorage.setItem('userId', result.user.id);
+        }
+        
+        alert('Registration successful!');
+        router.push(result.token ? '/supplier-dashboard' : '/auth/user-login');
       } else {
         setError(result.message || 'Registration failed');
       }
-    } catch (err) {
-      setError('Network error. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }

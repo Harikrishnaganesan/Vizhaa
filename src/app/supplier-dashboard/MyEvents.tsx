@@ -10,14 +10,18 @@ const MyEvents: React.FC = () => {
 
   const loadMyBookings = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/supplier/bookings', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
-      setBookings(result.data || []);
+      const { supplierAPI } = await import('/services/api.js');
+      const result = await supplierAPI.getBookings();
+      
+      if (result.success) {
+        setBookings(result.data || []);
+      } else {
+        console.error('Failed to load bookings:', result.message);
+        setBookings([]);
+      }
     } catch (error) {
       console.error('Failed to load bookings:', error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -63,12 +67,12 @@ const MyEvents: React.FC = () => {
               <div>
                 <div className="font-semibold text-gray-700 mb-1">Booking Details</div>
                 <div className="text-gray-700">Location: <span className="font-bold">{booking.event.location}</span></div>
-                <div className="text-gray-700">Services: <span className="font-bold">{booking.services.join(', ')}</span></div>
-                <div className="text-gray-700">Proposed Price: <span className="font-bold">₹{booking.proposedPrice.toLocaleString()}</span></div>
+                <div className="text-gray-700">Services: <span className="font-bold">{booking.services?.join(', ') || 'N/A'}</span></div>
+                <div className="text-gray-700">Proposed Price: <span className="font-bold">₹{booking.proposedPrice?.toLocaleString() || '0'}</span></div>
                 <div className="flex items-center gap-2">
                   <span className="text-gray-700">Status:</span>
                   <span className={`px-2 py-1 rounded text-sm font-medium ${
-                    booking.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                    booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
                     booking.status === 'Rejected' ? 'bg-red-100 text-red-800' :
                     'bg-yellow-100 text-yellow-800'
                   }`}>
@@ -105,8 +109,8 @@ const MyEvents: React.FC = () => {
               <div>
                 <div className="font-semibold text-gray-700 mb-1">Booking Details</div>
                 <div className="text-gray-700">Location: <span className="font-bold">{booking.event.location}</span></div>
-                <div className="text-gray-700">Services: <span className="font-bold">{booking.services.join(', ')}</span></div>
-                <div className="text-gray-700">Final Price: <span className="font-bold">₹{booking.proposedPrice.toLocaleString()}</span></div>
+                <div className="text-gray-700">Services: <span className="font-bold">{booking.services?.join(', ') || 'N/A'}</span></div>
+                <div className="text-gray-700">Final Price: <span className="font-bold">₹{booking.proposedPrice?.toLocaleString() || '0'}</span></div>
                 <div className="text-gray-700">Status: <span className="font-bold text-gray-600">Completed</span></div>
               </div>
             </div>

@@ -203,11 +203,17 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSessionId('demo-session');
-      setStep('otp');
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.forgotPassword(phone);
+      
+      if (result.success) {
+        setSessionId(result.sessionId);
+        setStep('otp');
+      } else {
+        setError(result.message || 'Failed to send OTP');
+      }
     } catch (err: unknown) {
-      setError('Demo mode - API not available');
+      setError(err instanceof Error ? err.message : 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -217,10 +223,16 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setStep('newPassword');
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
+      
+      if (result.success) {
+        setStep('newPassword');
+      } else {
+        setError(result.message || 'Invalid OTP');
+      }
     } catch (err: unknown) {
-      setError('Demo mode - API not available');
+      setError(err instanceof Error ? err.message : 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -238,11 +250,17 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Password reset successful! Please login with your new password.');
-      onBack();
+      const { authAPI } = await import('/services/api.js');
+      const result = await authAPI.resetPassword(sessionId, phone, newPassword);
+      
+      if (result.success) {
+        alert('Password reset successful! Please login with your new password.');
+        onBack();
+      } else {
+        setError(result.message || 'Failed to reset password');
+      }
     } catch (err: unknown) {
-      setError('Demo mode - API not available');
+      setError(err instanceof Error ? err.message : 'Failed to reset password');
     } finally {
       setLoading(false);
     }

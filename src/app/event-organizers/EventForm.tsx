@@ -14,12 +14,12 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
     eventName: initialData?.eventName || "",
     eventType: initialData?.eventType || "",
     location: initialData?.location || "",
-    eventDate: initialData?.eventDate || "",
+    eventDate: initialData?.eventDate ? new Date(initialData.eventDate).toISOString().split('T')[0] : "",
     eventTime: initialData?.eventTime || "",
     budget: initialData?.budget || "",
     numberOfSuppliers: initialData?.numberOfSuppliers || "",
     servicesNeeded: initialData?.servicesNeeded || [],
-    description: initialData?.description || "",
+    notes: initialData?.notes || "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
   const [success, setSuccess] = useState('');
 
   const eventTypes = ["Wedding", "Corporate", "Birthday", "Anniversary", "Conference", "Other"];
-  const availableServices = ["Catering", "Photography", "Decoration", "Music", "Transportation", "Security"];
+  const availableServices = ["Breakfast", "Dinner", "Snacks", "Cocktails", "Lunch", "Mini Tifin", "High Tea", "Desserts"];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,8 +51,9 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
       
       const eventData = {
         ...formData,
-        budget: parseInt(formData.budget),
-        numberOfSuppliers: parseInt(formData.numberOfSuppliers)
+        budget: formData.budget ? parseInt(formData.budget) : 0,
+        numberOfSuppliers: parseInt(formData.numberOfSuppliers),
+        eventDate: new Date(formData.eventDate).toISOString()
       };
       
       if (isEdit && initialData?.id) {
@@ -181,9 +182,9 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
         </div>
         
         <textarea
-          name="description"
-          placeholder="Event Description"
-          value={formData.description}
+          name="notes"
+          placeholder="Event Notes/Description"
+          value={formData.notes}
           onChange={handleChange}
           rows={4}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400"

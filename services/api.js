@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   : 'http://localhost:4000/api';
 
 const apiCall = async (endpoint, options = {}) => {
-  const token = localStorage.getItem('authToken');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   
   const config = {
     method: 'GET',
@@ -17,21 +17,29 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
+    console.log(`API Call: ${config.method} ${API_BASE_URL}${endpoint}`);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
     if (response.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userType');
-      localStorage.removeItem('userId');
       if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
         window.location.href = '/auth/user-login';
       }
       throw new Error('Session expired. Please login again.');
     }
     
     const data = await response.json();
+    console.log(`API Response:`, data);
+    
+    if (!data.success && data.message) {
+      throw new Error(data.message);
+    }
+    
     return data;
   } catch (error) {
+    console.error(`API Error for ${endpoint}:`, error);
     throw error;
   }
 };
@@ -122,28 +130,45 @@ export const organizerAPI = {
   
   // Event Management
   getEvents: () => apiCall('/organizer/events'),
-  createEvent: (eventData) => apiCall('/organizer/events', {
-    method: 'POST',
-    body: JSON.stringify(eventData)
-  }),
-  updateEvent: (eventId, eventData) => apiCall(`/organizer/events/${eventId}`, {
-    method: 'PUT',
-    body: JSON.stringify(eventData)
-  }),
-  deleteEvent: (eventId) => apiCall(`/organizer/events/${eventId}`, {
-    method: 'DELETE'
-  }),
+  getEventsStatus: () => apiCall('/organizer/status'),
+  createEvent: (eventData) => {
+    console.log('Creating event with data:', eventData);
+    return apiCall('/organizer/events', {
+      method: 'POST',
+      body: JSON.stringify(eventData)
+    });
+  },
+  updateEvent: (eventId, eventData) => {
+    console.log('Updating event:', eventId, eventData);
+    return apiCall(`/organizer/events/${eventId}`, {
+      method: 'PUT',
+      body: JSON.stringify(eventData)
+    });
+  },
+  deleteEvent: (eventId) => {
+    console.log('Deleting event:', eventId);
+    return apiCall(`/organizer/events/${eventId}`, {
+      method: 'DELETE'
+    });
+  },
   
   // Supplier Management
   getEventSuppliers: (eventId) => apiCall(`/organizer/events/${eventId}/suppliers`),
   
   // Booking Management
   getBookings: () => apiCall('/organizer/bookings'),
-  updateBookingStatus: (bookingId, status) => apiCall(`/organizer/bookings/${bookingId}/status`, {
+  updateBookingStatus: (bookingId, status, organizerMessage) => apiCall(`/organizer/bookings/${bookingId}/status`, {
     method: 'PUT',
-    body: JSON.stringify({ status })
+    body: JSON.stringify({ status, organizerMessage })
   }),
-  getBookingDetails: (bookingId) => apiCall(`/organizer/bookings/${bookingId}`)
+  getBookingDetails: (bookingId) => apiCall(`/organizer/bookings/${bookingId}`),
+  
+  // Profile Management
+  getProfile: () => apiCall('/organizer/profile'),
+  updateProfile: (profileData) => apiCall('/organizer/profile', {
+    method: 'PUT',
+    body: JSON.stringify(profileData)
+  })
 };
 
 // Supplier API
@@ -154,10 +179,13 @@ export const supplierAPI = {
   getAvailableEvents: () => apiCall('/supplier/events'),
   
   // Book Event
-  bookEvent: (eventId, message) => apiCall(`/supplier/events/${eventId}/book`, {
-    method: 'POST',
-    body: JSON.stringify({ message })
-  }),
+  bookEvent: (eventId, bookingData) => {
+    console.log('Booking event:', eventId, bookingData);
+    return apiCall(`/supplier/events/${eventId}/book`, {
+      method: 'POST',
+      body: JSON.stringify(bookingData)
+    });
+  },
   
   // View My Bookings
   getBookings: () => apiCall('/supplier/bookings')

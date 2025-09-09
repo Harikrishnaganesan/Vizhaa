@@ -21,13 +21,15 @@ const ViewEvents: React.FC = () => {
 
   const loadEvents = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/supplier/events', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
-      setEvents(result.data || []);
-      setError('');
+      const { supplierAPI } = await import('/services/api.js');
+      const result = await supplierAPI.getAvailableEvents();
+      
+      if (result.success) {
+        setEvents(result.data || []);
+        setError('');
+      } else {
+        setError(result.message || 'Failed to load events');
+      }
     } catch (error: any) {
       setError(error.message || 'Failed to load events');
     } finally {
@@ -36,30 +38,26 @@ const ViewEvents: React.FC = () => {
   };
 
   const handleBookEvent = async (eventId: string) => {
-    if (!bookingData.message) {
+    if (!bookingData.message.trim()) {
       alert('Please enter a message');
       return;
     }
 
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`/api/supplier/events/${eventId}/book`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message: bookingData.message })
+      const { supplierAPI } = await import('/services/api.js');
+      const result = await supplierAPI.bookEvent(eventId, {
+        services: bookingData.services,
+        proposedPrice: bookingData.proposedPrice ? parseInt(bookingData.proposedPrice) : 0,
+        message: bookingData.message
       });
       
-      const result = await response.json();
       if (result.success) {
         setBookingEvent(null);
         setBookingData({ services: [], proposedPrice: "", message: "" });
         alert('Application submitted successfully!');
         loadEvents();
       } else {
-        alert('Failed to apply: ' + result.message);
+        alert('Failed to apply: ' + (result.message || 'Unknown error'));
       }
     } catch (error: any) {
       alert('Failed to apply: ' + error.message);
@@ -114,9 +112,9 @@ const ViewEvents: React.FC = () => {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Organizer:</span>
-                <span className="text-gray-800 font-medium">{event.organizer.fullName}</span>
+                <span className="text-gray-800 font-medium">{event.organizer?.fullName || 'N/A'}</span>
               </div>
-              {event.organizer.companyName && (
+              {event.organizer?.companyName && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Company:</span>
                   <span className="text-gray-800">{event.organizer.companyName}</span>
@@ -124,7 +122,7 @@ const ViewEvents: React.FC = () => {
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Phone:</span>
-                <span className="text-gray-800">{event.organizer.phone}</span>
+                <span className="text-gray-800">{event.organizer?.phone || 'N/A'}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Location:</span>
@@ -134,16 +132,18 @@ const ViewEvents: React.FC = () => {
                 <span className="text-gray-600">Date:</span>
                 <span className="text-gray-800">{new Date(event.eventDate).toLocaleDateString()}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Budget:</span>
-                <span className="text-gray-800 font-semibold">₹{event.budget?.toLocaleString()}</span>
-              </div>
+              {event.budget > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Budget:</span>
+                  <span className="text-gray-800 font-semibold">₹{event.budget?.toLocaleString()}</span>
+                </div>
+              )}
             </div>
             
             {event.isBooked ? (
               <div className="text-center">
                 <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  event.bookingStatus === 'Approved' ? 'bg-green-100 text-green-800' :
+                  event.bookingStatus === 'Confirmed' ? 'bg-green-100 text-green-800' :
                   event.bookingStatus === 'Rejected' ? 'bg-red-100 text-red-800' :
                   'bg-yellow-100 text-yellow-800'
                 }`}>
