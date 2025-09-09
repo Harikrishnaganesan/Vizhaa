@@ -33,8 +33,8 @@ const apiCall = async (endpoint, options = {}) => {
     const data = await response.json();
     console.log(`API Response:`, data);
     
-    if (!data.success && data.message) {
-      throw new Error(data.message);
+    if (data.success === false) {
+      throw new Error(data.message || 'API request failed');
     }
     
     return data;

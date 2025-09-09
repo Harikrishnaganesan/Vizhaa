@@ -81,7 +81,7 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
       </div>
       <div className="space-y-6">
         {bookings.map((booking) => (
-          <div key={booking.id} className="border rounded-lg p-6 flex flex-col lg:flex-row lg:items-center gap-6 bg-gray-50">
+          <div key={booking._id} className="border rounded-lg p-6 flex flex-col lg:flex-row lg:items-center gap-6 bg-gray-50">
             <div className="flex-shrink-0">
               <Image src="/avatar1.png" alt="Profile" width={100} height={100} className="rounded-lg object-cover w-[100px] h-[100px]" />
             </div>
@@ -98,10 +98,10 @@ const StatusTab: React.FC<StatusTabProps> = ({ events }) => {
                 </div>
                 <div>
                   <div className="text-gray-600 text-sm mb-2">
-                    <span className="font-semibold">Services:</span> {booking.services?.join(', ') || 'N/A'}
+                    <span className="font-semibold">Services:</span> {booking.services?.length > 0 ? booking.services.join(', ') : 'No services specified'}
                   </div>
                   <div className="text-gray-600 text-sm mb-2">
-                    <span className="font-semibold">Proposed Price:</span> ₹{booking.proposedPrice?.toLocaleString() || '0'}
+                    <span className="font-semibold">Proposed Price:</span> ₹{booking.proposedPrice > 0 ? booking.proposedPrice.toLocaleString() : 'Not specified'}
                   </div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-gray-600 text-sm font-semibold">Status:</span>
