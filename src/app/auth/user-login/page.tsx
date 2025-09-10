@@ -203,8 +203,8 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('../../../services/api.js');
-      const result = await authAPI.forgotPassword(phone);
+      const { backendApi } = await import('../../services/backendApi');
+      const result = await backendApi.auth.forgotPassword(phone);
       
       if (result.success) {
         setSessionId(result.sessionId);
@@ -223,8 +223,8 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('../../../services/api.js');
-      const result = await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
+      const { backendApi } = await import('../../services/backendApi');
+      const result = await backendApi.auth.verifyPasswordResetOTP(sessionId, otp, phone);
       
       if (result.success) {
         setStep('newPassword');
@@ -250,8 +250,8 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('../../../services/api.js');
-      const result = await authAPI.resetPassword(sessionId, phone, newPassword);
+      const { backendApi } = await import('../../services/backendApi');
+      const result = await backendApi.auth.resetPassword(sessionId, phone, newPassword);
       
       if (result.success) {
         alert('Password reset successful! Please login with your new password.');
@@ -409,8 +409,8 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
       }
       
       setError('Authenticating...');
-      const { authAPI } = await import('../../../services/api.js');
-      const result = await authAPI.login(phone, password);
+      const { backendApi } = await import('../../services/backendApi');
+      const result = await backendApi.auth.login(phone, password);
 
       if (!result.success) {
         throw new Error(result.message || 'Login failed');
