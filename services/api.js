@@ -1,7 +1,8 @@
 // Direct backend API calls
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://vizhaa-backend-1.onrender.com/api'
-  : 'http://localhost:4000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://vizhaa-backend-1.onrender.com/api'
+    : 'http://localhost:4000/api');
 
 const apiCall = async (endpoint, options = {}) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
@@ -10,9 +11,12 @@ const apiCall = async (endpoint, options = {}) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers
     },
+    mode: 'cors',
+    credentials: 'omit',
     ...options
   };
 
@@ -20,14 +24,19 @@ const apiCall = async (endpoint, options = {}) => {
     console.log(`API Call: ${config.method} ${API_BASE_URL}${endpoint}`);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
-    if (response.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userType');
-        localStorage.removeItem('userId');
-        window.location.href = '/auth/user-login';
+    if (!response.ok) {
+      if (response.status === 401) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userType');
+          localStorage.removeItem('userId');
+          window.location.href = '/auth/user-login';
+        }
+        throw new Error('Session expired. Please login again.');
       }
-      throw new Error('Session expired. Please login again.');
+      
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
     }
     
     const data = await response.json();
@@ -40,6 +49,11 @@ const apiCall = async (endpoint, options = {}) => {
     return data;
   } catch (error) {
     console.error(`API Error for ${endpoint}:`, error);
+    
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('Network error: Unable to connect to server. Please check your internet connection.');
+    }
+    
     throw error;
   }
 };
