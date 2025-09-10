@@ -1,10 +1,25 @@
 // Direct backend API calls
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
-  (process.env.NODE_ENV === 'production' 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
     ? 'https://vizhaa-backend-1.onrender.com/api'
     : 'http://localhost:4000/api');
 
-const apiCall = async (endpoint, options = {}) => {
+// Health check function
+const checkBackendHealth = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: { 'Accept': 'application/json' }
+    });
+    return response.ok;
+  } catch (error) {
+    console.warn('Backend health check failed:', error);
+    return false;
+  }
+};
+
+const apiCall = async (endpoint, options = {}, retries = 2) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   
   const config = {
@@ -17,44 +32,75 @@ const apiCall = async (endpoint, options = {}) => {
     },
     mode: 'cors',
     credentials: 'omit',
+    timeout: 30000,
     ...options
   };
 
-  try {
-    console.log(`API Call: ${config.method} ${API_BASE_URL}${endpoint}`);
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    
-    if (!response.ok) {
-      if (response.status === 401) {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userType');
-          localStorage.removeItem('userId');
-          window.location.href = '/auth/user-login';
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      console.log(`API Call (attempt ${attempt + 1}): ${config.method} ${API_BASE_URL}${endpoint}`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...config,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userType');
+            localStorage.removeItem('userId');
+            window.location.href = '/auth/user-login';
+          }
+          throw new Error('Session expired. Please login again.');
         }
-        throw new Error('Session expired. Please login again.');
+        
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
       }
       
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+      const data = await response.json();
+      console.log(`API Response:`, data);
+      
+      if (data.success === false) {
+        throw new Error(data.message || 'API request failed');
+      }
+      
+      return data;
+    } catch (error) {
+      console.error(`API Error for ${endpoint} (attempt ${attempt + 1}):`, error);
+      
+      if (attempt === retries) {
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout: Server is taking too long to respond.');
+        }
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          throw new Error('Network error: Unable to connect to server. The backend service may be starting up or unavailable.');
+        }
+        throw error;
+      }
+      
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
     }
-    
-    const data = await response.json();
-    console.log(`API Response:`, data);
-    
-    if (data.success === false) {
-      throw new Error(data.message || 'API request failed');
-    }
-    
-    return data;
+  }
+};
+
+// Wake up backend (for Render free tier)
+const wakeUpBackend = async () => {
+  try {
+    await fetch('https://vizhaa-backend-1.onrender.com/health', { 
+      method: 'GET',
+      mode: 'no-cors'
+    });
   } catch (error) {
-    console.error(`API Error for ${endpoint}:`, error);
-    
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      throw new Error('Network error: Unable to connect to server. Please check your internet connection.');
-    }
-    
-    throw error;
+    console.log('Backend wake-up call made');
   }
 };
 
@@ -80,10 +126,20 @@ export const authAPI = {
     body: JSON.stringify(data)
   }),
   
-  login: (phone, password) => apiCall('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ phone, password })
-  }),
+  login: async (phone, password) => {
+    try {
+      // Wake up backend first
+      await wakeUpBackend();
+      
+      return await apiCall('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ phone, password })
+      });
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw new Error(error.message || 'Login failed. The server may be starting up, please wait a moment and try again.');
+    }
+  },
   
   forgotPassword: (phone) => apiCall('/auth/forgot-password', {
     method: 'POST',
