@@ -203,8 +203,12 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { backendApi } = await import('../../services/backendApi');
-      const result = await backendApi.auth.forgotPassword(phone);
+      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+      const result = await response.json();
       
       if (result.success) {
         setSessionId(result.sessionId);
@@ -223,8 +227,12 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { backendApi } = await import('../../services/backendApi');
-      const result = await backendApi.auth.verifyPasswordResetOTP(sessionId, otp, phone);
+      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/verify-password-reset-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, otp, phone })
+      });
+      const result = await response.json();
       
       if (result.success) {
         setStep('newPassword');
@@ -250,8 +258,12 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { backendApi } = await import('../../services/backendApi');
-      const result = await backendApi.auth.resetPassword(sessionId, phone, newPassword);
+      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, phone, newPassword })
+      });
+      const result = await response.json();
       
       if (result.success) {
         alert('Password reset successful! Please login with your new password.');
@@ -409,8 +421,16 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
       }
       
       setError('Authenticating...');
-      const { backendApi } = await import('../../services/backendApi');
-      const result = await backendApi.auth.login(phone, password);
+      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, password })
+      });
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Login failed');
+      }
 
       if (!result.success) {
         throw new Error(result.message || 'Login failed');
