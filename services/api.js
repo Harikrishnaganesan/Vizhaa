@@ -30,6 +30,7 @@ const apiCall = async (endpoint, options = {}, retries = 2) => {
       ...options.headers
     },
     mode: 'cors',
+    credentials: 'omit',
     ...options
   };
 
