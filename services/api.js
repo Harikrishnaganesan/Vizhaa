@@ -27,11 +27,12 @@ const apiCall = async (endpoint, options = {}, retries = 2) => {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Origin': typeof window !== 'undefined' ? window.location.origin : 'https://vizhaa.in',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers
     },
     mode: 'cors',
-    credentials: 'omit',
+    credentials: 'include',
     timeout: 30000,
     ...options
   };
