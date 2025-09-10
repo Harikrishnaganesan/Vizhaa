@@ -26,14 +26,10 @@ const apiCall = async (endpoint, options = {}, retries = 2) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Origin': typeof window !== 'undefined' ? window.location.origin : 'https://vizhaa.in',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers
     },
     mode: 'cors',
-    credentials: 'include',
-    timeout: 30000,
     ...options
   };
 
@@ -96,12 +92,15 @@ const apiCall = async (endpoint, options = {}, retries = 2) => {
 // Wake up backend (for Render free tier)
 const wakeUpBackend = async () => {
   try {
-    await fetch('https://vizhaa-backend-1.onrender.com/health', { 
+    const response = await fetch('https://vizhaa-backend-1.onrender.com/health', { 
       method: 'GET',
-      mode: 'no-cors'
+      mode: 'cors'
     });
+    console.log('Backend wake-up successful:', response.ok);
+    return response.ok;
   } catch (error) {
-    console.log('Backend wake-up call made');
+    console.log('Backend wake-up failed:', error.message);
+    return false;
   }
 };
 
@@ -129,8 +128,12 @@ export const authAPI = {
   
   login: async (phone, password) => {
     try {
-      // Wake up backend first
+      // Wake up backend first and wait
+      console.log('Waking up backend...');
       await wakeUpBackend();
+      
+      // Wait a bit for backend to fully start
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       return await apiCall('/auth/login', {
         method: 'POST',
@@ -138,7 +141,7 @@ export const authAPI = {
       });
     } catch (error) {
       console.error('Login failed:', error);
-      throw new Error(error.message || 'Login failed. The server may be starting up, please wait a moment and try again.');
+      throw new Error(error.message || 'Login failed. Please try again in a moment.');
     }
   },
   
