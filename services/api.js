@@ -39,7 +39,7 @@ const apiCall = async (endpoint, options = {}, retries = 2) => {
       console.log(`API Call (attempt ${attempt + 1}): ${config.method} ${API_BASE_URL}${endpoint}`);
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // Increased to 60 seconds
       
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...config,
@@ -131,24 +131,43 @@ export const authAPI = {
     try {
       console.log('Attempting login...');
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         mode: 'cors',
+        signal: controller.signal,
         body: JSON.stringify({ phone, password })
       });
       
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error (${response.status}): ${errorText || response.statusText}`);
+      }
+      
       const data = await response.json();
       
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || 'Login failed');
       }
       
       return data;
     } catch (error) {
       console.error('Login failed:', error);
+      
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout: Server is taking too long to respond. This may be due to server startup time.');
+      }
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to server. Please check your internet connection.');
+      }
+      
       throw new Error(error.message || 'Login failed. Please try again.');
     }
   },

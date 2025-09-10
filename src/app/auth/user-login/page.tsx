@@ -203,7 +203,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('/services/api.js');
+      const { authAPI } = await import('../../../services/api.js');
       const result = await authAPI.forgotPassword(phone);
       
       if (result.success) {
@@ -223,7 +223,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('/services/api.js');
+      const { authAPI } = await import('../../../services/api.js');
       const result = await authAPI.verifyPasswordResetOTP(sessionId, otp, phone);
       
       if (result.success) {
@@ -250,7 +250,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const { authAPI } = await import('/services/api.js');
+      const { authAPI } = await import('../../../services/api.js');
       const result = await authAPI.resetPassword(sessionId, phone, newPassword);
       
       if (result.success) {
@@ -396,9 +396,20 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
     setError('');
 
     try {
-
+      // Wake up backend first (for Render free tier)
+      setError('Connecting to server...');
+      try {
+        await fetch('https://vizhaa-backend-1.onrender.com/health', { 
+          method: 'GET',
+          mode: 'cors',
+          signal: AbortSignal.timeout(10000)
+        });
+      } catch (wakeError) {
+        console.log('Backend wake-up attempt:', wakeError);
+      }
       
-      const { authAPI } = await import('/services/api.js');
+      setError('Authenticating...');
+      const { authAPI } = await import('../../../services/api.js');
       const result = await authAPI.login(phone, password);
 
       if (!result.success) {
@@ -416,7 +427,17 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
         router.push('/user-dashboard');
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Invalid credentials');
+      if (err instanceof Error) {
+        if (err.message.includes('fetch')) {
+          setError('Network error: Unable to connect to server. Please check your internet connection and try again.');
+        } else if (err.message.includes('timeout')) {
+          setError('Server is taking too long to respond. Please try again in a moment.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -531,7 +552,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
               disabled={loading}
               className="w-full mt-4 py-3 rounded-md bg-[#253C51] text-white text-lg font-semibold transition hover:bg-[#2A4F71] shadow disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (error.includes('Connecting') ? 'Waking up server...' : error.includes('Authenticating') ? 'Signing in...' : 'Please wait...') : 'Sign In'}
             </button>
           </form>
           
