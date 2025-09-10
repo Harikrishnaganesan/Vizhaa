@@ -205,6 +205,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     try {
       const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/forgot-password', {
         method: 'POST',
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
       });
@@ -229,6 +230,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     try {
       const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/verify-password-reset-otp', {
         method: 'POST',
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, otp, phone })
       });
@@ -260,6 +262,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     try {
       const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/reset-password', {
         method: 'POST',
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, phone, newPassword })
       });
@@ -423,6 +426,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
       setError('Authenticating...');
       const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/login', {
         method: 'POST',
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, password })
       });
