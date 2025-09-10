@@ -129,20 +129,27 @@ export const authAPI = {
   
   login: async (phone, password) => {
     try {
-      // Wake up backend first and wait
-      console.log('Waking up backend...');
-      await wakeUpBackend();
+      console.log('Attempting login...');
       
-      // Wait a bit for backend to fully start
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      return await apiCall('/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        mode: 'cors',
         body: JSON.stringify({ phone, password })
       });
+      
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Login failed');
+      }
+      
+      return data;
     } catch (error) {
       console.error('Login failed:', error);
-      throw new Error(error.message || 'Login failed. Please try again in a moment.');
+      throw new Error(error.message || 'Login failed. Please try again.');
     }
   },
   
