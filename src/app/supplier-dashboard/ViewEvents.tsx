@@ -8,9 +8,8 @@ const ViewEvents: React.FC = () => {
   const [error, setError] = useState('');
   const [bookingEvent, setBookingEvent] = useState<string | null>(null);
   const [bookingData, setBookingData] = useState({
-    services: [] as string[],
-    proposedPrice: "",
-    message: "",
+    proposedBudget: "",
+    notes: "",
   });
 
   const availableServices = ["Catering", "Photography", "Decoration", "Music", "Transportation", "Security"];
@@ -22,7 +21,7 @@ const ViewEvents: React.FC = () => {
   const loadEvents = async () => {
     try {
       const { api } = await import('../../services/completeApi');
-      const result = await api.supplier.getEvents();
+      const result = await api.events.getAvailable();
       
       if (result.success) {
         setEvents((result.data as any[]) || []);
@@ -38,22 +37,22 @@ const ViewEvents: React.FC = () => {
   };
 
   const handleBookEvent = async (eventId: string) => {
-    if (!bookingData.message.trim()) {
-      alert('Please enter a message');
+    if (!bookingData.proposedBudget) {
+      alert('Please enter a proposed budget');
       return;
     }
 
     try {
       const { api } = await import('../../services/completeApi');
-      const result = await api.supplier.bookEvent(eventId, {
-        services: bookingData.services,
-        proposedPrice: bookingData.proposedPrice ? parseInt(bookingData.proposedPrice) : 0,
-        message: bookingData.message
-      });
+      const result = await api.events.book(
+        eventId, 
+        parseInt(bookingData.proposedBudget), 
+        bookingData.notes
+      );
       
       if (result.success) {
         setBookingEvent(null);
-        setBookingData({ services: [], proposedPrice: "", message: "" });
+        setBookingData({ proposedBudget: "", notes: "" });
         alert('Application submitted successfully!');
         loadEvents();
       } else {
@@ -64,12 +63,7 @@ const ViewEvents: React.FC = () => {
     }
   };
 
-  const handleServiceToggle = (service: string) => {
-    const services = bookingData.services.includes(service)
-      ? bookingData.services.filter(s => s !== service)
-      : [...bookingData.services, service];
-    setBookingData({ ...bookingData, services });
-  };
+
 
   if (loading) {
     return (
@@ -253,62 +247,39 @@ const ViewEvents: React.FC = () => {
             
             {/* Modal Content */}
             <div className="p-6 space-y-6">
-              {/* Services Selection */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  Select Services You Provide
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {availableServices.map(service => (
-                    <label key={service} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={bookingData.services.includes(service)}
-                        onChange={() => handleServiceToggle(service)}
-                        className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                      />
-                      <span className="text-sm font-medium text-gray-700">{service}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Proposed Price */}
+              {/* Proposed Budget */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                   <svg className="w-4 h-4 text-yellow-600" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                   </svg>
-                  Proposed Price
+                  Proposed Budget
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">₹</span>
                   <input
                     type="number"
-                    placeholder="Enter your price"
-                    value={bookingData.proposedPrice}
-                    onChange={(e) => setBookingData({ ...bookingData, proposedPrice: e.target.value })}
+                    placeholder="Enter your proposed budget"
+                    value={bookingData.proposedBudget}
+                    onChange={(e) => setBookingData({ ...bookingData, proposedBudget: e.target.value })}
                     className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all"
                     required
                   />
                 </div>
               </div>
               
-              {/* Message */}
+              {/* Notes */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                   <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                   </svg>
-                  Message to Organizer
+                  Notes to Organizer
                 </label>
                 <textarea
                   placeholder="Tell the organizer about your services and why you're the best choice..."
-                  value={bookingData.message}
-                  onChange={(e) => setBookingData({ ...bookingData, message: e.target.value })}
+                  value={bookingData.notes}
+                  onChange={(e) => setBookingData({ ...bookingData, notes: e.target.value })}
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all resize-none"
                 />

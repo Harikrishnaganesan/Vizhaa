@@ -141,26 +141,28 @@ export default function EventOrganizerRegistrationPage() {
 
     try {
       const result = await apiCall('organizer/signup', {
+        phone: formData.phone,
+        sessionId,
         fullName: formData.name,
         email: formData.email,
-        phone: formData.phone,
         password: formData.password,
-        companyName: formData.companyName,
-        sessionId
+        companyName: formData.companyName
       });
       
       if (result.success) {
-        // Store auth token if provided
-        const token = (result as any).token || (result as any).data?.token;
-        const user = (result as any).user || (result as any).data?.user;
-        if (token) {
+        // Store auth token if provided - token and user are at root level
+        const token = result.token || result.data?.token;
+        const user = result.user || result.data?.user;
+        if (token && user) {
           localStorage.setItem('authToken', token);
           localStorage.setItem('userType', 'organizer');
-          localStorage.setItem('userId', user?.id);
+          localStorage.setItem('userId', user.id);
+          alert('Registration successful!');
+          router.push('/event-organizers');
+        } else {
+          alert('Registration successful! Please login.');
+          router.push('/auth/user-login');
         }
-        
-        alert('Registration successful!');
-        router.push(token ? '/event-organizers' : '/auth/user-login');
       } else {
         setError(result.message || 'Registration failed');
       }
