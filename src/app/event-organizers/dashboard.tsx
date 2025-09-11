@@ -8,11 +8,19 @@ import Header from "../components/Header/Header";
 import { useProfile } from "../contexts/ProfileContext";
 import Image from "next/image";
 
+interface ProfileData {
+  fullName: string;
+  email: string;
+  phone: string;
+  companyName?: string;
+  createdAt: string;
+}
+
 const ProfileTab = () => {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState<Partial<ProfileData>>({});
 
   useEffect(() => {
     loadProfile();
@@ -20,11 +28,11 @@ const ProfileTab = () => {
 
   const loadProfile = async () => {
     try {
-      const { organizerAPI } = await import('/services/api.js');
-      const result = await organizerAPI.getProfile();
+      const { api } = await import('../../services/completeApi');
+      const result = await api.organizer.getProfile();
       if (result.success) {
-        setProfile(result.data);
-        setEditData(result.data);
+        setProfile(result.data as ProfileData);
+        setEditData(result.data as ProfileData);
       }
     } catch (error) {
       console.error('Failed to load profile:', error);
@@ -35,10 +43,10 @@ const ProfileTab = () => {
 
   const handleSave = async () => {
     try {
-      const { organizerAPI } = await import('/services/api.js');
-      const result = await organizerAPI.updateProfile(editData);
+      const { api } = await import('../../services/completeApi');
+      const result = await api.organizer.updateProfile(editData);
       if (result.success) {
-        setProfile(result.data);
+        setProfile(result.data as ProfileData);
         setEditing(false);
       }
     } catch (error) {
@@ -167,6 +175,7 @@ export interface EventData {
   selectedDressCode: string;
   paymentStatus: 'Paid' | 'Advance Paid' | 'Unpaid';
   isPastEvent: boolean;
+  viewSuppliers?: boolean;
 }
 
 const EventOrganizersDashboard: React.FC = () => {
@@ -183,11 +192,11 @@ const EventOrganizersDashboard: React.FC = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const { organizerAPI } = await import('/services/api.js');
+      const { api } = await import('../../services/completeApi');
       
       // Load events from API
-      const eventsData = await organizerAPI.getEvents();
-      setEvents(eventsData.data || []);
+      const eventsData = await api.organizer.getEvents();
+      setEvents((eventsData.data as EventData[]) || []);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
     } finally {

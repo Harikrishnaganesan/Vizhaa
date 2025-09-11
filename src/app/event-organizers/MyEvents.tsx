@@ -10,6 +10,7 @@ interface Event {
   eventDate: string;
   budget: number;
   suppliersCount: number;
+  numberOfSuppliers: number;
   createdAt: string;
 }
 
@@ -36,9 +37,9 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
     setLoading(true);
     setError('');
     try {
-      const { organizerAPI } = await import('/services/api.js');
-      const result = await organizerAPI.getEvents();
-      setEvents(result.data || []);
+      const { api } = await import('../../services/completeApi');
+      const result = await api.organizer.getEvents();
+      setEvents((result.data as Event[]) || []);
     } catch (error: any) {
       setError(error.message || 'Failed to load events');
     } finally {
@@ -50,8 +51,8 @@ const MyEvents: React.FC<MyEventsProps> = ({ onStartNewEvent, onEditEvent, loadi
     if (!confirm('Are you sure you want to delete this event?')) return;
     
     try {
-      const { organizerAPI } = await import('/services/api.js');
-      await organizerAPI.deleteEvent(eventId);
+      const { api } = await import('../../services/completeApi');
+      await api.organizer.deleteEvent(eventId);
       setEvents(events.filter(e => e.id !== eventId));
       setError('');
     } catch (error: any) {

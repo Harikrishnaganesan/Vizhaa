@@ -7,11 +7,19 @@ import Header from "../components/Header/Header";
 import ProfileCard from "../components/ProfileCard";
 import { useProfile } from "../contexts/ProfileContext";
 
+interface SupplierProfile {
+  fullName: string;
+  email: string;
+  phone: string;
+  services: string[];
+  createdAt: string;
+}
+
 const SupplierProfileTab = () => {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<SupplierProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState<Partial<SupplierProfile>>({});
 
   const availableServices = ['catering', 'decoration', 'photography', 'music', 'venue', 'transportation', 'flowers', 'security'];
 
@@ -58,9 +66,9 @@ const SupplierProfileTab = () => {
     }
   };
 
-  const handleServiceToggle = (service) => {
+  const handleServiceToggle = (service: string) => {
     const services = editData.services?.includes(service)
-      ? editData.services.filter(s => s !== service)
+      ? editData.services.filter((s: string) => s !== service)
       : [...(editData.services || []), service];
     setEditData({...editData, services});
   };
@@ -218,15 +226,15 @@ export default function SupplierDashboard() {
             {sidebarItems.map((item) => (
               <button
                 key={item.name}
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-300 whitespace-nowrap transform hover:scale-105 shadow-md ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                   activeTab === item.name
-                    ? "bg-gradient-to-r from-[#2DBE60] to-green-600 text-white shadow-lg scale-105"
-                    : "text-white hover:bg-white hover:bg-opacity-10 hover:text-[#2DBE60]"
+                    ? 'bg-white text-[#23364E] shadow-md'
+                    : 'text-white hover:bg-white/10'
                 }`}
                 onClick={() => setActiveTab(item.name)}
               >
                 {item.icon}
-                <span className="text-sm font-semibold">{item.name}</span>
+                {item.name}
               </button>
             ))}
           </nav>
@@ -273,14 +281,6 @@ export default function SupplierDashboard() {
               </button>
             ))}
           </nav>
-          
-          {/* Footer */}
-          <div className="p-6 border-t border-white border-opacity-10">
-            <div className="text-center text-gray-400 text-xs">
-              <p>Vizhaa Supplier Dashboard</p>
-              <p className="mt-1">v1.0.0</p>
-            </div>
-          </div>
         </aside>
         
         {/* Main Content */}

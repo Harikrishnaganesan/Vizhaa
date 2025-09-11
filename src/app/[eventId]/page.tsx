@@ -3,13 +3,32 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
+type EventType = {
+  eventName: string;
+  location: string;
+  eventDate: string | Date;
+  budget: number;
+};
+
+type Supplier = {
+  id: string;
+  fullName: string;
+  businessName?: string;
+  phone: string;
+  email: string;
+  services: string[];
+  proposedPrice: number;
+  status: string;
+  message?: string;
+};
+
 const EventSuppliersPage: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const eventId = params.eventId as string;
   
-  const [suppliers, setSuppliers] = useState<unknown[]>([]);
-  const [event, setEvent] = useState<unknown>(null);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [event, setEvent] = useState<EventType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -94,19 +113,12 @@ const EventSuppliersPage: React.FC = () => {
         {/* Suppliers List */}
         {suppliers.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <img src="/status.svg" alt="No Suppliers" className="w-32 h-32 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-700 mb-2">No Suppliers Yet</h2>
-            <p className="text-gray-500">No suppliers have booked this event yet.</p>
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">No Suppliers Found</h2>
+            <p className="text-gray-500">No suppliers have applied for this event yet.</p>
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-800">
-                Suppliers ({suppliers.length})
-              </h2>
-            </div>
-            
-            {suppliers.map((supplier) => (
+            {suppliers.map((supplier: Supplier) => (
               <div key={supplier.id} className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                   <div className="flex-shrink-0">
@@ -182,8 +194,7 @@ const EventSuppliersPage: React.FC = () => {
                       <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded text-sm flex items-center gap-2">
                         <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
                           <path fill="#fff" d="M21 15.46l-5.27-2.11a.75.75 0 0 0-.73.09l-2.11 1.58a.75.75 0 0 1-.88 0l-2.11-1.58a.75.75 0 0 0-.73-.09L3 15.46V17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1.54z"/>
-                          <path fill="#fff" d="M21 8.24V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v1.24l9 3.6 9-3.6z"/>
-                        </svg>
+            </svg>
                         Contact
                       </button>
                     </div>
@@ -198,4 +209,4 @@ const EventSuppliersPage: React.FC = () => {
   );
 };
 
-export default EventSuppliersPage;
+export default EventSuppliersPage;              

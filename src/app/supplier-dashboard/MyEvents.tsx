@@ -10,11 +10,11 @@ const MyEvents: React.FC = () => {
 
   const loadMyBookings = async () => {
     try {
-      const { supplierAPI } = await import('/services/api.js');
-      const result = await supplierAPI.getBookings();
+      const { api } = await import('../../services/completeApi');
+      const result = await api.supplier.getBookings();
       
       if (result.success) {
-        setBookings(result.data || []);
+        setBookings((result.data as any[]) || []);
       } else {
         console.error('Failed to load bookings:', result.message);
         setBookings([]);

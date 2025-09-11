@@ -2,11 +2,27 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
+interface Profile {
+  userType: 'organizer' | 'supplier';
+  fullName: string;
+  email: string;
+  phone: string;
+  services?: string[];
+  isVerified: boolean;
+  createdAt?: string;
+}
+
+interface FormData {
+  fullName: string;
+  email: string;
+  services: string[];
+}
+
 export default function ProfileCard() {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
     services: []
@@ -174,7 +190,7 @@ export default function ProfileCard() {
           <div>
             <label className="block text-sm font-medium text-gray-500">Services</label>
             <div className="flex flex-wrap gap-1 mt-1">
-              {profile.services?.map(service => (
+              {profile.services?.map((service: string) => (
                 <span key={service} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                   {service.charAt(0).toUpperCase() + service.slice(1)}
                 </span>

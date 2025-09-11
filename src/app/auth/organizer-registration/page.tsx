@@ -38,18 +38,18 @@ export default function EventOrganizerRegistrationPage() {
     setError("");
   };
 
-  // API call helper using direct backend calls
+  // API call helper using complete API service
   const apiCall = async (endpoint: string, data: any) => {
     try {
-      const { authAPI } = await import('/services/api.js');
+      const { api } = await import('../../../services/completeApi');
       
       switch (endpoint) {
         case 'send-otp':
-          return await authAPI.sendOTP(data.phone, data.userType);
+          return await api.auth.sendOTP(data.phone, data.userType);
         case 'verify-otp':
-          return await authAPI.verifyOTP(data.sessionId, data.otp, data.phone);
+          return await api.auth.verifyOTP(data.sessionId, data.otp, data.phone);
         case 'organizer/signup':
-          return await authAPI.organizerSignup(data);
+          return await api.auth.organizerSignup(data);
         default:
           throw new Error(`Unknown endpoint: ${endpoint}`);
       }
@@ -82,7 +82,7 @@ export default function EventOrganizerRegistrationPage() {
         userType: 'organizer'
       });
       
-      setSessionId(result.sessionId || 'temp-session');
+      setSessionId((result as any).sessionId || (result as any).data?.sessionId || 'temp-session');
       setStep(2);
       setCountdown(60);
     } catch (err: any) {
@@ -151,14 +151,16 @@ export default function EventOrganizerRegistrationPage() {
       
       if (result.success) {
         // Store auth token if provided
-        if (result.token) {
-          localStorage.setItem('authToken', result.token);
+        const token = (result as any).token || (result as any).data?.token;
+        const user = (result as any).user || (result as any).data?.user;
+        if (token) {
+          localStorage.setItem('authToken', token);
           localStorage.setItem('userType', 'organizer');
-          localStorage.setItem('userId', result.user.id);
+          localStorage.setItem('userId', user?.id);
         }
         
         alert('Registration successful!');
-        router.push(result.token ? '/event-organizers' : '/auth/user-login');
+        router.push(token ? '/event-organizers' : '/auth/user-login');
       } else {
         setError(result.message || 'Registration failed');
       }

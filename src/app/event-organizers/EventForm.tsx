@@ -1,7 +1,7 @@
 // EventForm.tsx - Create/Edit Event Form
 "use client";
 import React, { useState } from "react";
-import { useEvents } from "../hooks/useAPI";
+
 
 interface EventFormProps {
   onSubmit: (data: any) => void;
@@ -47,7 +47,7 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
     setSuccess('');
     
     try {
-      const { organizerAPI } = await import('/services/api.js');
+      const { api } = await import('../../services/completeApi');
       
       const eventData = {
         ...formData,
@@ -57,10 +57,10 @@ const EventForm: React.FC<EventFormProps> = ({ onSubmit, initialData, isEdit = f
       };
       
       if (isEdit && initialData?.id) {
-        await organizerAPI.updateEvent(initialData.id, eventData);
+        await api.organizer.updateEvent(initialData.id, eventData);
         setSuccess('Event updated successfully!');
       } else {
-        await organizerAPI.createEvent(eventData);
+        await api.organizer.createEvent(eventData);
         setSuccess('Event created successfully!');
       }
       
