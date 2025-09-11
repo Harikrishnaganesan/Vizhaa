@@ -31,7 +31,7 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const { api } = await import('../../../services/completeApi');
+      const api = (await import('../../../services/api')).default;
       const result = await api.auth.sendOTP(phoneData.phone, 'supplier');
       
       if (result.success) {
@@ -53,7 +53,7 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const { api } = await import('../../../services/completeApi');
+      const api = (await import('../../../services/api')).default;
       const result = await api.auth.verifyOTP(sessionId, otpData.otp, phoneData.phone);
       
       if (result.success && ((result as any).phoneVerified || (result as any).data?.phoneVerified)) {
@@ -74,7 +74,7 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const { api } = await import('../../../services/completeApi');
+      const api = (await import('../../../services/api')).default;
       const result = await api.auth.supplierSignup({
         phone: phoneData.phone,
         sessionId,

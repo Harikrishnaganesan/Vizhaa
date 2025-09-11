@@ -38,10 +38,10 @@ export default function EventOrganizerRegistrationPage() {
     setError("");
   };
 
-  // API call helper using complete API service
+  // API call helper using production API service
   const apiCall = async (endpoint: string, data: any) => {
     try {
-      const { api } = await import('../../../services/completeApi');
+      const api = (await import('../../../services/api')).default;
       
       switch (endpoint) {
         case 'send-otp':

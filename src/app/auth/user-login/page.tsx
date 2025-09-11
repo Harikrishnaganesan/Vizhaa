@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
-import { api } from '../../../services/completeApi';
+import api from '../../../services/api';
 
 // ---- PASSWORD RESET COMPONENTS ----
 function PasswordResetView({ onToast, onBack }: { onToast: (msg: string) => void; onBack: () => void }) {
