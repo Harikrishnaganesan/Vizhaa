@@ -1,12 +1,25 @@
 // Complete API service with all endpoints
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://vizhaa-backend-1.onrender.com/api'
-  : 'http://localhost:4000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://vizhaa-backend-1.onrender.com/api'
+    : 'http://localhost:4000/api');
 
 interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data?: T;
+  token?: string;
+  user?: any;
+  sessionId?: string;
+  otp?: string;
+  phoneVerified?: boolean;
+  userType?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }
 
 class ApiService {
@@ -15,6 +28,7 @@ class ApiService {
     
     const config: RequestInit = {
       method: 'GET',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -30,13 +44,14 @@ class ApiService {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userType');
         localStorage.removeItem('userId');
-        window.location.href = '/auth/login';
+        window.location.href = '/auth/user-login';
         throw new Error('Unauthorized');
       }
       
       const data = await response.json();
       return data;
     } catch (error) {
+      console.error('API Request Error:', error);
       throw error;
     }
   }
@@ -55,13 +70,27 @@ class ApiService {
         body: JSON.stringify({ sessionId, otp, phone }),
       }),
 
-    organizerSignup: (data: any) =>
+    organizerSignup: (data: {
+      phone: string;
+      sessionId: string;
+      fullName: string;
+      email: string;
+      password: string;
+      companyName: string;
+    }) =>
       this.request('/auth/organizer/signup', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
 
-    supplierSignup: (data: any) =>
+    supplierSignup: (data: {
+      phone: string;
+      sessionId: string;
+      fullName: string;
+      email: string;
+      password: string;
+      services: string[];
+    }) =>
       this.request('/auth/supplier/signup', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -94,7 +123,17 @@ class ApiService {
 
   // Events endpoints
   events = {
-    create: (eventData: any) =>
+    create: (eventData: {
+      eventName: string;
+      eventType: string;
+      location: string;
+      numberOfSuppliers: number;
+      eventDate: string;
+      eventTime: string;
+      servicesNeeded: string[];
+      budget: number;
+      notes?: string;
+    }) =>
       this.request('/events', {
         method: 'POST',
         body: JSON.stringify(eventData),
@@ -115,12 +154,26 @@ class ApiService {
         method: 'DELETE',
       }),
 
-    getAvailable: () => this.request('/events/available/events'),
+    getAvailable: (params?: {
+      page?: number;
+      limit?: number;
+      services?: string;
+      location?: string;
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.services) queryParams.append('services', params.services);
+      if (params?.location) queryParams.append('location', params.location);
+      
+      const queryString = queryParams.toString();
+      return this.request(`/events/available/events${queryString ? `?${queryString}` : ''}`);
+    },
 
-    book: (eventId: string, message: string) =>
+    book: (eventId: string, proposedBudget: number, notes?: string) =>
       this.request('/events/book', {
         method: 'POST',
-        body: JSON.stringify({ eventId, message }),
+        body: JSON.stringify({ eventId, proposedBudget, notes }),
       }),
 
     getApplications: (eventId: string) =>
@@ -149,7 +202,17 @@ class ApiService {
 
     getEvents: () => this.request('/organizer/events'),
 
-    createEvent: (eventData: any) =>
+    createEvent: (eventData: {
+      eventName: string;
+      eventType: string;
+      location: string;
+      numberOfSuppliers: number;
+      eventDate: string;
+      eventTime: string;
+      servicesNeeded: string[];
+      budget: number;
+      notes?: string;
+    }) =>
       this.request('/organizer/events', {
         method: 'POST',
         body: JSON.stringify(eventData),
@@ -193,9 +256,26 @@ class ApiService {
         body: JSON.stringify(profileData),
       }),
 
-    getEvents: () => this.request('/supplier/events'),
+    getEvents: (params?: {
+      page?: number;
+      limit?: number;
+      services?: string;
+      location?: string;
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.services) queryParams.append('services', params.services);
+      if (params?.location) queryParams.append('location', params.location);
+      
+      const queryString = queryParams.toString();
+      return this.request(`/supplier/events${queryString ? `?${queryString}` : ''}`);
+    },
 
-    bookEvent: (eventId: string, bookingData: any) =>
+    bookEvent: (eventId: string, bookingData: {
+      proposedBudget: number;
+      notes?: string;
+    }) =>
       this.request(`/supplier/events/${eventId}/book`, {
         method: 'POST',
         body: JSON.stringify(bookingData),
@@ -217,7 +297,30 @@ class ApiService {
       }),
   };
 
-  // OTP endpoints
+  // File upload for supplier registration
+  uploadFile = async (formData: FormData) => {
+    const token = localStorage.getItem('authToken');
+    
+    const config: RequestInit = {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/supplier/signup`, config);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('File Upload Error:', error);
+      throw error;
+    }
+  };
+
+  // OTP endpoints (legacy support)
   otp = {
     send: (phone: string, purpose: string) =>
       this.request('/otp/send', {

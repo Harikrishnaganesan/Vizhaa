@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:local": "cross-env NODE_ENV=development next dev",
+    "build:prod": "cross-env NODE_ENV=production next build",
+    "start:prod": "cross-env NODE_ENV=production next start"
   },
   "dependencies": {
     "lottie-react": "^2.4.1",

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../../services/completeApi';
 
 // ---- PASSWORD RESET COMPONENTS ----
 function PasswordResetView({ onToast, onBack }: { onToast: (msg: string) => void; onBack: () => void }) {
@@ -203,16 +204,10 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/forgot-password', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone })
-      });
-      const result = await response.json();
+      const result = await api.auth.forgotPassword(phone);
       
       if (result.success) {
-        setSessionId(result.sessionId);
+        setSessionId(result.sessionId || 'temp-session');
         setStep('otp');
       } else {
         setError(result.message || 'Failed to send OTP');
@@ -228,13 +223,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/verify-password-reset-otp', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, otp, phone })
-      });
-      const result = await response.json();
+      const result = await api.auth.verifyPasswordResetOTP(sessionId, otp, phone);
       
       if (result.success) {
         setStep('newPassword');
@@ -260,13 +249,7 @@ function ForgotPasswordView({ onBack }: { onBack: () => void }) {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/reset-password', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, phone, newPassword })
-      });
-      const result = await response.json();
+      const result = await api.auth.resetPassword(sessionId, phone, newPassword);
       
       if (result.success) {
         alert('Password reset successful! Please login with your new password.');
@@ -411,41 +394,26 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
     setError('');
 
     try {
-      // Wake up backend first (for Render free tier)
-      setError('Connecting to server...');
-      try {
-        await fetch('https://vizhaa-backend-1.onrender.com/health', { 
-          method: 'GET',
-          mode: 'cors',
-          signal: AbortSignal.timeout(10000)
-        });
-      } catch (wakeError) {
-        console.log('Backend wake-up attempt:', wakeError);
-      }
-      
       setError('Authenticating...');
-      const response = await fetch('https://vizhaa-backend-1.onrender.com/api/auth/login', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password })
-      });
-      const result = await response.json();
+      const result = await api.auth.login(phone, password);
       
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Login failed');
-      }
-
       if (!result.success) {
         throw new Error(result.message || 'Login failed');
       }
       
-      // Use AuthContext login method
-      login(result.token, result.user);
+      // Use AuthContext login method - token and user are at root level
+      const token = result.token || result.data?.token;
+      const user = result.user || result.data?.user;
       
-      if (result.user.userType === 'organizer') {
+      if (!token || !user) {
+        throw new Error('Invalid response format from server');
+      }
+      
+      login(token, user);
+      
+      if (user.userType === 'organizer') {
         router.push('/event-organizers');
-      } else if (result.user.userType === 'supplier') {
+      } else if (user.userType === 'supplier') {
         router.push('/supplier-dashboard');
       } else {
         router.push('/user-dashboard');
@@ -501,7 +469,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
                 className={`peer pl-11 pr-3 py-4 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-transparent outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
                   phoneLabelFloat ? 'w-[110%]' : 'w-full'
                 }`}
-                placeholder="Mobile Number"
+                placeholder="Phone Number"
                 autoComplete="tel"
                 required
               />
@@ -513,7 +481,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
                     : 'top-1/2 left-11 text-base -translate-y-1/2'
                 }`}
               >
-                Mobile Number
+                Phone Number
               </label>
             </div>
             

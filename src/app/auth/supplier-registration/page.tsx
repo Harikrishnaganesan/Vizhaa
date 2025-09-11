@@ -85,17 +85,19 @@ export default function ServiceSupplierRegistrationPage() {
       });
       
       if (result.success) {
-        // Store auth token if provided
-        const token = (result as any).token || (result as any).data?.token;
-        const user = (result as any).user || (result as any).data?.user;
-        if (token) {
+        // Store auth token if provided - token and user are at root level
+        const token = result.token || result.data?.token;
+        const user = result.user || result.data?.user;
+        if (token && user) {
           localStorage.setItem('authToken', token);
           localStorage.setItem('userType', 'supplier');
-          localStorage.setItem('userId', user?.id);
+          localStorage.setItem('userId', user.id);
+          alert('Registration successful!');
+          router.push('/supplier-dashboard');
+        } else {
+          alert('Registration successful! Please login.');
+          router.push('/auth/user-login');
         }
-        
-        alert('Registration successful!');
-        router.push(token ? '/supplier-dashboard' : '/auth/user-login');
       } else {
         setError(result.message || 'Registration failed');
       }
