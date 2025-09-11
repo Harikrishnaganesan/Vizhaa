@@ -31,11 +31,11 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const { authAPI } = await import('/services/api.js');
-      const result = await authAPI.sendOTP(phoneData.phone, 'supplier');
+      const { api } = await import('../../../services/completeApi');
+      const result = await api.auth.sendOTP(phoneData.phone, 'supplier');
       
       if (result.success) {
-        setSessionId(result.sessionId);
+        setSessionId((result as any).sessionId || (result as any).data?.sessionId || 'temp-session');
         setCurrentStep('otp');
       } else {
         setError(result.message || 'Failed to send OTP');
@@ -53,10 +53,10 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const { authAPI } = await import('/services/api.js');
-      const result = await authAPI.verifyOTP(sessionId, otpData.otp, phoneData.phone);
+      const { api } = await import('../../../services/completeApi');
+      const result = await api.auth.verifyOTP(sessionId, otpData.otp, phoneData.phone);
       
-      if (result.success && result.phoneVerified) {
+      if (result.success && ((result as any).phoneVerified || (result as any).data?.phoneVerified)) {
         setCurrentStep('details');
       } else {
         setError(result.message || 'Invalid OTP');
@@ -74,8 +74,8 @@ export default function ServiceSupplierRegistrationPage() {
     setError('');
 
     try {
-      const { authAPI } = await import('/services/api.js');
-      const result = await authAPI.supplierSignup({
+      const { api } = await import('../../../services/completeApi');
+      const result = await api.auth.supplierSignup({
         phone: phoneData.phone,
         sessionId,
         fullName: formData.fullName,
@@ -86,14 +86,16 @@ export default function ServiceSupplierRegistrationPage() {
       
       if (result.success) {
         // Store auth token if provided
-        if (result.token) {
-          localStorage.setItem('authToken', result.token);
+        const token = (result as any).token || (result as any).data?.token;
+        const user = (result as any).user || (result as any).data?.user;
+        if (token) {
+          localStorage.setItem('authToken', token);
           localStorage.setItem('userType', 'supplier');
-          localStorage.setItem('userId', result.user.id);
+          localStorage.setItem('userId', user?.id);
         }
         
         alert('Registration successful!');
-        router.push(result.token ? '/supplier-dashboard' : '/auth/user-login');
+        router.push(token ? '/supplier-dashboard' : '/auth/user-login');
       } else {
         setError(result.message || 'Registration failed');
       }

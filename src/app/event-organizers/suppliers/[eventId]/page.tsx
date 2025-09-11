@@ -6,6 +6,7 @@ import Image from "next/image";
 
 interface Supplier {
   id: string;
+  bookingId: string;
   fullName: string;
   businessName?: string;
   phone: string;
@@ -15,6 +16,14 @@ interface Supplier {
   message?: string;
   status: string;
   bookedAt: string;
+  bookedServices?: string[];
+  supplier?: {
+    fullName: string;
+    businessName?: string;
+    phone: string;
+    email: string;
+    services: string[];
+  };
 }
 
 export default function EventSuppliersPage() {
@@ -34,12 +43,12 @@ export default function EventSuppliersPage() {
 
   const loadEventSuppliers = async () => {
     try {
-      const { organizerAPI } = await import('/services/api.js');
-      const result = await organizerAPI.getEventSuppliers(eventId);
+      const { api } = await import('../../../../services/completeApi');
+      const result = await api.organizer.getEventSuppliers(eventId);
       
       if (result.success && result.data) {
-        setSuppliers(result.data.suppliers || []);
-        setEventName(result.data.event?.eventName || "Event");
+        setSuppliers((result.data as any).suppliers || []);
+        setEventName((result.data as any).event?.eventName || "Event");
       } else {
         setSuppliers([]);
         setEventName("Event");
@@ -55,8 +64,8 @@ export default function EventSuppliersPage() {
 
   const handleUpdateStatus = async (bookingId: string, status: string) => {
     try {
-      const { organizerAPI } = await import('/services/api.js');
-      const result = await organizerAPI.updateBookingStatus(bookingId, status);
+      const { api } = await import('../../../../services/completeApi');
+      const result = await api.organizer.updateBookingStatus(bookingId, status);
       
       if (result.success) {
         loadEventSuppliers();

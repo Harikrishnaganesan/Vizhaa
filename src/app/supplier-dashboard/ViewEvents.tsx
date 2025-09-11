@@ -21,11 +21,11 @@ const ViewEvents: React.FC = () => {
 
   const loadEvents = async () => {
     try {
-      const { supplierAPI } = await import('/services/api.js');
-      const result = await supplierAPI.getAvailableEvents();
+      const { api } = await import('../../services/completeApi');
+      const result = await api.supplier.getEvents();
       
       if (result.success) {
-        setEvents(result.data || []);
+        setEvents((result.data as any[]) || []);
         setError('');
       } else {
         setError(result.message || 'Failed to load events');
@@ -44,8 +44,8 @@ const ViewEvents: React.FC = () => {
     }
 
     try {
-      const { supplierAPI } = await import('/services/api.js');
-      const result = await supplierAPI.bookEvent(eventId, {
+      const { api } = await import('../../services/completeApi');
+      const result = await api.supplier.bookEvent(eventId, {
         services: bookingData.services,
         proposedPrice: bookingData.proposedPrice ? parseInt(bookingData.proposedPrice) : 0,
         message: bookingData.message

@@ -37,7 +37,7 @@ export default function Navigation() {
     { name: 'Dashboard', path: getDashboardPath() }
   ];
 
-  const getInitials = (name) => {
+  const getInitials = (name: string | undefined) => {
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
