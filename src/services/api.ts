@@ -19,8 +19,10 @@ class ApiService {
     const config: RequestInit = {
       method: 'GET',
       mode: 'cors',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
@@ -28,6 +30,7 @@ class ApiService {
     };
 
     try {
+      console.log(`🌐 API Request: ${config.method} ${API_BASE_URL}${endpoint}`);
       const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
       
       if (response.status === 401) {
@@ -38,10 +41,19 @@ class ApiService {
         throw new Error('Unauthorized');
       }
       
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+        throw new Error(errorData.message || `HTTP ${response.status}`);
+      }
+      
       const data = await response.json();
+      console.log(`✅ API Response: ${response.status}`, data.success ? 'Success' : 'Failed');
       return data;
     } catch (error) {
-      console.error('API Request Error:', error);
+      console.error('❌ API Request Error:', error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error - please check your connection');
+      }
       throw error;
     }
   }
