@@ -6,6 +6,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  trailingSlash: false,
+  output: 'standalone',
   async headers() {
     return [
       {

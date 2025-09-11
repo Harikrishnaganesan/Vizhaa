@@ -1,7 +1,5 @@
 // Direct backend API service
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://vizhaa-backend-1.onrender.com/api'
-  : 'http://localhost:4000/api';
+import { API_BASE_URL } from '../utils/constants';
 
 interface ApiResponse<T = any> {
   success: boolean;
