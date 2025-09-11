@@ -44,10 +44,15 @@ const ViewEvents: React.FC = () => {
 
     try {
       const { api } = await import('../../services/completeApi');
+      
+      // Get supplier profile to include services
+      const profileResult = await api.supplier.getProfile();
+      const supplierServices = profileResult.success ? profileResult.data?.services || [] : [];
+      
       const result = await api.events.book(
         eventId, 
         parseInt(bookingData.proposedBudget), 
-        bookingData.notes
+        bookingData.notes || `Services offered: ${supplierServices.join(', ')}`
       );
       
       if (result.success) {
@@ -120,8 +125,8 @@ const ViewEvents: React.FC = () => {
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <div key={event.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden group">
+        {events.map((event, index) => (
+          <div key={event._id || event.id || index} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden group">
             {/* Event Header */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100">
               <div className="flex justify-between items-start mb-4">
@@ -191,6 +196,19 @@ const ViewEvents: React.FC = () => {
                     </div>
                   </div>
                 )}
+                
+                {event.servicesNeeded && event.servicesNeeded.length > 0 && (
+                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-xs text-gray-500 font-medium mb-2">Services Needed</p>
+                    <div className="flex flex-wrap gap-1">
+                      {event.servicesNeeded.map((service: string, idx: number) => (
+                        <span key={idx} className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
+                          {service}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Action Button */}
@@ -209,7 +227,7 @@ const ViewEvents: React.FC = () => {
                 </div>
               ) : (
                 <button
-                  onClick={() => setBookingEvent(event.id)}
+                  onClick={() => setBookingEvent(event._id || event.id)}
                   className="w-full bg-gradient-to-r from-[#2DBE60] to-green-600 hover:from-green-600 hover:to-green-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">

@@ -401,9 +401,14 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
         throw new Error(result.message || 'Login failed');
       }
       
+      // Debug login response
+      console.log('Login result:', result);
+      
       // Use AuthContext login method - token and user are at root level
       const token = result.token || result.data?.token;
       const user = result.user || result.data?.user;
+      
+      console.log('Token:', token, 'User:', user);
       
       if (!token || !user) {
         throw new Error('Invalid response format from server');

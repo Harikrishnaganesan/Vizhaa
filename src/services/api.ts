@@ -1,0 +1,256 @@
+// Production API Service - Integrated with https://vizhaa-backend-1.onrender.com/api
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api';
+
+interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
+  data?: T;
+  token?: string;
+  user?: any;
+  sessionId?: string;
+  phoneVerified?: boolean;
+  userType?: string;
+}
+
+class ApiService {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    const token = localStorage.getItem('authToken');
+    
+    const config: RequestInit = {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      },
+      ...options,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+      
+      if (response.status === 401) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
+        window.location.href = '/auth/user-login';
+        throw new Error('Unauthorized');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('API Request Error:', error);
+      throw error;
+    }
+  }
+
+  // Authentication
+  auth = {
+    sendOTP: (phone: string, userType: string) =>
+      this.request('/auth/send-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone, userType }),
+      }),
+
+    verifyOTP: (sessionId: string, otp: string, phone: string) =>
+      this.request('/auth/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, otp, phone }),
+      }),
+
+    organizerSignup: (data: {
+      phone: string;
+      sessionId: string;
+      fullName: string;
+      email: string;
+      password: string;
+      companyName: string;
+    }) =>
+      this.request('/auth/organizer/signup', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    supplierSignup: (data: {
+      phone: string;
+      sessionId: string;
+      fullName: string;
+      email: string;
+      password: string;
+      services: string[];
+    }) =>
+      this.request('/auth/supplier/signup', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    login: (phone: string, password: string) =>
+      this.request('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ phone, password }),
+      }),
+
+    forgotPassword: (phone: string) =>
+      this.request('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ phone }),
+      }),
+
+    verifyPasswordResetOTP: (sessionId: string, otp: string, phone: string) =>
+      this.request('/auth/verify-password-reset-otp', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, otp, phone }),
+      }),
+
+    resetPassword: (sessionId: string, phone: string, newPassword: string) =>
+      this.request('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, phone, newPassword }),
+      }),
+  };
+
+  // Events
+  events = {
+    create: (eventData: any) =>
+      this.request('/events', {
+        method: 'POST',
+        body: JSON.stringify(eventData),
+      }),
+
+    getAll: () => this.request('/events'),
+    getStats: () => this.request('/events/stats'),
+    getById: (id: string) => this.request(`/events/${id}`),
+    
+    update: (id: string, eventData: any) =>
+      this.request(`/events/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(eventData),
+      }),
+
+    delete: (id: string) =>
+      this.request(`/events/${id}`, { method: 'DELETE' }),
+
+    getByStatus: (status: string) => this.request(`/events/status/${status}`),
+    
+    updatePayment: (eventId: string, paymentData: any) =>
+      this.request(`/events/${eventId}/payment`, {
+        method: 'PUT',
+        body: JSON.stringify(paymentData),
+      }),
+
+    getAvailable: () => this.request('/events/available/events'),
+    
+    book: (eventId: string, proposedBudget: number, notes?: string) =>
+      this.request('/events/book', {
+        method: 'POST',
+        body: JSON.stringify({ eventId, proposedBudget, notes }),
+      }),
+
+    getApplications: (eventId: string) =>
+      this.request(`/events/applications/${eventId}`),
+
+    updateApplicationStatus: (bookingId: string, status: string) =>
+      this.request(`/events/application/${bookingId}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      }),
+
+    getSupplierBookings: () => this.request('/events/supplier/bookings'),
+  };
+
+  // Organizer
+  organizer = {
+    getDashboard: () => this.request('/organizer/dashboard'),
+    getProfile: () => this.request('/organizer/profile'),
+    updateProfile: (data: any) =>
+      this.request('/organizer/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    
+    createEvent: (eventData: any) =>
+      this.request('/organizer/events', {
+        method: 'POST',
+        body: JSON.stringify(eventData),
+      }),
+    
+    getEvents: () => this.request('/organizer/events'),
+    
+    updateEvent: (eventId: string, eventData: any) =>
+      this.request(`/organizer/events/${eventId}`, {
+        method: 'PUT',
+        body: JSON.stringify(eventData),
+      }),
+    
+    deleteEvent: (eventId: string) =>
+      this.request(`/organizer/events/${eventId}`, { method: 'DELETE' }),
+    
+    getEventSuppliers: (eventId: string) =>
+      this.request(`/organizer/events/${eventId}/suppliers`),
+    
+    getBookings: () => this.request('/organizer/bookings'),
+    
+    getBookingDetails: (bookingId: string) =>
+      this.request(`/organizer/bookings/${bookingId}`),
+    
+    updateBookingStatus: (bookingId: string, status: string, message?: string) =>
+      this.request(`/organizer/bookings/${bookingId}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status, organizerMessage: message }),
+      }),
+    
+    getStatus: () => this.request('/organizer/status'),
+  };
+
+  // Supplier
+  supplier = {
+    getDashboard: () => this.request('/supplier/dashboard'),
+    getEvents: () => this.request('/supplier/events'),
+    
+    bookEvent: (eventId: string, proposedBudget: number, notes?: string) =>
+      this.request(`/supplier/events/${eventId}/book`, {
+        method: 'POST',
+        body: JSON.stringify({ proposedBudget, notes }),
+      }),
+    
+    getBookings: () => this.request('/supplier/bookings'),
+  };
+
+  // Users
+  users = {
+    getDashboard: () => this.request('/users/dashboard'),
+    getProfile: () => this.request('/users/profile'),
+    updateProfile: (data: any) =>
+      this.request('/users/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+  };
+
+  // OTP (legacy support)
+  otp = {
+    send: (phone: string, purpose: string) =>
+      this.request('/otp/send', {
+        method: 'POST',
+        body: JSON.stringify({ phone, purpose }),
+      }),
+    
+    verify: (sessionId: string, otp: string) =>
+      this.request('/otp/verify', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId, otp }),
+      }),
+  };
+
+  // Health check
+  health = {
+    check: () => this.request('/health'),
+    api: () => this.request('/api/health'),
+    db: () => this.request('/api/test-db'),
+  };
+}
+
+export const api = new ApiService();
+export default api;

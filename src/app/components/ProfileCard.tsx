@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { api } from '../../services/completeApi';
 
 interface Profile {
   userType: 'organizer' | 'supplier';
@@ -35,10 +36,11 @@ export default function ProfileCard() {
   const loadProfile = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/users/profile', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
+      console.log('Token:', token ? 'exists' : 'missing');
+      
+      const result = await api.users.getProfile();
+      console.log('Profile result:', result);
+      
       if (result.success) {
         setProfile(result.data);
         setFormData({
@@ -46,6 +48,8 @@ export default function ProfileCard() {
           email: result.data.email,
           services: result.data.services || []
         });
+      } else {
+        console.error('Profile API failed:', result.message);
       }
     } catch (error) {
       console.error('Failed to load profile:', error);
@@ -56,16 +60,7 @@ export default function ProfileCard() {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/users/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      const result = await response.json();
+      const result = await api.users.updateProfile(formData);
       if (result.success) {
         setProfile(result.data);
         setIsEditing(false);
