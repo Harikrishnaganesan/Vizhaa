@@ -1,5 +1,7 @@
-// Production API Service - Integrated with https://vizhaa-backend-1.onrender.com/api
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api';
+// Production API Service - Using proxy to avoid CORS
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '/api/proxy'
+  : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -51,7 +53,14 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('❌ API Request Error:', error);
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'name' in error &&
+        'message' in error &&
+        (error as { name: string; message: string }).name === 'TypeError' &&
+        (error as { name: string; message: string }).message.includes('fetch')
+      ) {
         throw new Error('Network error - please check your connection');
       }
       throw error;
