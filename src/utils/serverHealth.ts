@@ -39,21 +39,10 @@ export async function checkServerHealth(url: string): Promise<ServerStatus> {
   }
 }
 
-export async function checkBothServers(): Promise<{
-  local: ServerStatus;
-  production: ServerStatus;
-}> {
-  const [local, production] = await Promise.all([
-    checkServerHealth('http://localhost:4000'),
-    checkServerHealth('https://vizhaa-backend-1.onrender.com'),
-  ]);
-
-  return { local, production };
+export async function checkProductionServer(): Promise<ServerStatus> {
+  return checkServerHealth('https://vizhaa-backend-1.onrender.com');
 }
 
 export function getActiveServerUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL || 
-    (process.env.NODE_ENV === 'production' 
-      ? 'https://vizhaa-backend-1.onrender.com/api'
-      : 'http://localhost:4000/api');
+  return process.env.NEXT_PUBLIC_API_URL || 'https://vizhaa-backend-1.onrender.com/api';
 }
