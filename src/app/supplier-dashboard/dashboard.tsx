@@ -29,11 +29,8 @@ const SupplierProfileTab = () => {
 
   const loadProfile = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:4000/api/auth/profile', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
+      const { api } = await import('../../services/completeApi');
+      const result = await api.users.getProfile();
       if (result.success) {
         setProfile(result.data);
         setEditData(result.data);
@@ -47,16 +44,8 @@ const SupplierProfileTab = () => {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:4000/api/auth/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(editData)
-      });
-      const result = await response.json();
+      const { api } = await import('../../services/completeApi');
+      const result = await api.users.updateProfile(editData);
       if (result.success) {
         setProfile(result.data);
         setEditing(false);
