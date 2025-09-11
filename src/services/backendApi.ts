@@ -19,15 +19,23 @@ class BackendApiService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && !endpoint.includes('/auth/') && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
+      // Add timeout
+      signal: AbortSignal.timeout(15000) // 15 second timeout
     };
 
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
       
+      // Check for network connectivity
+      if (!response.ok) {
+        if (response.status === 0) {
+          throw new Error('Unable to connect to server. Please check your internet connection.');
+        }
+      }
       if (response.status === 401) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userType');
