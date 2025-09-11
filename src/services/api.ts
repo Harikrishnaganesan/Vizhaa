@@ -247,8 +247,8 @@ class ApiService {
   // Health check
   health = {
     check: () => this.request('/health'),
-    api: () => this.request('/api/health'),
-    db: () => this.request('/api/test-db'),
+    api: () => this.request('/health'),
+    db: () => this.request('/test-db'),
   };
 }
 
