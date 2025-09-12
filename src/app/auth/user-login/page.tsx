@@ -470,10 +470,8 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
                 onChange={(e) => setPhone(e.target.value)}
                 onFocus={() => setIsPhoneFocused(true)}
                 onBlur={() => setIsPhoneFocused(false)}
-                className={`peer pl-11 pr-3 py-4 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-transparent outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
-                  phoneLabelFloat ? 'w-[110%]' : 'w-full'
-                }`}
-                placeholder="Phone Number"
+                className="peer pl-11 pr-3 py-4 border border-gray-300 rounded-md bg-white text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 w-full"
+                placeholder=" "
                 autoComplete="tel"
                 required
               />
@@ -502,10 +500,8 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setIsPasswordFocused(true)}
                 onBlur={() => setIsPasswordFocused(false)}
-                className={`peer pl-11 pr-11 py-4 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-transparent outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
-                  passwordLabelFloat ? 'w-[110%]' : 'w-full'
-                }`}
-                placeholder="Password"
+                className="peer pl-11 pr-11 py-4 border border-gray-300 rounded-md bg-white text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 w-full"
+                placeholder=" "
                 autoComplete="current-password"
                 required
               />

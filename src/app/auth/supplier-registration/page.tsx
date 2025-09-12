@@ -195,7 +195,7 @@ export default function ServiceSupplierRegistrationPage() {
         placeholder="Full Name"
         value={formData.fullName}
         onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 placeholder-gray-500"
         required
       />
       
@@ -204,7 +204,7 @@ export default function ServiceSupplierRegistrationPage() {
         placeholder="Email Address"
         value={formData.email}
         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 placeholder-gray-500"
         required
       />
       
@@ -213,7 +213,7 @@ export default function ServiceSupplierRegistrationPage() {
         placeholder="Create Password"
         value={formData.password}
         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 placeholder-gray-500"
         minLength={6}
         required
       />

@@ -186,7 +186,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="Full Name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <input
@@ -195,7 +195,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="Email Address"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <input
@@ -204,7 +204,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="Phone Number"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <button
@@ -227,7 +227,7 @@ export default function EventOrganizerRegistrationPage() {
                 value={formData.otp}
                 onChange={handleInputChange}
                 maxLength={6}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-center"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-center text-gray-800 placeholder-gray-500"
               />
               <button
                 onClick={handleVerifyOTP}
@@ -258,7 +258,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="Company/Organization Name"
                 value={formData.companyName}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <input
@@ -267,7 +267,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="City"
                 value={formData.city}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <input
@@ -276,7 +276,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="Create Password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <input
@@ -285,7 +285,7 @@ export default function EventOrganizerRegistrationPage() {
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:border-blue-500 outline-none text-gray-800 placeholder-gray-500"
                 required
               />
               <button
