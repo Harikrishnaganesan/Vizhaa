@@ -7,7 +7,7 @@ import { ProfileProvider } from "./contexts/ProfileContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import ServerStatus from "./components/ServerStatus";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,7 +67,7 @@ function LayoutWithConditionalHeaderFooter({ children }: { children: React.React
             {showHeaderFooter && <Header />}
             {children}
             {showHeaderFooter && <Footer />}
-            <ServerStatus />
+
           </ProfileProvider>
         </AuthProvider>
       </body>
