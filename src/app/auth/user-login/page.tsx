@@ -394,7 +394,6 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
     setError('');
 
     try {
-      setError('Authenticating...');
       const result = await api.auth.login(phone, password);
       
       if (!result.success) {
@@ -534,6 +533,12 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
               <div className="text-red-500 text-sm mb-3">{error}</div>
             )}
             
+            {loading && (
+              <div className="flex justify-center mb-3">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+            
             <div className="text-right mt-2">
               <button
                 type="button"
@@ -549,7 +554,7 @@ function UserLoginView({ onForgot }: { onForgot: () => void }) {
               disabled={loading}
               className="w-full mt-4 py-3 rounded-md bg-[#253C51] text-white text-lg font-semibold transition hover:bg-[#2A4F71] shadow disabled:opacity-50"
             >
-              {loading ? (error.includes('Connecting') ? 'Waking up server...' : error.includes('Authenticating') ? 'Signing in...' : 'Please wait...') : 'Sign In'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
           
