@@ -43,17 +43,21 @@ const ViewEvents: React.FC = () => {
     }
 
     try {
-      const { api } = await import('../../services/completeApi');
+      const token = localStorage.getItem('authToken');
       
-      // Get supplier profile to include services
-      const profileResult = await api.supplier.getProfile();
-      const supplierServices = profileResult.success ? profileResult.data?.services || [] : [];
+      const response = await fetch(`https://vizhaa-backend-1.onrender.com/api/supplier/events/${eventId}/book`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          proposedBudget: parseInt(bookingData.proposedBudget),
+          notes: bookingData.notes || 'Application for event booking'
+        })
+      });
       
-      const result = await api.events.book(
-        eventId, 
-        parseInt(bookingData.proposedBudget), 
-        bookingData.notes || `Services offered: ${supplierServices.join(', ')}`
-      );
+      const result = await response.json();
       
       if (result.success) {
         setBookingEvent(null);
