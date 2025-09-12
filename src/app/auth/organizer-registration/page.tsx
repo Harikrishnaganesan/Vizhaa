@@ -150,19 +150,8 @@ export default function EventOrganizerRegistrationPage() {
       });
       
       if (result.success) {
-        // Store auth token if provided - token and user are at root level
-        const token = result.token || result.data?.token;
-        const user = result.user || result.data?.user;
-        if (token && user) {
-          localStorage.setItem('authToken', token);
-          localStorage.setItem('userType', 'organizer');
-          localStorage.setItem('userId', user.id);
-          alert('Registration successful!');
-          router.push('/event-organizers');
-        } else {
-          alert('Registration successful! Please login.');
-          router.push('/auth/user-login');
-        }
+        alert('Registration successful! Please login.');
+        router.push('/auth/user-login');
       } else {
         setError(result.message || 'Registration failed');
       }
