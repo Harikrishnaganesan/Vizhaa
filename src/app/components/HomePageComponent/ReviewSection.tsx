@@ -4,29 +4,29 @@ import Image from "next/image";
 
 const reviews = [
   {
-    name: "John doe",
+    name: "Ragul Vignesh",
     avatar: "/avatar1.png",
-    text: "I am absolutely thrilled with the service I received from their company! They were attentive, responsive, and genuinely cared about meeting my needs. I highly recommend them."
+    text: "Vizhaa made our wedding planning effortless! The platform connected us with amazing vendors who delivered beyond our expectations. Highly recommended!"
   },
   {
-    name: "John doe",
+    name: "Hari",
     avatar: "/avatar2.png",
-    text: "I am absolutely thrilled with the service I received from their company! They were attentive, responsive, and genuinely cared about meeting my needs. I highly recommend them."
+    text: "As an event organizer, Vizhaa has been a game-changer. Finding reliable suppliers is now so much easier. The booking system is seamless and efficient."
   },
   {
-    name: "John doe",
+    name: "Surya",
     avatar: "/avatar3.png",
-    text: "I was impressed with the service I received from their company! They were responsive, and genuinely cared about meeting my needs. I highly recommend them."
+    text: "Being a supplier on Vizhaa has opened up so many opportunities. The platform helps me connect with quality event organizers and grow my business."
   },
   {
-    name: "John doe",
+    name: "Priya Sharma",
     avatar: "/avatar1.png",
-    text: "Amazing experience! The team was professional and delivered exactly what we needed."
+    text: "Organized our corporate event through Vizhaa. The vendor quality and service coordination was exceptional. Will definitely use again!"
   },
   {
-    name: "John doe",
+    name: "Karthik",
     avatar: "/avatar2.png",
-    text: "Outstanding service quality. They exceeded our expectations in every way possible."
+    text: "Vizhaa's transparent pricing and reliable vendor network made our anniversary celebration perfect. Great platform for event planning!"
   }
 ];
 
@@ -123,10 +123,10 @@ const ReviewSection = () => {
     >
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold text-green-600 mb-4 text-center">
-          Our Client Review
+          What Our Users Say
         </h2>
         <p className="text-gray-600 text-center mb-16 text-lg">
-          The reasons why people loves us and become our partner.
+          Discover why event organizers and suppliers trust Vizhaa for their success.
         </p>
         
         <div className="relative overflow-hidden">
